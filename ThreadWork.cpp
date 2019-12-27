@@ -1,0 +1,437 @@
+// ---------------------------------------------------------------------------
+
+#pragma hdrstop
+
+#include "ThreadWork.h"
+#include <IOUtils.hpp>
+#include <math.h>
+// #include "TLCard502.h"
+// #include "TLogCh502Params.h"
+// #include "GSPF052.h"
+#include "TSG.h"
+#include "TProtocol.h"
+#include <ctime.h>
+#include "unTExtFunction.h"
+#include "SignalListDef.h"
+#include "unSQLDbModule.h"
+#include "TypeSizeFrequencies.h"
+// #include <boost\ratio\ratio.hpp>
+// #include <chrono.hpp>
+// ---------------------------------------------------------------------------
+
+// ----конструктор - переносим внешние переменные на внутренние---------------
+__fastcall ThreadWork::ThreadWork(bool _createSuspended, TLCardData* _lCardData, TGlobalSettings* _globalSettings, TGSPF052* _gen) {
+	thGlobalSettings = _globalSettings;
+	lCardData = _lCardData;
+	int err = -101;
+	GSPF = _gen; // new TGSPF052(thGlobalSettings,err);
+	solidGroup = new TSG(thGlobalSettings, lCardData);
+	Collect = true;
+	// ini = _ini;
+	// AnsiString sect = "Type_"; // + ini->ReadString("Default", "TypeSize", "1");
+	// delay = 10; // = ini->ReadInteger("OtherSettings", "OnLineCycleDelay", 10);
+	// pauseWorkSpeed = 1050; // ini->ReadInteger(sect, "PauseWorkSpeed", 1050);
+	// pauseStop = 500; // ini->ReadInteger(sect, "PauseStop", 500);
+	cs = new TCriticalSection();
+	calc_event = new TEvent(NULL, false, false, "calc_event", true);
+	// SGFix = _SGFix;
+
+}
+
+// ---------------------------------------------------------------------------
+__fastcall ThreadWork::~ThreadWork(void) {
+	Terminate();
+	WaitFor();
+	// delete treadADCdouble0;
+	if (GSPF) {
+		delete GSPF;
+		GSPF = NULL;
+	}
+	if (solidGroup) {
+		delete solidGroup;
+		solidGroup = NULL;
+	}
+	delete calc_event;
+	delete cs;
+}
+
+// -----запуск потока работы--------------------------------------------------
+void __fastcall ThreadWork::Execute() {
+	// NameThreadForDebugging("WorkOnlineThread",0xFFFF);
+	SetStext1("Режим \"Работа\"");
+	SetStext2("Готовим к исходному положению");
+	TProtocol::ProtocolSave("-----------");
+	TProtocol::ProtocolSave(stext1);
+	Post(UPDATE_STATUS);
+
+	UnicodeString prepare_result = PrepareForWork();
+	if (prepare_result != "ok") {
+		SetStext1("Режим \"Работа\" не завершен!");
+		SetStext2(prepare_result);
+		TProtocol::ProtocolSave("Работа: " + stext2);
+		Post(UPDATE_STATUS);
+		Finally();
+		Post(COMPLETE, 0);
+		return;
+	}
+	TProtocol::ProtocolSave("Работа: Подготовка прошла успешно");
+	bool ret = OnlineCycle();
+	if (Terminated) {
+		SetStext1("Режим \"Работа\" не завершен!");
+		TProtocol::ProtocolSave("Режим \"Работа\" не завершен!");
+		Post(UPDATE_STATUS);
+		Finally();
+		return;
+	}
+	Post(COMPUTE);
+	TProtocol::ProtocolSave("Ждем результатов от Main");
+	calc_event->WaitFor(INFINITE);
+	calc_event->ResetEvent();
+	if (Terminated) {
+		Post(COMPLETE, 0);
+		return;
+	}
+	TProtocol::ProtocolSave("Получили результаты");
+	if (!ret) {
+		SetStext1("Режим \"Работа\" не завершен!");
+		TProtocol::ProtocolSave("Режим \"Работа\" не завершен!");
+		Post(UPDATE_STATUS);
+		Finally();
+		Post(COMPLETE, 0);
+		return;
+	}
+	Sleep(500);
+	// Запись данных в БД
+	// SaveMuftToDB();
+	// -----
+	Post(COMPLETE, (LPARAM)1);
+}
+
+// ---------------------------------------------------------------------------
+void ThreadWork::Post(WPARAM _w, LPARAM _l) {
+	// PostMessage(, WM_USER + 101, 33, 0);
+	if (PostMessage(Application->Handle, thGlobalSettings->threadMsg, _w, _l) == 0)
+		TExtFunction::FATAL("ThreadOnLine::Post: не могу послать сообщение");
+	AnsiString a = "ThreadOnLine::Post: послали ";
+	a += _w;
+	a += " ";
+	a += _l;
+	TProtocol::ProtocolSave(a);
+}
+
+// ---------------------------------------------------------------------------
+// -----подготовка к работе
+UnicodeString ThreadWork::PrepareForWork() {
+	// проверяем, включен ли модуль группы прочности
+	// if (!lcard->GetDinValue("ON"))
+	// return "Включите модуль размагничивания!";
+	// todo проверка муфты
+	// if (SLD->iINMODULE->Get())
+	// SetStext2("Уберите муфту из установки!");
+	// while (SLD->iINMODULE->Get()){
+	// Sleep(3000);
+	// TExtFunction::ShowBigModalMessage("Уберите муфту из установки!",clRed);
+	// }
+
+	// SetStext2("Ждем Готовность");
+	SetStext2("Установка готова");
+	Post(UPDATE_STATUS);
+
+	Post(NEXT_MUFT);
+	return "ok";
+}
+
+// -------------------------------------------------------------------------------
+// ----онлайн цикл, крутящийся бесконечно и проверяющий все события---------------
+bool ThreadWork::OnlineCycle() {
+	TProtocol::ProtocolSave("Работа: Режим работа");
+	bool result = true; // общий результат успешности цикла
+	AnsiString msg = "";
+	// Ждем муфту
+	bool timeFlag;
+	timeFlag = CheckMufta(false, 60000);
+	if (!timeFlag) // если превышено время ожидания, то выходим
+	{
+		// проверяем наличие цепей питания
+		if (SLD->iCC->WasConst(false, 50))
+			msg = "Работа: пропал сигнал цепи управления";
+		else
+			msg = "Работа: Не дождались пока уберут муфту";
+		SetStext2(msg);
+		Post(UPDATE_STATUS);
+		// TExtFunction::ShowBigModalMessage(msg,clBlue);
+		TProtocol::ProtocolSave(msg);
+		return false;
+	}
+	timeFlag = CheckMufta(true, 60000);
+	if (!timeFlag) // если превышено время ожидания, то выходим
+	{
+		// проверяем наличие цепей питания
+		if (SLD->iCC->WasConst(false, 50))
+			msg = "Работа: пропал сигнал цепи управления";
+		else
+			msg = "Работа: Не дождались пока поставят муфту";
+		SetStext2(msg);
+		Post(UPDATE_STATUS);
+		// TExtFunction::ShowBigModalMessage(msg,clBlue);
+		TProtocol::ProtocolSave(msg);
+		return false;
+	}
+	// gen = new TGSPF052(dGlobalSettings,err);
+	if (solidGroup != NULL) {
+		delete solidGroup;
+	}
+	lCardData->ClearSGM();
+//	 TSFrequencies TSFreqs =
+//	 TSFrequencies(thGlobalSettings->indexCurrentTypeSize);
+//	 if (TSFreqs.Frequency.size() <= 0) {
+//	 TProtocol::ProtocolSave
+//	 ("Работа: частот для этого типоразмера нет в базе данных");
+//	 TExtFunction::ShowBigModalMessage
+//	 ("Работа: частот для этого типоразмера нет в базе данных", clBlue);
+//	 return false;
+//	 }
+//	 GSPF->SetSampleFreq(thGlobalSettings->discrFrecGSPF);
+//	 GSPF->FormSignal(TSFreqs.Frequency[0], TSFreqs.Amplitude[0]);
+	solidGroup = new TSG(thGlobalSettings, lCardData);
+	Sleep(500); // задержка на поправку муфты
+	DWORD LastTime = GetTickCount();
+	SetStext2("Начинаем сбор");
+	Post(UPDATE_STATUS);
+	// включаем питание датчика
+	SLD->oSENSORON->Set(true);
+	// Включаем ГСПФ
+	GSPF->StartGSPF052();
+	Sleep(100);
+	// чтение ЛКард
+	while (true) {
+		if (solidGroup->Exec(0) == 2) {
+			break;
+		}
+	}
+	// Сбрасываем состояние ГП и останавливаем ГСПФ
+	solidGroup->ResetState();
+	GSPF->StopGSPF052();
+
+	// выключаем питание датчика
+	SLD->oSENSORON->Set(false);
+	// SLD->oSENSLOWPOW->Set(false);
+	SetStext2("Закончили сбор");
+	Post(UPDATE_STATUS);
+	// рассчитываем ГП
+	int err = 0;
+	csg = solidGroup->Get1FrecSG();
+	csg.group = SqlDBModule->GetStrFieldSQL("SolidGroups", "SGName", "rec_id=" + IntToStr(csg.group_id), "X", err);
+	csg.color = (TColor)SqlDBModule->GetIntFieldSQL("SolidGroups", "Color", "rec_id=" + IntToStr(csg.group_id), 65535, err);
+	// PanelSG->Caption = csg.group+" "+IntToStr((int)(csg.probability*100))+"%";
+	// PanelSG->Color = csg.color;
+	// Выводим на экран графики
+	Post(REDRAW);
+	// ------
+	if (Terminated) // если прервали
+	{
+		Collect = false;
+		result = false;
+		TProtocol::ProtocolSave("Работа: Зашли в Terminated");
+		Finally();
+	}
+	TProtocol::ProtocolSave("OnlineCycle завершен");
+	return result;
+}
+
+void ThreadWork::Finally() {
+	// останавливаем LCard
+	if (lCardData != NULL) {
+		lCardData->StopSGM();
+	}
+	else {
+		//
+	}
+	// выключаем питание датчика
+	SLD->oSENSORON->Set(false);
+}
+
+void ThreadWork::ErrFinally(AnsiString _msg, bool* _Collect, bool* _result) {
+	Finally();
+	*_Collect = false;
+	*_result = false;
+	TProtocol::ProtocolSave(_msg);
+	SetStext2(_msg);
+	Post(UPDATE_STATUS);
+}
+
+// ---------------------------------------------------------------------------
+AnsiString ThreadWork::GetStext1(void) {
+	AnsiString ret;
+	cs->Enter(); {
+		ret = stext1;
+	} cs->Leave();
+	return (ret);
+}
+
+// ---------------------------------------------------------------------------
+AnsiString ThreadWork::GetStext2(void) {
+	AnsiString ret;
+	cs->Enter(); {
+		ret = stext2;
+	} cs->Leave();
+	return (ret);
+}
+
+// ---------------------------------------------------------------------------
+void ThreadWork::SetStext1(AnsiString _s) {
+	cs->Enter(); {
+		stext1 = _s;
+	} cs->Leave();
+}
+
+// ---------------------------------------------------------------------------
+void ThreadWork::SetStext2(AnsiString _s) {
+	cs->Enter(); {
+		stext2 = _s;
+	} cs->Leave();
+}
+
+// ---------------------------------------------------------------------------
+void ThreadWork::SetCalc() // (bool _IsBrak)
+{
+	// IsBrak = _IsBrak;
+	calc_event->SetEvent();
+}
+
+// ---------------------------------------------------------------------------
+void ThreadWork::pr(AnsiString _msg) {
+	TProtocol::ProtocolSave(_msg);
+}
+
+// ---------------------------------------------------------------------------
+void ThreadWork::SaveMuftToDB() {
+	AnsiString SQL;
+	AnsiString ret;
+
+	// CExecSQL* E;
+	// Проверяем число записей
+	// CSelect S1("SELECT COUNT(TubeNum) as nn from dbo.TubesStat");
+	// if (S1.AsInt("nn") > 60000)
+	// {
+	// // Находим самые старые записи
+	// CSelect S2("Select top " + IntToStr(S1.AsInt("nn") - 60000)
+	// + " * from dbo.TubesStat order by IDTube ASC");
+	// while (!S2.isLast())
+	// {
+	// // Удаляем старые записи с этим номером
+	// SQL = "Delete from dbo.TubesStat where TubeNum=" + S2.AsInt("TubeNum");
+	// E = new CExecSQL(SQL);
+	// delete E;
+	// S2.Next();
+	// }
+	// }
+
+	// // Ищем последний номер трубы
+	// CSelect S3("Select top 1 * from dbo.TubesStat order by IDTube Desc");
+	// // Выбираем новый номер трубы
+	// int TubeNum = 0;
+	int TubeNum = 1; // S3.AsInt("TubeNum");
+	if (TubeNum == 0 || TubeNum == 200000)
+		TubeNum = 1;
+	else
+		TubeNum++;
+
+	// Удаляем старые записи с этим номером
+	// SQL = "Delete from dbo.TubesStat where TubeNum=";
+	// SQL += TubeNum;
+	// E = new CExecSQL(SQL);
+	// ret = E->IsOk();
+	// delete E;
+	// if (ret != "Ok") {
+	// pr(AnsiString("SaveMuftToDB: ") + ret);
+	// }
+
+	// Вводим новую запись трубы
+	// SQL = "insert into dbo.TubesStat (TubeNum,DateTime,TypeSize,SolidGroup) values(";
+	// SQL += TubeNum;
+	// SQL += ",'";
+	// SQL += DateTimeToStr(Date() + Time());
+	// SQL += "','";
+	// SQL += ini->ReadString("Default", "TypeSize", "1");
+	// SQL += "','";
+	// SQL += csg.group;
+	// SQL += "')";
+	// pr(SQL);
+	// E = new CExecSQL(SQL);
+	// ret = E->IsOk();
+	// delete E;
+	// if (ret != "Ok") {
+	// pr(AnsiString("SaveMuftToDB: ") + ret);
+	// }
+}
+
+// ----------------------------------------------------------------------------
+CSG ThreadWork::GetSG(void) {
+	CSG ret;
+	cs->Enter(); {
+		ret = csg;
+	} cs->Leave();
+	return (ret);
+}
+
+// ----------------------------------------------------------------------------
+void ThreadWork::SetSG(CSG _csg) {
+	cs->Enter(); {
+		csg = _csg;
+	} cs->Leave();
+}
+
+// ---------------------------------------------------------------------------
+// проверка наличия муфты. Возвращает true если за указанное время статус изменился на ожидаемый
+bool ThreadWork::CheckMufta(bool _waitStatus, int _waitTime) {
+	// Ждем муфту
+	bool timeFlag = false;
+	DWORD StartTime = GetTickCount();
+	if (_waitStatus)
+		SetStext2("Поставьте муфту в датчик!");
+	else
+		SetStext2("Уберите муфту из датчика!");
+	Post(UPDATE_STATUS);
+
+	TLCardData * muftаSearchData = new TLCardData(lCardData->GetLCard502(), 1, lCardData->GetLCard502()->countLogCh);
+	TSG* muftаSearch = new TSG(thGlobalSettings, muftаSearchData);
+	while (true) {
+		while (true) {
+			if (muftаSearch->Exec(0) == 2)
+				break;
+		}
+		muftаSearch->ResetState();
+		bool result = muftаSearchData->CheckMufta(thGlobalSettings->checkMuftaChannel);
+		if (result == _waitStatus) {
+			break;
+		}
+		muftаSearchData->ClearSGM();
+		if (GetTickCount() - StartTime > _waitTime) {
+			timeFlag = true;
+			break;
+		}
+		// проверяем наличие цепей питания
+		if (SLD->iCC->WasConst(false, 50)) {
+			TProtocol::ProtocolSave("Работа: пропал сигнал цепи управления");
+			timeFlag = true;
+			SetStext2("Ошибка: Пропал сигнал цепи управления");
+			Post(UPDATE_STATUS);
+			break;
+		}
+		// смотрим, не было ли сброса
+		if (Terminated) {
+			TProtocol::ProtocolSave("Работа: Зашли в Terminated");
+			timeFlag = true;
+			break;
+		}
+	}
+	delete muftаSearch;
+	muftаSearchData->ClearSGM();
+	delete muftаSearchData;
+	if (timeFlag) // если превышено время ожидание, то false
+			return false;
+	else // если обнаружен искомый статус, то true
+			return true;
+}
+// ---------------------------------------------------------------------------
