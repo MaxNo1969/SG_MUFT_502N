@@ -24,7 +24,6 @@ object SGSettForm: TSGSettForm
     Height = 53
     Align = alBottom
     TabOrder = 0
-    ExplicitWidth = 741
     object bSave: TButton
       Left = 397
       Top = 4
@@ -118,7 +117,6 @@ object SGSettForm: TSGSettForm
     Align = alClient
     Caption = #1043#1088#1091#1087#1087#1072' '#1087#1088#1086#1095#1085#1086#1089#1090#1080
     TabOrder = 2
-    ExplicitWidth = 251
     object cbSolidGroup: TComboBox
       Left = 23
       Top = 26

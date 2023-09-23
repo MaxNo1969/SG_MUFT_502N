@@ -202,7 +202,7 @@ bool ThreadWork::OnlineCycle() {
 	SLD->oSENSORON->Set(true);
 	// Включаем ГСПФ
 	GSPF->StartGSPF052();
-	Sleep(100);
+	Sleep(500);
 	// чтение ЛКард
 	while (true) {
 		if (solidGroup->Exec(0) == 2) {

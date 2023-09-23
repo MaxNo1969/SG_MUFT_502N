@@ -766,11 +766,8 @@ void __fastcall TMainForm::mnuCheckGenClick(TObject * Sender) {
 // ---------------------------------------------------------------------------
 
 void __fastcall TMainForm::mnuCheck1730Click(TObject * Sender) {
-	FSignalsState = new TFSignalsState(this, &mainGlobalSettings, SLD);
-	// FSignalsState->Show();
-	FSignalsState->ShowModal();
-	FSignalsState->Close();
-	FSignalsState = NULL;
+		FSignalsState = new TFSignalsState(this, &mainGlobalSettings, SLD);
+		FSignalsState->Show();
 }
 
 // ---------------------------------------------------------------------------

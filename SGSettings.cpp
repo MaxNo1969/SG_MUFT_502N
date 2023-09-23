@@ -168,7 +168,7 @@ void __fastcall TSGSettForm::queryFrecAfterInsert(TDataSet *DataSet) {
 	int ind = cbTypeSize->ItemIndex;
 	queryFrec->FieldByName("TS_id")->AsInteger = (int)cbTypeSize->Items->Objects[ind];
 	// queryFrec->FieldByName("frequency_nu")->AsInteger=queryFrec->RecordCount+1;
-	queryFrec->FieldByName("amplValue")->AsFloat = 5.0;
+	queryFrec->FieldByName("amplValue")->AsFloat = 2.0;
 	AnsiString insertStr = queryFrec->SQL->Text;
 }
 
