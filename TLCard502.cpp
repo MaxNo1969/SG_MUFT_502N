@@ -18,7 +18,7 @@ TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr)
 		raw = new double[raw_size];
 		rawc = new double[raw_size];
 #ifndef TVIRTLCARD502
-		handle = L502_Create();
+		handle = X502_Create();
 		if (handle == NULL){
 			LFATAL("LCard502::LCard502: Ошибка создания описателя модуля",1);
 			_codeErr=-1;
@@ -27,7 +27,7 @@ TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr)
 				//
 			}
 		unsigned int dev_cnt = 0;
-		if (L502_GetSerialList(NULL, 0, 0, &dev_cnt) < 0){
+		if (E502_UsbGetSerialList(NULL, 0, 0, &dev_cnt) < 0){
 			LFATAL("LCard502::LCard502: Ни одной платы не найдено !",1);
 			_codeErr=-2;
 			return;
@@ -42,8 +42,8 @@ TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr)
 				//
 			}
 		//t_l502_serial_list list =(t_l502_serial_list)(new char[dev_cnt * L502_SERIAL_SIZE]);
-		listCards=(t_l502_serial_list)(new char[dev_cnt * L502_SERIAL_SIZE]);
-		_codeErr=L502_GetSerialList(listCards, dev_cnt, 0, NULL);
+		listCards=(t_x502_serial_list)(new char[dev_cnt * X502_SERIAL_SIZE]);
+		_codeErr=E502_UsbGetSerialList(listCards, dev_cnt, 0, NULL);
 		if ( _codeErr<= 0){
 			LFATAL("LCard502::LCard502: Ни одной платы не найдено !!!",1);
 			_codeErr=-4;
@@ -53,7 +53,7 @@ TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr)
 			}
 
 		aStr += listCards[0];
-		LFATAL(aStr, L502_Open(handle, listCards[0]));
+		LFATAL(aStr, E502_OpenUsb(handle, listCards[0]));
 #else
 		handle = 0;
 		listCards=(t_l502_serial_list)(new char[1 * L502_SERIAL_SIZE]);
@@ -123,7 +123,7 @@ TLCard502::~TLCard502(void)
 		delete[](char*)listCards;
 	}
 #ifndef TVIRTLCARD502
-	L502_Free(handle);
+	X502_Free(handle);
 #endif
 	delete rawi;
 	delete raw;
@@ -142,7 +142,7 @@ void TLCard502::LFATAL(AnsiString _msg, int _err)
 	if (_err < 0) {
 		a += " ";
 #ifndef TVIRTLCARD502
-		a += L502_GetErrorString(_err);
+		a += X502_GetErrorString(_err);
 #else
 		a += IntToStr(_err);
 #endif
@@ -157,7 +157,7 @@ bool TLCard502::CheckError(int _err)
 	if (_err == 0)
 		return (false);
 #ifndef TVIRTLCARD502
-	LastError = L502_GetErrorString(_err);
+	LastError = X502_GetErrorString(_err);
 #else
 	LastError = "Ошибка "+IntToStr(_err);
 #endif
@@ -170,7 +170,7 @@ void TLCard502::LoadAndSetSettings(vector<TLogCh502Params>& _logChannels)
 	AnsiString a = "LCard502::LoadAndSetSettings: Не удалось задать параметры";
 	countLogCh = _logChannels.size();
 #ifndef TVIRTLCARD502
-	LFATAL(a, L502_SetLChannelCount(handle, countLogCh));
+	LFATAL(a, X502_SetLChannelCount(handle, countLogCh));
 	for (int i = 0; i < countLogCh; i++)
 	{
 //		AnsiString a = "Канал[";
@@ -192,21 +192,21 @@ void TLCard502::LoadAndSetSettings(vector<TLogCh502Params>& _logChannels)
 //int zz=L502_ADC_RANGE_05;
 //int zzz=_logChannels[i].adcRangeIndex;
 
-		LFATAL(a, L502_SetLChannel(handle, i,_logChannels[i].logicalChannel,
+		LFATAL(a, X502_SetLChannel(handle, i,_logChannels[i].logicalChannel,
 			_logChannels[i].collectedMode,_logChannels[i].adcRangeIndex, 0));
 	}
 	// Настраиваем источник частоты синхронизации
-	LFATAL(a, L502_SetSyncMode(handle, syncMode));
+	LFATAL(a, X502_SetSyncMode(handle, syncMode));
 	// Настраиваем  источник запуска сбора
-	LFATAL(a, L502_SetSyncStartMode(handle, syncStartMode));
+	LFATAL(a, X502_SetSyncStartMode(handle, syncStartMode));
 	double f_acq = frequencyPerChannel_Hz * countLogCh;
 	double f_lch = frequencyPerChannel_Hz;
 	// настраиваем частоту сбора с АЦП
-	LFATAL(a, L502_SetAdcFreq(handle, &f_acq, &f_lch));
+	LFATAL(a, X502_SetAdcFreq(handle, &f_acq, &f_lch));
 	// Parameters.frequencyCollect = f_acq;
 	// Parameters.frequencyPerChannel = f_lch;
 	// Записываем настройки в модуль
-	LFATAL(a, L502_Configure(handle, 0));
+	LFATAL(a, X502_Configure(handle, 0));
 #endif
 }
 // ---------------------------------------------------------------------------
@@ -218,10 +218,10 @@ void TLCard502::Start(void)
 	IsStarted = true;
 #ifndef TVIRTLCARD502
 	LFATAL("LCard502::Start: не смогли разрешить потоки: ",
-		L502_StreamsEnable(handle, L502_STREAM_ADC));
+		X502_StreamsEnable(handle, X502_STREAM_ADC));
 
 	LFATAL("LCard502::Start: не смогли стартовать: ",
-		L502_StreamsStart(handle));
+		X502_StreamsStart(handle));
 #endif
 }
 
@@ -233,7 +233,7 @@ void TLCard502::Stop(void)
 	IsStarted = false;
 #ifndef TVIRTLCARD502
 	LFATAL("LCard502::Start: не смогли остановиться: ",
-		L502_StreamsStop(handle));
+		X502_StreamsStop(handle));
 #endif
 }
 
@@ -242,7 +242,7 @@ double* TLCard502::Read(int* _size)
 {
 	uint32_t count;
 #ifndef TVIRTLCARD502
-	if (CheckError(L502_GetRecvReadyCount(handle, &count)))
+	if (CheckError(X502_GetRecvReadyCount(handle, &count)))
 	{
 		*_size = -1;
 		return (NULL);
@@ -254,17 +254,17 @@ double* TLCard502::Read(int* _size)
 	count *= countLogCh;
 	SetRawSize(count);
 #ifndef TVIRTLCARD502
-	int rcv_size = L502_Recv(handle, rawi, count, RECV_TOUT);
+	int rcv_size = X502_Recv(handle, rawi, count, RECV_TOUT);
 	/* значение меньше нуля означает ошибку... */
 	/* получаем номер лог. канала, соответствующий первому
 	 отсчету АЦП, так как до этого могли обработать
 	 некратное количество кадров */
 	unsigned int firstLch;
-	L502_GetNextExpectedLchNum(handle, &firstLch);
+	X502_GetNextExpectedLchNum(handle, &firstLch);
 	AnsiString a="firstLch=";
 	a+=firstLch;
 	TProtocol::ProtocolSave(a);
-	if (CheckError(L502_GetNextExpectedLchNum(handle, &firstLch)))
+	if (CheckError(X502_GetNextExpectedLchNum(handle, &firstLch)))
 	{
 		*_size = -2;
 		return (NULL);
@@ -284,7 +284,7 @@ double* TLCard502::Read(int* _size)
 //		return (NULL);
 //	}
 #ifndef TVIRTLCARD502
-	if (CheckError(L502_ProcessAdcData(handle, rawi, raw, &count1,0)))
+	if (CheckError(X502_ProcessAdcData(handle, rawi, raw, &count1,0)))
 	{
 		*_size = -5;
 		return (NULL);
@@ -333,7 +333,7 @@ double TLCard502::GetValue(int _ch)
 #ifndef TVIRTLCARD502
 	double* buf = new double[countLogCh];
 	LFATAL("RLCard502::GetValue: не смогли получить значение: ",
-		L502_AsyncGetAdcFrame(handle, L502_PROC_FLAGS_VOLT, 1000, buf));
+		X502_AsyncGetAdcFrame(handle, X502_PROC_FLAGS_VOLT, 1000, buf));
 	double ret = buf[_ch];
 	delete buf;
 	return (ret);

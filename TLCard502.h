@@ -3,7 +3,8 @@
 #define TLCard502H
 //#include "RLCard_parameters.h"
 #include "TLogCh502Params.h"
-#include "l502api.h"
+#include "x502api.h"
+#include <E502api.h>
 #include "TGlobalSettings.h"
 #include <vector>
 #pragma comment(lib, "l502api.lib")
@@ -15,7 +16,7 @@ class TLCard502
 {
 private:
 	// ! Хендл платы
-	t_l502_hnd handle;
+	t_x502_hnd handle;
 	int raw_size;
 	unsigned int* rawi;
 	double* raw;
@@ -25,7 +26,7 @@ private:
 //	int RECV_TOUT;
 //	int MainSensors;
 //	int OtherSensors;
-	t_l502_serial_list listCards;
+	t_x502_serial_list listCards;
 	void SetRawSize(int _size);
 	void LFATAL(AnsiString _msg, int _err);
 	bool CheckError(int _err);
