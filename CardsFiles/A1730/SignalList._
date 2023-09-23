@@ -1,0 +1,87 @@
+//---------------------------------------------------------------------------
+#ifndef SignalListH
+#define SignalListH
+#include<SyncObjs.hpp>
+#include "TSignal.h"
+#include "uCRListT.h"
+#include "Latch.h"
+#ifdef A1730_DAQNaviR
+#include "A1730_DAQNavi.h"
+#endif
+#ifdef A1730_BioDAQR
+#include "A1730_BioDAQ.h"
+#endif
+#ifdef A1730_virtualR
+#include "A1730_virtual.h"
+#endif
+#ifdef A1730_SQLR
+#include "A1730_SQL.h"
+#endif
+#include "TGlobalSettings.h"
+#include "unSQLDbModule.h"
+
+class SignalList : private TThread
+{
+private:
+	void __fastcall Execute();
+	CRListT<CSignal>singList;
+	CRListT<Latch>L;
+	void WriteSignals(void);
+	void FlushSignals(DWORD _buf0, DWORD _buf1, DWORD _tick);
+	bool Wait(bool _value, CSignal* _signal, DWORD _tm);
+#ifdef A1730_DAQNaviR
+	A1730_DAQNavi* dev0;
+	A1730_DAQNavi* dev1;
+#endif
+#ifdef A1730_BioDAQR
+	A1730_BioDAQ* dev0;
+	A1730_BioDAQ* dev1;
+#endif
+#ifdef A1730_virtualR
+	A1730_virtual* dev0;
+	A1730_virtual* dev1;
+#endif
+#ifdef A1730_SQLR
+	A1730_SQL* dev0;
+	A1730_SQL* dev1;
+#endif
+	int period;
+	void LatchesTerminate0(void);
+	void CheckWait(DWORD _tick);
+	bool IsAlarm;
+	DWORD last_write;
+protected:
+	virtual bool CheckAlarm(void);
+	TCriticalSection* cs;
+	bool wasAlarm;
+	TStringList* AlarmList;
+	void prAlarm(void);
+	void pr(AnsiString _msg);
+	void SetAlarm0(bool _on);
+	virtual void Drop(DWORD _tick) = 0;
+	virtual void Save(DWORD _in,DWORD _out);
+	bool blockDrop;
+	virtual void Catch(){};
+public:
+	SignalList(void);
+	virtual __fastcall ~SignalList(void);
+	CSignal* Find(AnsiString _name, bool _in);
+	void SetPeriod(int _period);
+
+	inline int SignalCount(void)
+	{
+		return (singList.Count());
+	}
+
+	inline CSignal* GetSignal(int _index)
+	{
+		return (singList[_index]);
+	}
+	void LatchesTerminate(void);
+	void BlockDrop(bool _val);
+	void ResetSignals(void);
+
+	bool WasAlarm(void);
+	void GetAlarmList(TStringList* _alarmList);
+};
+#endif
