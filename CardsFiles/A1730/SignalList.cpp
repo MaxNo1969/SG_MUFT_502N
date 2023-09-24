@@ -3,7 +3,7 @@
 #include "TProtocol.h"
 // #ifndef NO1730
 ////#include "A1730_real.h"
-#include "A1730_DAQNavi.h"
+//#include "A1730_DAQNavi.h"
 // #else
 // #include "A1730_pseudo.h"
 // #endif
@@ -14,6 +14,7 @@
 // SignalList::SignalList(TIniFile* _ini)
 // список сигналов  адвантех 1730
 SignalList::SignalList(int &_err) {
+    dev = NULL;
 	cs = new TCriticalSection();
 	// period=_ini->ReadInteger("OtherSettings","SignalListPeriod",200);
 	period = SqlDBModule->GetIntFieldSQL("PCIE1730Params", "SignalListTimeout", NULL, 50, _err);
@@ -85,15 +86,15 @@ SignalList::SignalList(int &_err) {
 	// delete ini;
 #ifndef NO1730
 	// dev=new A1730_real(_ini->ReadInteger("OtherSettings","SignalListDevice",0));
-	int dd = SqlDBModule->GetIntFieldSQL("PCIE1730Params", "devnum", NULL, 0, _err);
-	dev = new A1730_DAQNavi(dd, _err);
-	if (_err < 0) {
-		TExtFunction::ShowBigModalMessage("Критическая ошибка! A1730_DAQNavi(dd,err)", clRed);
-		return;
-	}
-	else {
+	//int dd = SqlDBModule->GetIntFieldSQL("PCIE1730Params", "devnum", NULL, 0, _err);
+	//dev = new A1730_DAQNavi(dd, _err);
+	//if (_err < 0) {
+	//	TExtFunction::ShowBigModalMessage("Критическая ошибка! A1730_DAQNavi(dd,err)", clRed);
+	//	return;
+	//}
+	//else {
 		//
-	}
+	//}
 #else
 	// dev=new A1730_pseudo(_ini->ReadInteger("OtherSettings","SignalListDevice",0));
 #endif

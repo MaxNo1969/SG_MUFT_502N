@@ -19,7 +19,9 @@ private:
 	void WriteSignals(void);
 	void FlushSignals(DWORD _buf,DWORD _tick);
 	bool Wait(bool _value,CSignal* _signal,DWORD _tm);
+public:
 	A1730* dev;
+private:
 	//A1730_DAQNavi* dev;
 	int period;
 	void LatchesTerminate0(void);

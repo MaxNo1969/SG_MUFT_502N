@@ -7,3 +7,6 @@ OutExe/
 *.local
 *.stat
 *.dsk
+**/__recovery
+**/*.lib
+

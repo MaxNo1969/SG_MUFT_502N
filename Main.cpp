@@ -19,6 +19,7 @@
 #include "SGSettings.h"
 #include "EtalonDatas.h"
 #include "unExtSettings.h"
+#include "InOutBits.h"
 // -----------------------------------
 
 #pragma resource "*.dfm"
@@ -58,6 +59,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 	lCardData = new TLCardData(lÑard502, freqCount, lÑard502->countLogCh); // todo Âðåìåííî 1 ÷àñòîòà
 	lastError = 1;
 	SLD = new SignalListDef(&lastError);
+	SLD->dev = InOutBits(lÑard502->handler);
 	// serg
 	if (lastError < 0) {
 		return;

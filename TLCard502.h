@@ -7,16 +7,18 @@
 #include <E502api.h>
 #include "TGlobalSettings.h"
 #include <vector>
-#pragma comment(lib, "l502api.lib")
+#pragma comment(lib, "x502api.lib")
+#pragma comment(lib, "e502api.lib")
 #define LCard502_INIT_SIZE 2000
 #define LCard502_ADD_PERCENT 50
 using namespace std;
 // ---------------------------------------------------------------------------
 class TLCard502
 {
-private:
+public:
 	// ! Хендл платы
 	t_x502_hnd handle;
+private:
 	int raw_size;
 	unsigned int* rawi;
 	double* raw;

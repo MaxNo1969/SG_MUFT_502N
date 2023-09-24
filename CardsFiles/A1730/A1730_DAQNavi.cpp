@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 #pragma hdrstop
-//#ifdef A1730_DAQNaviR
+#ifdef A1730_DAQNaviR
 #include "A1730_DAQNavi.h"
 #include <SysUtils.hpp>
 #include "unTUtils.h"
@@ -15,7 +15,6 @@ BYTE output[4];
 // ---------------------------------------------------------------------------
 A1730_DAQNavi::A1730_DAQNavi(int &_DevNum,int &_codeErr)
 {
-/*
 	_codeErr=0;
 	int oldDevNum=_DevNum;
 #ifndef VIRT1730
@@ -65,13 +64,11 @@ A1730_DAQNavi::A1730_DAQNavi(int &_DevNum,int &_codeErr)
 	TExtFunction::ShowBigModalMessage("A1730_DAQNavi::A1730_DAQNavi: не смогли открыть плату Advantech1730", clRed);
 	}
 #endif
-*/
 }
 
 // ---------------------------------------------------------------------------
 A1730_DAQNavi::~A1730_DAQNavi(void)
 {
-/*
 #ifndef VIRT1730
 	if (instantDiCtrl!=NULL) {
 	 instantDiCtrl->Cleanup();
@@ -80,13 +77,11 @@ A1730_DAQNavi::~A1730_DAQNavi(void)
 	 instantDoCtrl->Dispose();
 	}
 #endif
-*/
 }
 
 // ---------------------------------------------------------------------------
 DWORD A1730_DAQNavi::Read(void)
 {
-/*
 	BYTE buf[4];
 	DWORD v=0;
 #ifndef VIRT1730
@@ -102,13 +97,11 @@ DWORD A1730_DAQNavi::Read(void)
 	v = input[0] + (input[1] << 8) + (input[2] << 16) + (input[3] << 24);
 #endif
 	return (v);
-	*/
 }
 
 // ---------------------------------------------------------------------------
 DWORD A1730_DAQNavi::ReadOut(void)
 {
-/*
 	BYTE buf[4];
 	DWORD v=0;
 #ifndef VIRT1730
@@ -124,13 +117,11 @@ DWORD A1730_DAQNavi::ReadOut(void)
 	v = output[0] + (output[1] << 8) + (output[2] << 16) + (output[3] << 24);
 #endif
 	return (v);
-	*/
 }
 
 // ---------------------------------------------------------------------------
 void A1730_DAQNavi::Write(DWORD _v)
 {
-/*
 #ifndef VIRT1730
 	BYTE buf[4];
 	buf[0] = _v & 0xFF;
@@ -148,7 +139,6 @@ void A1730_DAQNavi::Write(DWORD _v)
 	output[2] = _v >> 16 & 0xFF;
 	output[3] = _v >> 24 & 0xFF;
 #endif
-*/
 }
 // ---------------------------------------------------------------------------
-//#endif
+#endif
