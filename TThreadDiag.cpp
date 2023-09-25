@@ -51,7 +51,7 @@ void __fastcall TThDiag::Execute() {
 		// включаем питание датчика
 		SLD->oSENSORON->Set(true);
 		startTime = clock(); // начальное время
-		thGen->StartGSPF052();
+		thGen->Start();
 		while (!stopThread && elapsTime < timeGen * 1000) {
 			currTime = clock();
 //			int tt = vecMeasure.size();
@@ -72,7 +72,7 @@ void __fastcall TThDiag::Execute() {
 			Synchronize(UpdateChart);
 			elapsTime = currTime - startTime;
 		}
-		thGen->StopGSPF052();
+		thGen->Stop();
 		// выключаем питание датчика
 		SLD->oSENSORON->Set(false);
 		PostMessage(Application->Handle, WM_USER + 99, 33, 0);

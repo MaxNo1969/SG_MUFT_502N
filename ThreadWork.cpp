@@ -7,7 +7,7 @@
 #include <math.h>
 // #include "TLCard502.h"
 // #include "TLogCh502Params.h"
-// #include "GSPF052.h"
+//#include "GSPF052.h"
 #include "TSG.h"
 #include "TProtocol.h"
 #include <ctime.h>
@@ -201,7 +201,7 @@ bool ThreadWork::OnlineCycle() {
 	// включаем питание датчика
 	SLD->oSENSORON->Set(true);
 	// Включаем ГСПФ
-	GSPF->StartGSPF052();
+	GSPF->Start();
 	Sleep(500);
 	// чтение ЛКард
 	while (true) {
@@ -211,7 +211,7 @@ bool ThreadWork::OnlineCycle() {
 	}
 	// Сбрасываем состояние ГП и останавливаем ГСПФ
 	solidGroup->ResetState();
-	GSPF->StopGSPF052();
+	GSPF->Stop();
 
 	// выключаем питание датчика
 	SLD->oSENSORON->Set(false);

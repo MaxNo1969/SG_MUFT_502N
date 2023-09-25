@@ -4,11 +4,12 @@
 
 #include "InOutBits.h"
 //#include <E502api.h>
+#include "unTExtFunction.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 DWORD InOutBits::Read(void)
 {
-	DWORD t = 0;
+	uint32_t t = 0;
 	int32_t err = X502_AsyncInDig(hdr, &t);
 	if (err != X502_ERR_OK) {
 		TExtFunction::ShowBigModalMessage("A1730_DAQNavi::Read: не могу прочитать плату", clRed);

@@ -60,9 +60,9 @@ void __fastcall TfmDiagnost::btnStartGenClick(TObject *Sender) {
 			}
 			// btnStopGen->Enabled = true;
 			// Включаем ГСПФ
-			gen->SetSampleFreq(StrToInt(lbeFrecDiscrGSPF052->Text));
+			//gen->SetSampleFreq(StrToInt(lbeFrecDiscrGSPF052->Text));
 			gen->FormSignal(StrToInt(lbeFrecSignalGSPF052->Text),StrToFloat(lbeVoltageGSPF052->Text));
-			gen->StartGSPF052();
+			gen->Start();
 			Sleep(500);
 			// чтение ЛКард
 			while (true) {
@@ -72,7 +72,7 @@ void __fastcall TfmDiagnost::btnStartGenClick(TObject *Sender) {
 			}
 			// Сбрасываем состояние ГП и останавливаем ГСПФ
 			solidGroup->ResetState();
-			gen->StopGSPF052();
+			gen->Stop();
 
 			// выключаем питание датчика
 			SLD->oSENSORON->Set(false);
@@ -196,7 +196,7 @@ void __fastcall TfmDiagnost::btnStopGenClick(TObject *Sender) {
 		else {
 			//
 		}
-		gen->StopGSPF052();
+		gen->Stop();
 		// Закрытие платы
 		// Close(onst char* desc=0);
 		// gen->CloseCard("ok");
@@ -273,10 +273,10 @@ void __fastcall TfmDiagnost::btnStartSerClick(TObject *Sender) {
 			for (int freqNum = 0; freqNum < TSFreqs->Frequency.size();
 			freqNum++) {
 				// Включаем ГСПФ
-				gen->SetSampleFreq(StrToInt(lbeFrecDiscrGSPF052->Text));
+				//gen->SetSampleFreq(StrToInt(lbeFrecDiscrGSPF052->Text));
 				gen->FormSignal(TSFreqs->Frequency[freqNum],
 					TSFreqs->Amplitude[freqNum]);
-				gen->StartGSPF052();
+				gen->Start();
 				Sleep(100);
 				// чтение ЛКард
 				while (true) {
@@ -286,7 +286,7 @@ void __fastcall TfmDiagnost::btnStartSerClick(TObject *Sender) {
 				}
 				// Сбрасываем состояние ГП и останавливаем ГСПФ
 				solidGroup->ResetState();
-				gen->StopGSPF052();
+				gen->Stop();
 			}
 			// конец цикла
 			// выключаем питание датчика
@@ -341,7 +341,7 @@ void __fastcall TfmDiagnost::btnStartSerClick(TObject *Sender) {
 // ---------------------------------------------------------------------------
 void __fastcall TfmDiagnost::FormClose(TObject *Sender, TCloseAction &Action) {
 	if (gen) {
-		gen->CloseCard("ok");
+		//gen->CloseCard("ok");
 		delete gen;
 		gen = NULL;
 	}
@@ -380,7 +380,7 @@ void __fastcall TfmDiagnost::FormCreate(TObject *Sender) {
 	lbeFrecDiscrGSPF052->Text = IntToStr(pGlobalSettings->discrFrecGSPF);
 	// lbeStepCountGSPF052->Text =IntToStr(SqlDBModule->GetIntFieldSQL("GSPF052Params","count(*) as F1","isUsed=1", 0,err));
 	if (!gen) {
-		gen = new TGSPF052(pGlobalSettings, err);
+		gen = new TGSPF052();//(pGlobalSettings, err);
 	}
 	else {
 		//

@@ -204,7 +204,7 @@ private: // User declarations
 	//Частоты текущего типоразмера
 	TSFrequencies *TSFreqs;
 	//плата генератора сигнала
-	TGSPF052* gen;
+   TGSPF052* gen;
 
 	//запуск рабочего цикла
 	void Start();

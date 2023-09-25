@@ -59,7 +59,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 	lCardData = new TLCardData(lСard502, freqCount, lСard502->countLogCh); // todo Временно 1 частота
 	lastError = 1;
 	SLD = new SignalListDef(&lastError);
-	SLD->dev = InOutBits(lСard502->handler);
+	SLD->dev = new InOutBits(lСard502->handle);
 	// serg
 	if (lastError < 0) {
 		return;
@@ -490,7 +490,8 @@ void TMainForm::Start() {
 				threadWork = NULL;
 			}
 			if (!gen) {
-				gen = new TGSPF052(&mainGlobalSettings, err);
+			   //	gen = new TGSPF052(&mainGlobalSettings, err);
+			   gen = new TGSPF052();
 			}
 			// gen->SetSampleFreq(mainGlobalSettings.discrFrecGSPF);
 			TSFrequencies TSFreqs = TSFrequencies(mainGlobalSettings.indexCurrentTypeSize);
@@ -499,7 +500,7 @@ void TMainForm::Start() {
 				TExtFunction::ShowBigModalMessage("Работа: частот для этого типоразмера нет в базе данных", clBlue);
 				return;
 			}
-			gen->SetSampleFreq(mainGlobalSettings.discrFrecGSPF);
+		   //	gen->SetSampleFreq(mainGlobalSettings.discrFrecGSPF);
 			double a = TSFreqs.Frequency[0];
 			a = TSFreqs.Amplitude[0];
 			gen->FormSignal(TSFreqs.Frequency[0], TSFreqs.Amplitude[0]);

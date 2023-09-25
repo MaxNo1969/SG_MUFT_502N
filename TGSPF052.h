@@ -3,6 +3,8 @@
 #ifndef TGSPF052H
 #define TGSPF052H
 //---------------------------------------------------------------------------
+#undef DEF_TGSPF052
+#if DEF_TGSPF052
 //#include <RshApi.h>
 
 //#ifdef RSH_MSWINDOWS
@@ -90,5 +92,8 @@ private:
 //double GSPF052::SignalFreq = 1000.0;
 //double GSPF052::SignalAmplitude = 1.0;
 //double GSPF052::OutR = 1000000.0f;
-
+#else
+#include "Hantek1025G.h"
+typedef Hantek1025G TGSPF052;
+#endif
 #endif
