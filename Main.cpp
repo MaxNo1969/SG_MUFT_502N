@@ -56,10 +56,10 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 	}
 	TSFreqs = new TSFrequencies(mainGlobalSettings.indexCurrentTypeSize);
 	int freqCount = TSFreqs->Frequency.size();
-	lCardData = new TLCardData(lСard502, freqCount, lСard502->countLogCh); // todo Временно 1 частота
+	lCardData = new TLCardData(lСard502, freqCount, lСard502?lСard502->countLogCh:0); // todo Временно 1 частота
 	lastError = 1;
 	SLD = new SignalListDef(&lastError);
-	SLD->dev = new InOutBits(lСard502->handle);
+	SLD->dev = new InOutBits(lСard502);
 	// serg
 	if (lastError < 0) {
 		return;
@@ -83,69 +83,11 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 	}
 	// выбор ГОСТа
 	cbSGGost->ItemIndex = mainGlobalSettings.indexCurrentSGGost;
-	// FSignalsState = new TFSignalsState(this, ini, SLD);
-	// if (ini->ReadBool("OtherSettings", "SignalsVisible", false))
-	// FSignalsState->Show();
-	//
-	// thresholdCount = ini->ReadInteger("default","ThresholdCount",8);
-	// eThresholds.resize(thresholdCount);
-	// lsThresholds.resize(thresholdCount);
-	// for (int i = 0; i < thresholdCount; i++)
-	// lsThresholds[i] = new TLineSeries(SignalChart);
-	// LoadFormPos(this, ini);
-	// sgc = new SGCoords(ini);
-	// for (int i = 0; i < thresholdCount; i++)
-	// {
-	// int left = 2;
-	// int width = pThresholds->Width - left * 2;
-	// int top = 10;
-	// int height = 21;
-	// eThresholds[i] = new TEdit(pThresholds);
-	// eThresholds[i]->Parent = pThresholds;
-	// eThresholds[i]->SetBounds(left, height*i + top, width, height);
-	// eThresholds[i]->Name = L"eThresholds" + IntToStr(i);
-	// eThresholds[i]->Clear();
-	// eThresholds[i]->OnExit = Edit1Exit;
-	// eThresholds[i]->Refresh();
-	// eThresholds[i]->Tag = i;
-	// }
-	// DragAcceptFiles(Handle, true); // Разрешаем перетаскивание файлов
-	//
-	// local_th = sgc->thresholds;
-	// for (int i = 0; i < thresholdCount; i++)
-	// eThresholds[i]->Text = String(local_th[i]);
-	// // создадим копию перед выводом в эдиты, для последующего сравнения
-	//
-	// StatusBar->Panels->Items[0]->Text = "";
-	// StatusBar->Panels->Items[1]->Text = "";
-	// SignalChart->BottomAxis->SetMinMax(0, 1000);
-	// SignalChart->UndoZoom();
-	// SeriesNetU->Clear();//NetU
-	// SeriesSignalSG->Clear();//SignalSG
-	// SeriesSynchroDetector->Clear();//SynchroDetector
-	// SeriesInductionSignal->Clear();//InductionSignal
-	// SeriesSynchroSignal->Clear();//SynchroSignal
-	// SeriesDotsNetU->Clear();//DotsNetU
-	// SeriesDotsSignalSG->Clear();//DotsSignalSG
-	// for (int i = 0; i < thresholdCount; i++)
-	// lsThresholds[i]->Clear();
-	// ChangeColor();
-	// scbChartDragger->Position = 1;
-	// curPos = 1;
-	// // SignalChart->SetFocus();
-
-	// PrepareFastLineChart(int _countSensors,  int _lengthChart,TChart* _chart)
 	TExtFunction::PrepareChartToTst(SignalChart, 3, 600, 2000);
 	SignalChart->Series[0]->Title += " Баркгаузен";
 	SignalChart->Series[1]->Title += " Напряжение";
 	SignalChart->Series[2]->Title += " Ток";
-	// TExtFunction::PrepareFastLineChart(4, 2500, SignalChart);
-	// SignalChart->LeftAxis->Automatic = false;
-	// SignalChart->LeftAxis->Maximum = 110.0;
-	// SignalChart->LeftAxis->Minimum = -110.0;
-	// SignalChart->RightAxis->Automatic = false;
-	// SignalChart->RightAxis->Maximum = 110.0;
-	// SignalChart->RightAxis->Minimum = -110.0;
+
 	ChangeColor();
 	TExtFunction::PrepareChartToTst(EtalonChart, 3, 10, 2000);
 	// Заполним список ГП
@@ -154,9 +96,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 		IntToStr(mainGlobalSettings.indexCurrentSGGost), cbxSG);
 	cbxSG->ItemIndex = -1;
 	queryEtalon->Connection = SqlDBModule->ADOConnectionDB;
-	// GroupBoxNGr->Left=MainForm->Width-GroupBoxNGr->Width-50;
-	// PanelSG->Left=GroupBoxNGr->Left-PanelSG->Width-10;
-	// PanelChartTop->Height=Panel2->Top-Panel1->Top;
+
 	// на всякий случай сбросим сигналы при включении
 	SLD->oSENSORON->Set(false);
 	// включим слаботочку
@@ -171,26 +111,34 @@ void __fastcall TMainForm::FormDestroy(TObject * Sender) {
 	if (threadWork) {
 		threadWork->Terminate();
 		threadWork->WaitFor();
+		threadWork = NULL;
 	}
+
 	if (lCardData) {
 		delete lCardData;
 		lCardData = NULL;
 	}
-	if (lСard502) {
-		delete lСard502;
-		lСard502 = NULL;
-	}
+
 	if (SLD) {
 		SLD->oSENSORON->Set(false);
 		SLD->oSENSLOWPOW->Set(false);
 		delete SLD;
+        SLD = NULL;
 	}
-	if (gen) {
-		delete gen;
-	}
+
+if (lСard502) {
+  	delete lСard502;
+	lСard502 = NULL;
+}
+if (gen) {
+	delete gen;
+	gen =  NULL;
+}
 	if (TSFreqs) {
 		delete TSFreqs;
+		TSFreqs = NULL;
 	}
+
 }
 
 // ---------------------------------------------------------------------------
@@ -493,7 +441,7 @@ void TMainForm::Start() {
 			   //	gen = new TGSPF052(&mainGlobalSettings, err);
 			   gen = new TGSPF052();
 			}
-			// gen->SetSampleFreq(mainGlobalSettings.discrFrecGSPF);
+			//gen->SetSampleFreq(mainGlobalSettings.discrFrecGSPF);
 			TSFrequencies TSFreqs = TSFrequencies(mainGlobalSettings.indexCurrentTypeSize);
 			if (TSFreqs.Frequency.size() <= 0) {
 				TProtocol::ProtocolSave("Работа: частот для этого типоразмера нет в базе данных");
@@ -544,10 +492,10 @@ void TMainForm::Stop() {
 	delete threadWork;
 	threadWork = NULL;
 	// отключим генератор
-	if (gen) {
-		delete gen;
-		gen = NULL;
-	}
+  //	if (gen) {
+  //		delete gen;
+   //		gen = NULL;
+   //	}
 	// MainMenu->Items->Visible = true;
 	// GroupBoxNGr->Visible = true;
 	// bStart->Enabled = true;
@@ -1026,4 +974,5 @@ void __fastcall TMainForm::FormCloseQuery(TObject *Sender, bool &CanClose)
 	}
 }
 //---------------------------------------------------------------------------
+
 

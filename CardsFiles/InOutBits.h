@@ -3,13 +3,13 @@
 #ifndef InOutBitsH
 #define InOutBitsH
 #include "A1730.h"
-#include "x502api.h"
+#include "TLCard502.h"
 class InOutBits: public A1730
 {
 	WORD outBits;
 public:
-	t_x502_hnd hdr;
-	InOutBits(t_x502_hnd hdr): hdr(hdr){};
+	TLCard502 *hdr;
+	InOutBits(TLCard502 *hdr): hdr(hdr){};
 	DWORD Read(void);
 	DWORD ReadOut(void);
 	void Write(DWORD _v);

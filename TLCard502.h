@@ -15,6 +15,8 @@ using namespace std;
 // ---------------------------------------------------------------------------
 class TLCard502
 {
+WORD outBits;
+CRITICAL_SECTION cs;
 public:
 	// ! Хендл платы
 	t_x502_hnd handle;
@@ -61,7 +63,11 @@ public:
 		return(rawc);
 	}
 
-
+	DWORD Read(void);
+	DWORD ReadOut(void);
+	void Write(DWORD _v);
+	void WriteSignals(void);
+	void ReadSignals(void);
 	//-----------------------------------------
 
 	// ! ТаймАут для сбора (с каким периодом будем скидывать данные из ацп в большой буфер,мс)

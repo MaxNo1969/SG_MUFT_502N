@@ -27,40 +27,35 @@ __fastcall ThreadWork::ThreadWork(bool _createSuspended, TLCardData* _lCardData,
 	GSPF = _gen; // new TGSPF052(thGlobalSettings,err);
 	solidGroup = new TSG(thGlobalSettings, lCardData);
 	Collect = true;
-	// ini = _ini;
-	// AnsiString sect = "Type_"; // + ini->ReadString("Default", "TypeSize", "1");
-	// delay = 10; // = ini->ReadInteger("OtherSettings", "OnLineCycleDelay", 10);
-	// pauseWorkSpeed = 1050; // ini->ReadInteger(sect, "PauseWorkSpeed", 1050);
-	// pauseStop = 500; // ini->ReadInteger(sect, "PauseStop", 500);
 	cs = new TCriticalSection();
 	calc_event = new TEvent(NULL, false, false, "calc_event", true);
-	// SGFix = _SGFix;
-
 }
 
 // ---------------------------------------------------------------------------
 __fastcall ThreadWork::~ThreadWork(void) {
 	Terminate();
 	WaitFor();
-	// delete treadADCdouble0;
-	if (GSPF) {
-		delete GSPF;
-		GSPF = NULL;
-	}
+
+   //	if (GSPF) {
+  //		delete GSPF;
+   //		GSPF = NULL;
+  //	}
+	if(gspfStart)GSPF->Stop();
 	if (solidGroup) {
 		delete solidGroup;
 		solidGroup = NULL;
 	}
+
 	delete calc_event;
-	delete cs;
+ 	delete cs;
 }
 
 // -----запуск потока работы--------------------------------------------------
 void __fastcall ThreadWork::Execute() {
-	// NameThreadForDebugging("WorkOnlineThread",0xFFFF);
+
 	SetStext1("Режим \"Работа\"");
 	SetStext2("Готовим к исходному положению");
-	TProtocol::ProtocolSave("-----------");
+ 	TProtocol::ProtocolSave("-----------");
 	TProtocol::ProtocolSave(stext1);
 	Post(UPDATE_STATUS);
 
@@ -74,6 +69,7 @@ void __fastcall ThreadWork::Execute() {
 		Post(COMPLETE, 0);
 		return;
 	}
+
 	TProtocol::ProtocolSave("Работа: Подготовка прошла успешно");
 	bool ret = OnlineCycle();
 	if (Terminated) {
@@ -83,6 +79,7 @@ void __fastcall ThreadWork::Execute() {
 		Finally();
 		return;
 	}
+
 	Post(COMPUTE);
 	TProtocol::ProtocolSave("Ждем результатов от Main");
 	calc_event->WaitFor(INFINITE);
@@ -91,6 +88,7 @@ void __fastcall ThreadWork::Execute() {
 		Post(COMPLETE, 0);
 		return;
 	}
+
 	TProtocol::ProtocolSave("Получили результаты");
 	if (!ret) {
 		SetStext1("Режим \"Работа\" не завершен!");
@@ -101,15 +99,12 @@ void __fastcall ThreadWork::Execute() {
 		return;
 	}
 	Sleep(500);
-	// Запись данных в БД
-	// SaveMuftToDB();
-	// -----
+
 	Post(COMPLETE, (LPARAM)1);
 }
 
 // ---------------------------------------------------------------------------
 void ThreadWork::Post(WPARAM _w, LPARAM _l) {
-	// PostMessage(, WM_USER + 101, 33, 0);
 	if (PostMessage(Application->Handle, thGlobalSettings->threadMsg, _w, _l) == 0)
 		TExtFunction::FATAL("ThreadOnLine::Post: не могу послать сообщение");
 	AnsiString a = "ThreadOnLine::Post: послали ";
@@ -122,18 +117,6 @@ void ThreadWork::Post(WPARAM _w, LPARAM _l) {
 // ---------------------------------------------------------------------------
 // -----подготовка к работе
 UnicodeString ThreadWork::PrepareForWork() {
-	// проверяем, включен ли модуль группы прочности
-	// if (!lcard->GetDinValue("ON"))
-	// return "Включите модуль размагничивания!";
-	// todo проверка муфты
-	// if (SLD->iINMODULE->Get())
-	// SetStext2("Уберите муфту из установки!");
-	// while (SLD->iINMODULE->Get()){
-	// Sleep(3000);
-	// TExtFunction::ShowBigModalMessage("Уберите муфту из установки!",clRed);
-	// }
-
-	// SetStext2("Ждем Готовность");
 	SetStext2("Установка готова");
 	Post(UPDATE_STATUS);
 
@@ -149,6 +132,7 @@ bool ThreadWork::OnlineCycle() {
 	AnsiString msg = "";
 	// Ждем муфту
 	bool timeFlag;
+	gspfStart = false;
 	timeFlag = CheckMufta(false, 60000);
 	if (!timeFlag) // если превышено время ожидания, то выходим
 	{
@@ -179,20 +163,10 @@ bool ThreadWork::OnlineCycle() {
 	}
 	// gen = new TGSPF052(dGlobalSettings,err);
 	if (solidGroup != NULL) {
-		delete solidGroup;
+	   	delete solidGroup;
 	}
 	lCardData->ClearSGM();
-//	 TSFrequencies TSFreqs =
-//	 TSFrequencies(thGlobalSettings->indexCurrentTypeSize);
-//	 if (TSFreqs.Frequency.size() <= 0) {
-//	 TProtocol::ProtocolSave
-//	 ("Работа: частот для этого типоразмера нет в базе данных");
-//	 TExtFunction::ShowBigModalMessage
-//	 ("Работа: частот для этого типоразмера нет в базе данных", clBlue);
-//	 return false;
-//	 }
-//	 GSPF->SetSampleFreq(thGlobalSettings->discrFrecGSPF);
-//	 GSPF->FormSignal(TSFreqs.Frequency[0], TSFreqs.Amplitude[0]);
+
 	solidGroup = new TSG(thGlobalSettings, lCardData);
 	Sleep(500); // задержка на поправку муфты
 	DWORD LastTime = GetTickCount();
@@ -201,6 +175,7 @@ bool ThreadWork::OnlineCycle() {
 	// включаем питание датчика
 	SLD->oSENSORON->Set(true);
 	// Включаем ГСПФ
+	gspfStart = true;
 	GSPF->Start();
 	Sleep(500);
 	// чтение ЛКард
@@ -309,61 +284,11 @@ void ThreadWork::SaveMuftToDB() {
 	AnsiString SQL;
 	AnsiString ret;
 
-	// CExecSQL* E;
-	// Проверяем число записей
-	// CSelect S1("SELECT COUNT(TubeNum) as nn from dbo.TubesStat");
-	// if (S1.AsInt("nn") > 60000)
-	// {
-	// // Находим самые старые записи
-	// CSelect S2("Select top " + IntToStr(S1.AsInt("nn") - 60000)
-	// + " * from dbo.TubesStat order by IDTube ASC");
-	// while (!S2.isLast())
-	// {
-	// // Удаляем старые записи с этим номером
-	// SQL = "Delete from dbo.TubesStat where TubeNum=" + S2.AsInt("TubeNum");
-	// E = new CExecSQL(SQL);
-	// delete E;
-	// S2.Next();
-	// }
-	// }
-
-	// // Ищем последний номер трубы
-	// CSelect S3("Select top 1 * from dbo.TubesStat order by IDTube Desc");
-	// // Выбираем новый номер трубы
-	// int TubeNum = 0;
 	int TubeNum = 1; // S3.AsInt("TubeNum");
 	if (TubeNum == 0 || TubeNum == 200000)
 		TubeNum = 1;
 	else
 		TubeNum++;
-
-	// Удаляем старые записи с этим номером
-	// SQL = "Delete from dbo.TubesStat where TubeNum=";
-	// SQL += TubeNum;
-	// E = new CExecSQL(SQL);
-	// ret = E->IsOk();
-	// delete E;
-	// if (ret != "Ok") {
-	// pr(AnsiString("SaveMuftToDB: ") + ret);
-	// }
-
-	// Вводим новую запись трубы
-	// SQL = "insert into dbo.TubesStat (TubeNum,DateTime,TypeSize,SolidGroup) values(";
-	// SQL += TubeNum;
-	// SQL += ",'";
-	// SQL += DateTimeToStr(Date() + Time());
-	// SQL += "','";
-	// SQL += ini->ReadString("Default", "TypeSize", "1");
-	// SQL += "','";
-	// SQL += csg.group;
-	// SQL += "')";
-	// pr(SQL);
-	// E = new CExecSQL(SQL);
-	// ret = E->IsOk();
-	// delete E;
-	// if (ret != "Ok") {
-	// pr(AnsiString("SaveMuftToDB: ") + ret);
-	// }
 }
 
 // ----------------------------------------------------------------------------

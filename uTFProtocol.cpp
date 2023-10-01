@@ -42,15 +42,15 @@ void __fastcall TFProtocol::FormCreate(TObject *Sender)
     }
 
 	//delete ini;
-	Timer1->Enabled = true;
+  //	Timer1->Enabled = true;
 }
 
 // ---------------------------------------------------------------------------
 void __fastcall TFProtocol::FormDestroy(TObject *Sender)
 {
-	Timer1->Enabled = false;
+  //	Timer1->Enabled = false;
 	fclose(file);
-	delete strList;
+   	delete strList;
 }
 void TFProtocol::Save(void)
 {

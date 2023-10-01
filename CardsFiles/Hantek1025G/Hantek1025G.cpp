@@ -3,7 +3,7 @@
 #pragma hdrstop
 
 #include "Hantek1025G.h"
-#include "HTDDSDll.h"
+//#include "HTDDSDll.h"
 #include <System.hpp>
 //#pragma comment(lib, "HTDDSDll.lib")
 //---------------------------------------------------------------------------
@@ -33,14 +33,25 @@ Hantek1025G::Hantek1025G()
 	hDLL = LoadLibraryA("HTDDSDll.dll");
 	if (hDLL != NULL)
 	{
+		DDSSearch        = (LPDDSSearch)GetProcAddress(hDLL, "DDSSearch");
 		DDSDownload      = (LPDDSDownload)GetProcAddress(hDLL, "DDSDownload");
 		DDSResetCounter  = (LPDDSResetCounter)GetProcAddress(hDLL, "DDSResetCounter");
 		DDSSetFrequency  = (LPDDSSetFrequency)GetProcAddress(hDLL, "DDSSetFrequency");
+		DDSCheck         = (LPDDSCheck)GetProcAddress(hDLL, "DDSCheck");
+		DDSSetPowerOnOutput = (LPDDSSetPowerOnOutput)GetProcAddress(hDLL, "DDSSetPowerOnOutput");
+		DDSSetSingleWave = (LPDDSSetSingleWave)GetProcAddress(hDLL, "DDSSetSingleWave");
+		if(!(DDSSearch() && DDSCheck(m_iDevice)))
+		{
+			 FreeLibrary(hDLL);
+			 hDLL = NULL;
+			 MessageDlg("Генератор не инициализировался", mtError, TMsgDlgButtons() << mbOK, NULL);
+		}
+		DDSSetPowerOnOutput(m_iDevice, 0);
 	}
 	else
 	{
 		MessageDlg("Нет библиотеки \"HTDDSDll.dll\"", mtError, TMsgDlgButtons() << mbOK, NULL);
-    }
+	}
 }
 Hantek1025G::~Hantek1025G()
 {
@@ -50,14 +61,15 @@ Hantek1025G::~Hantek1025G()
 }
 void Hantek1025G::Start()
 {
-	if(NULL == DDSDownload) return;
+	if(NULL == hDLL) return;
 	DDSDownload(m_iDevice, buffer, m_nWavePointNum);
+	DDSSetSingleWave(m_iDevice, 0);
 }
 
 void Hantek1025G::Stop()
 {
-	if(NULL == DDSResetCounter) return;
-	DDSResetCounter(m_iDevice);
+	if(NULL == hDLL) return;
+	DDSSetSingleWave(m_iDevice, 1);
 }
 
 void Hantek1025G::CreateWave()
@@ -75,7 +87,7 @@ void Hantek1025G::CreateWave()
 }
 void Hantek1025G::FormSignal(int _valueFrec,double _valueAmpl)
 {
-	if(NULL == DDSSetFrequency) return;
+	if(NULL == hDLL) return;
 	m_frequency = _valueFrec;
 	m_volt = _valueAmpl;
 	DDSSetFrequency(m_iDevice, m_frequency, &m_nWavePointNum, &m_nWavePeriodNum);

@@ -31,7 +31,9 @@ private:
 protected:
 	CSignal* Find(AnsiString _name,bool _in);
 	virtual bool CheckAlarm(void);
+public:
 	TCriticalSection* cs;
+protected:
 	bool wasAlarm;
 	TStringList* AlarmList;
 	void prAlarm(void);

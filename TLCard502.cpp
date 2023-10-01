@@ -7,8 +7,10 @@
 // ---------------------------------------------------------------------------
 TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr)
 {    AnsiString aStr="";
+InitializeCriticalSection(&cs);
 	try
 	{
+	/*
 		listCards=NULL;
 		handle=NULL;
 		globalSettings = _mainGlobalSettings;
@@ -17,7 +19,6 @@ TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr)
 		rawi = new unsigned int[raw_size];
 		raw = new double[raw_size];
 		rawc = new double[raw_size];
-#ifndef TVIRTLCARD502
 		handle = X502_Create();
 		if (handle == NULL){
 			LFATAL("LCard502::LCard502: Ошибка создания описателя модуля",1);
@@ -54,12 +55,25 @@ TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr)
 
 		aStr += listCards[0];
 		LFATAL(aStr, E502_OpenUsb(handle, listCards[0]));
-#else
-		handle = 0;
-		listCards=(t_l502_serial_list)(new char[1 * L502_SERIAL_SIZE]);
-#endif
+*/
 		//serg
 		//delete[](char*)list;
+		t_x502_devrec x502_item;
+		int32_t res = E502_UsbGetDevRecordsList(&x502_item, 1, 0, NULL);
+		if (!res)
+		{
+			LFATAL("LCard502::LCard502: Ни одной платы не найдено !",1);
+		}
+		handle = X502_Create();
+		int32_t err = X502_OpenByDevRecord(handle, &x502_item);
+		if (X502_ERR_OK != err)
+		{
+			AnsiString mess = "Ошибка установления связи с модулем ";
+			mess +=  X502_GetErrorString(err);
+			LFATAL(mess, 1);
+		}
+	   //	X502_FreeDevRecordList(&x502_item, 1);
+
 		IsStarted = false;
 
 		// заполним вектор каналов
@@ -115,22 +129,59 @@ TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr)
 	}
 }
 
+DWORD TLCard502::Read(void)
+{
+
+	uint32_t t = 0;
+	EnterCriticalSection(&cs);
+	int32_t err = 0;
+	if(handle)
+	  err = X502_AsyncInDig(handle, &t);
+	LeaveCriticalSection(&cs);
+	if (err != X502_ERR_OK) {
+		TExtFunction::ShowBigModalMessage("A1730_DAQNavi::Read: не могу прочитать плату", clRed);
+	}
+	return t;
+}
+DWORD TLCard502::ReadOut(void)
+{
+	return outBits;
+}
+void TLCard502::Write(DWORD val)
+{
+EnterCriticalSection(&cs);
+int32_t err = 0;
+ if(handle)
+		err = X502_AsyncOutDig(handle, val, 0);
+		LeaveCriticalSection(&cs);
+        outBits = val;
+		if (err != X502_ERR_OK) {
+			TExtFunction::ShowBigModalMessage("A1730_DAQNavi::Write: не могу записать на плату", clRed);
+		}
+}
+void TLCard502::WriteSignals(void)
+{
+
+}
+void TLCard502::ReadSignals(void)
+{
+
+}
+
 // ---------------------------------------------------------------------------
 TLCard502::~TLCard502(void)
-{if (handle!=NULL) {
-	if (listCards!=NULL) {
-		Stop();
-		delete[](char*)listCards;
-	}
-#ifndef TVIRTLCARD502
+{
+if (handle!=NULL) {
+EnterCriticalSection(&cs);
+X502_StreamsStop(handle);
+X502_Close(handle);
 	X502_Free(handle);
-#endif
-	delete rawi;
-	delete raw;
-	delete rawc;
+	 handle = NULL;
+	LeaveCriticalSection(&cs);
 	}else{
 	  //
 	}
+	DeleteCriticalSection(&cs);
 }
 
 // ---------------------------------------------------------------------------
@@ -167,31 +218,17 @@ bool TLCard502::CheckError(int _err)
 // Читает настройки и вбивает в плату
 void TLCard502::LoadAndSetSettings(vector<TLogCh502Params>& _logChannels)
 {
+EnterCriticalSection(&cs);
+Sleep(1000);
 	AnsiString a = "LCard502::LoadAndSetSettings: Не удалось задать параметры";
 	countLogCh = _logChannels.size();
 #ifndef TVIRTLCARD502
 	LFATAL(a, X502_SetLChannelCount(handle, countLogCh));
 	for (int i = 0; i < countLogCh; i++)
 	{
-//		AnsiString a = "Канал[";
-//		a += i;
-//		a += "]=l:";
-//		a += channels[i].logicalChannel;
-//		a += ",m:";
-//		a += channels[i].collectedMode;
-//		a += ",r:";
-//		a += channels[i].adcRangeIndex;
-//		TProtocol::ProtocolSave(a);
-
-//    L502_ADC_RANGE_10 = X502_ADC_RANGE_10, /**< Диапазон +/-10V */
-//	L502_ADC_RANGE_5  = X502_ADC_RANGE_5, /**< Диапазон +/-5V */
-//	L502_ADC_RANGE_2  = X502_ADC_RANGE_2, /**< Диапазон +/-2V */
-//	L502_ADC_RANGE_1  = X502_ADC_RANGE_1, /**< Диапазон +/-1V */
-//	L502_ADC_RANGE_05 = X502_ADC_RANGE_05, /**< Диапазон +/-0.5V */
-//	L502_ADC_RANGE_02 = X502_ADC_RANGE_02  /**< Диапазон +/-0.2V */
-//int zz=L502_ADC_RANGE_05;
-//int zzz=_logChannels[i].adcRangeIndex;
-
+		unsigned logicalChannel = _logChannels[i].logicalChannel;
+		unsigned collectedMode = _logChannels[i].collectedMode;
+		unsigned adcRangeIndex =  _logChannels[i].adcRangeIndex;
 		LFATAL(a, X502_SetLChannel(handle, i,_logChannels[i].logicalChannel,
 			_logChannels[i].collectedMode,_logChannels[i].adcRangeIndex, 0));
 	}
@@ -207,13 +244,16 @@ void TLCard502::LoadAndSetSettings(vector<TLogCh502Params>& _logChannels)
 	// Parameters.frequencyPerChannel = f_lch;
 	// Записываем настройки в модуль
 	LFATAL(a, X502_Configure(handle, 0));
+    Sleep(1000);
+	LeaveCriticalSection(&cs);
 #endif
 }
 // ---------------------------------------------------------------------------
 void TLCard502::Start(void)
 {
-	if (IsStarted)
-		return;
+	if (!IsStarted)
+	{
+	EnterCriticalSection(&cs);
 	LoadAndSetSettings(vecLogChannels);
 	IsStarted = true;
 #ifndef TVIRTLCARD502
@@ -222,19 +262,24 @@ void TLCard502::Start(void)
 
 	LFATAL("LCard502::Start: не смогли стартовать: ",
 		X502_StreamsStart(handle));
+			LeaveCriticalSection(&cs);
 #endif
+	}
 }
 
 // ---------------------------------------------------------------------------
 void TLCard502::Stop(void)
 {
-	if (!IsStarted)
-		return;
+	if (IsStarted)
+	{
+		EnterCriticalSection(&cs);
 	IsStarted = false;
 #ifndef TVIRTLCARD502
 	LFATAL("LCard502::Start: не смогли остановиться: ",
 		X502_StreamsStop(handle));
+			LeaveCriticalSection(&cs);
 #endif
+	}
 }
 
 // ---------------------------------------------------------------------------

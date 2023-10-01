@@ -50,6 +50,7 @@ private:
 	TLCardData* lCardData;
 	// Плата генератора сигнала
 	TGSPF052* GSPF;
+	bool gspfStart;
 	//параметры канала
 //	TLogCh502Params* lCard_parameters;
 	void SetStext1(AnsiString _s);

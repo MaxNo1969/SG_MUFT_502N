@@ -9,14 +9,14 @@ TProtocol* TProtocol::Instance=NULL;
 TProtocol::TProtocol()
 {
 	cs = new TCriticalSection();
-	FProtocol = new TFProtocol(MainForm,cs);
+	FProtocol = new TFProtocol(NULL, cs);//(MainForm,cs);
 }
 
 TProtocol::~TProtocol()
 {
-	FProtocol->Save();
-	delete FProtocol;
-	delete cs;
+	//FProtocol->Save();
+   //	delete FProtocol;
+  //	delete cs;
 }
 
 void TProtocol::ProtocolSave(AnsiString _msg)

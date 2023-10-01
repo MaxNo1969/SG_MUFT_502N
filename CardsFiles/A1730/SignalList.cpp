@@ -142,7 +142,7 @@ void _fastcall SignalList::Execute() {
 		if (Terminated)
 			break;
 		cs->Enter(); {
-			DWORD v = dev->Read();
+			DWORD v = dev ?dev->Read():0;
 			DWORD tick = GetTickCount();
 			FlushSignals(v, tick);
 			if (IsAlarm) {
@@ -179,7 +179,7 @@ bool SignalList::Wait(bool _value, CSignal* _signal, DWORD _tm) {
 }
 
 void SignalList::WriteSignals(void) {
-	DWORD buf = dev->ReadOut();
+	DWORD buf = dev?dev->ReadOut():0;
 	CSignal* p;
 	for (int i = 0; i < listSignal.Count(); i++) {
 		p = listSignal[i];
@@ -190,7 +190,7 @@ void SignalList::WriteSignals(void) {
 		else
 			buf &= ~(((DWORD)1) << p->index);
 	}
-	dev->Write(buf);
+	if(dev)dev->Write(buf);
 	// serg
 	int u = 0;
 }

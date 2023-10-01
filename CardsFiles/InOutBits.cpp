@@ -9,12 +9,7 @@
 #pragma package(smart_init)
 DWORD InOutBits::Read(void)
 {
-	uint32_t t = 0;
-	int32_t err = X502_AsyncInDig(hdr, &t);
-	if (err != X502_ERR_OK) {
-		TExtFunction::ShowBigModalMessage("A1730_DAQNavi::Read: не могу прочитать плату", clRed);
-	}
-	return t;
+	return hdr?hdr->Read():0;
 }
 DWORD InOutBits::ReadOut(void)
 {
@@ -22,17 +17,14 @@ DWORD InOutBits::ReadOut(void)
 }
 void InOutBits::Write(DWORD val)
 {
-		int32_t err = X502_AsyncOutDig(hdr, val, 0);
-        outBits = val;
-		if (err != X502_ERR_OK) {
-			TExtFunction::ShowBigModalMessage("A1730_DAQNavi::Write: не могу записать на плату", clRed);
-		}
+		outBits = val;
+		if(hdr)hdr->Write(val);
 }
 void InOutBits::WriteSignals(void)
 {
-
+	if(hdr)hdr-> WriteSignals();
 }
 void InOutBits::ReadSignals(void)
 {
-
+	if(hdr)hdr->ReadSignals();
 }

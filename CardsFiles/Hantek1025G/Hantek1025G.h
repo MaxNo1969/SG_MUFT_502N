@@ -8,16 +8,24 @@
 #define MEA_FREQ	0
 #define MEA_COUNT	1
 
-typedef int (CALLBACK *LPDDSDownload)(int index, unsigned short* buf, int number);
-typedef int (CALLBACK *LPDDSResetCounter)(int index);
-typedef int (CALLBACK *LPDDSSetFrequency)(int index, double frequency, int* wavePointNum, int* TNum);
+typedef int (__stdcall *LPDDSSearch)();
+typedef int (__stdcall *LPDDSDownload)(int index, unsigned short* buf, int number);
+typedef int (__stdcall *LPDDSResetCounter)(int index);
+typedef int (__stdcall *LPDDSSetFrequency)(int index, double frequency, int* wavePointNum, int* TNum);
+typedef int (__stdcall *LPDDSCheck)(int index);
+typedef int (__stdcall *LPDDSSetPowerOnOutput)(int index, BOOL bOpen);
+typedef int (__stdcall *LPDDSSetSingleWave)(int index, BOOL bSingle);
 
 class Hantek1025G
 {
 	HINSTANCE hDLL;
+    LPDDSSearch DDSSearch;
 	LPDDSDownload DDSDownload;
 	LPDDSResetCounter DDSResetCounter;
 	LPDDSSetFrequency DDSSetFrequency;
+	LPDDSCheck DDSCheck;
+	LPDDSSetPowerOnOutput DDSSetPowerOnOutput;
+	LPDDSSetSingleWave DDSSetSingleWave;
 public:
 	double m_frequency;
 	float m_volt;

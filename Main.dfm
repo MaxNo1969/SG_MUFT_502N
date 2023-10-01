@@ -407,7 +407,7 @@ object MainForm: TMainForm
         OnClick = mnuCheckGenClick
       end
       object mnuCheck1730: TMenuItem
-        Caption = #1055#1088#1086#1074#1077#1088#1082#1072' 1730'
+        Caption = #1055#1088#1086#1074#1077#1088#1082#1072' '#1076#1080#1089#1082#1088#1077#1090#1085#1099#1093' '#1074#1093#1086#1076#1086#1074'-'#1074#1099#1093#1086#1076#1086#1074
         OnClick = mnuCheck1730Click
       end
     end

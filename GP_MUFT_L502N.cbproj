@@ -372,12 +372,12 @@
         <FormResources Include="unFmMessage.dfm"/>
         <FormResources Include="unFmEditSettings.dfm"/>
         <FormResources Include="unExtSettings.dfm"/>
+        <FormResources Include="NewSG.dfm"/>
         <FormResources Include="CardsFiles\A1730\uFSignalsState.dfm"/>
         <FormResources Include="CardsFiles\A1730\uFRSigPanel.dfm"/>
         <FormResources Include="ADCSettings.dfm"/>
         <FormResources Include="ABOUT_NTC_NK_URAN.dfm"/>
         <FormResources Include="ColorSettings.dfm"/>
-        <FormResources Include="NewSG.dfm"/>
         <FormResources Include="Main.dfm"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
