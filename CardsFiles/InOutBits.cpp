@@ -22,7 +22,7 @@ void InOutBits::Write(DWORD val)
 }
 void InOutBits::WriteSignals(void)
 {
-	if(hdr)hdr-> WriteSignals();
+	if(hdr)hdr->WriteSignals();
 }
 void InOutBits::ReadSignals(void)
 {

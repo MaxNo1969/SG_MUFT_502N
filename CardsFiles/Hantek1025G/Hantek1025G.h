@@ -15,11 +15,11 @@ typedef int (__stdcall *LPDDSSetFrequency)(int index, double frequency, int* wav
 typedef int (__stdcall *LPDDSCheck)(int index);
 typedef int (__stdcall *LPDDSSetPowerOnOutput)(int index, BOOL bOpen);
 typedef int (__stdcall *LPDDSSetSingleWave)(int index, BOOL bSingle);
-
+#if 1
 class Hantek1025G
 {
 	HINSTANCE hDLL;
-    LPDDSSearch DDSSearch;
+	LPDDSSearch DDSSearch;
 	LPDDSDownload DDSDownload;
 	LPDDSResetCounter DDSResetCounter;
 	LPDDSSetFrequency DDSSetFrequency;
@@ -43,5 +43,19 @@ public:
 	void CreateWave();
 	void FormSignal(int _valueFrec, double _valueAmpl);
 };
+#else
+#define TestHantek
+class Hantek1025G
+{
+public:
+
+	Hantek1025G(){}
+	~Hantek1025G(){}
+	void Start(){}
+	void Stop(){}
+	void CreateWave(){}
+	void FormSignal(int _valueFrec, double _valueAmpl){}
+};
+#endif
 // ---------------------------------------------------------------------------
 #endif

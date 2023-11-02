@@ -22,7 +22,7 @@ DLL_API BOOL WINAPI DDSSetDIOMode(int index, BOOL mode);
 DLL_API BOOL WINAPI DDSCheck(int index);
 DLL_API BOOL WINAPI DDSSetPowerOnOutput(int index, BOOL bOpen);
 */
-
+#ifndef TestHantek
 Hantek1025G::Hantek1025G()
 {
 	m_frequency = 1000.0;
@@ -93,5 +93,6 @@ void Hantek1025G::FormSignal(int _valueFrec,double _valueAmpl)
 	DDSSetFrequency(m_iDevice, m_frequency, &m_nWavePointNum, &m_nWavePeriodNum);
 	CreateWave();
 }
+#endif
 
 

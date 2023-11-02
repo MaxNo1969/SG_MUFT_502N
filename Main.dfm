@@ -424,6 +424,7 @@ object MainForm: TMainForm
     end
     object N10: TMenuItem
       Caption = #1055#1086#1084#1086#1097#1100
+      Visible = False
       object menuAbout: TMenuItem
         Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
         OnClick = menuAboutClick

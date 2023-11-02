@@ -10,7 +10,6 @@ TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr)
 InitializeCriticalSection(&cs);
 	try
 	{
-	/*
 		listCards=NULL;
 		handle=NULL;
 		globalSettings = _mainGlobalSettings;
@@ -19,6 +18,7 @@ InitializeCriticalSection(&cs);
 		rawi = new unsigned int[raw_size];
 		raw = new double[raw_size];
 		rawc = new double[raw_size];
+		/*
 		handle = X502_Create();
 		if (handle == NULL){
 			LFATAL("LCard502::LCard502: Ошибка создания описателя модуля",1);
@@ -215,11 +215,13 @@ bool TLCard502::CheckError(int _err)
 	return (true);
 }
 // ---------------------------------------------------------------------------
+static const unsigned  READ_BLOCK_SIZE = 4096 * 200;
+uint32_t rcv_buf[READ_BLOCK_SIZE];
 // Читает настройки и вбивает в плату
 void TLCard502::LoadAndSetSettings(vector<TLogCh502Params>& _logChannels)
 {
 EnterCriticalSection(&cs);
-Sleep(1000);
+//Sleep(1000);
 	AnsiString a = "LCard502::LoadAndSetSettings: Не удалось задать параметры";
 	countLogCh = _logChannels.size();
 #ifndef TVIRTLCARD502
@@ -240,12 +242,17 @@ Sleep(1000);
 	double f_lch = frequencyPerChannel_Hz;
 	// настраиваем частоту сбора с АЦП
 	LFATAL(a, X502_SetAdcFreq(handle, &f_acq, &f_lch));
-	// Parameters.frequencyCollect = f_acq;
-	// Parameters.frequencyPerChannel = f_lch;
 	// Записываем настройки в модуль
 	LFATAL(a, X502_Configure(handle, 0));
-    Sleep(1000);
+ //   Sleep(1000);
 	LeaveCriticalSection(&cs);
+
+//	int err = X502_StreamsEnable(handle, 1);
+//	err = X502_StreamsStart(handle);
+
+//	uint32_t count = 0;
+//	err = X502_GetRecvReadyCount(handle, &count);
+//	int rcv_size = X502_Recv(handle, rcv_buf, READ_BLOCK_SIZE, 2000);
 #endif
 }
 // ---------------------------------------------------------------------------
@@ -262,7 +269,7 @@ void TLCard502::Start(void)
 
 	LFATAL("LCard502::Start: не смогли стартовать: ",
 		X502_StreamsStart(handle));
-			LeaveCriticalSection(&cs);
+	LeaveCriticalSection(&cs);
 #endif
 	}
 }
@@ -285,7 +292,8 @@ void TLCard502::Stop(void)
 // ---------------------------------------------------------------------------
 double* TLCard502::Read(int* _size)
 {
-	uint32_t count;
+Sleep(1000);
+	uint32_t count = 0;
 #ifndef TVIRTLCARD502
 	if (CheckError(X502_GetRecvReadyCount(handle, &count)))
 	{

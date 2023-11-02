@@ -3,7 +3,7 @@
 #define TLCard502H
 //#include "RLCard_parameters.h"
 #include "TLogCh502Params.h"
-#include "x502api.h"
+#include "l502api.h"
 #include <E502api.h>
 #include "TGlobalSettings.h"
 #include <vector>
