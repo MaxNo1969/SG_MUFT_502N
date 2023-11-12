@@ -1,9 +1,9 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  Caption = #1052#1086#1076#1091#1083#1100' '#1082#1086#1085#1090#1088#1086#1083#1103' '#1075#1088#1091#1087#1087#1099' '#1087#1088#1086#1095#1085#1086#1089#1090#1080' '#1084#1091#1092#1090' '#1053#1050#1058' "'#1041#1059#1056#1040#1053' 5009'#1052'"'
-  ClientHeight = 644
-  ClientWidth = 976
+  Caption = #1059#1057#1058#1040#1053#1054#1042#1050#1040' '#1050#1054#1053#1058#1056#1054#1051#1071' '#1043#1056#1059#1055#1055#1067' '#1055#1056#1054#1063#1053#1054#1057#1058#1048' '#1052#1059#1060#1058' '#1053#1050#1058'. '#1055#1088#1086#1077#1082#1090' '#1055#1050#1054'-109  '
+  ClientHeight = 624
+  ClientWidth = 1177
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,8 +24,8 @@ object MainForm: TMainForm
   TextHeight = 13
   object SplitterMid: TSplitter
     Left = 0
-    Top = 369
-    Width = 976
+    Top = 349
+    Width = 1177
     Height = 5
     Cursor = crVSplit
     Align = alBottom
@@ -35,11 +35,12 @@ object MainForm: TMainForm
     OnMoved = SplitterMidMoved
     ExplicitLeft = 8
     ExplicitTop = 380
+    ExplicitWidth = 976
   end
   object StatusBar: TStatusBar
     Left = 0
     Top = 58
-    Width = 976
+    Width = 1177
     Height = 40
     Align = alTop
     Panels = <
@@ -49,41 +50,42 @@ object MainForm: TMainForm
       item
         Width = 250
       end>
+    ExplicitWidth = 976
   end
   object BottomPanel: TPanel
     Left = 0
-    Top = 628
-    Width = 976
+    Top = 608
+    Width = 1177
     Height = 16
     Align = alBottom
     TabOrder = 1
+    ExplicitTop = 628
+    ExplicitWidth = 976
     object lMinScrollbar: TLabel
       Left = 1
       Top = 1
       Width = 16
-      Height = 14
+      Height = 13
       Align = alLeft
       Alignment = taCenter
       Caption = 'Min'
       Transparent = True
       Visible = False
-      ExplicitHeight = 13
     end
     object lMaxScrollbar: TLabel
-      Left = 955
+      Left = 1156
       Top = 1
       Width = 20
-      Height = 14
+      Height = 13
       Align = alRight
       Alignment = taCenter
       Caption = 'Max'
       Visible = False
-      ExplicitHeight = 13
     end
     object scbChartDragger: TScrollBar
       Left = 17
       Top = 1
-      Width = 938
+      Width = 1139
       Height = 14
       Align = alClient
       Max = 10000
@@ -93,33 +95,37 @@ object MainForm: TMainForm
       TabOrder = 0
       Visible = False
       OnChange = scbChartDraggerChange
+      ExplicitWidth = 938
     end
   end
   object PanelChartTop: TPanel
     Left = 0
     Top = 98
-    Width = 976
-    Height = 271
+    Width = 1177
+    Height = 251
     Align = alClient
     BorderStyle = bsSingle
     Caption = 'PanelChartTop'
     TabOrder = 2
+    ExplicitWidth = 976
+    ExplicitHeight = 271
     object SplitterRes: TSplitter
-      Left = 659
+      Left = 860
       Top = 1
       Width = 5
-      Height = 265
+      Height = 245
       Align = alRight
       Color = clHighlight
       ParentColor = False
       OnMoved = SplitterResMoved
       ExplicitLeft = 661
+      ExplicitHeight = 265
     end
     object SignalChart: TChart
       Left = 1
       Top = 1
-      Width = 658
-      Height = 265
+      Width = 859
+      Height = 245
       AllowPanning = pmNone
       BackWall.Size = 2
       BottomWall.Size = 2
@@ -133,6 +139,8 @@ object MainForm: TMainForm
       View3D = False
       Align = alClient
       TabOrder = 0
+      ExplicitWidth = 658
+      ExplicitHeight = 265
       DefaultCanvas = 'TGDIPlusCanvas'
       PrintMargins = (
         15
@@ -163,10 +171,10 @@ object MainForm: TMainForm
       end
     end
     object PanelSG: TPanel
-      Left = 664
+      Left = 865
       Top = 1
       Width = 307
-      Height = 265
+      Height = 245
       Align = alRight
       Caption = #1048#1058#1054#1043
       Font.Charset = DEFAULT_CHARSET
@@ -176,21 +184,25 @@ object MainForm: TMainForm
       Font.Style = []
       ParentFont = False
       TabOrder = 1
+      ExplicitLeft = 664
+      ExplicitHeight = 265
     end
   end
   object PanelChartBottom: TPanel
     Left = 0
-    Top = 374
-    Width = 976
+    Top = 354
+    Width = 1177
     Height = 254
     Align = alBottom
     BorderStyle = bsSingle
     Caption = 'PanelChartBottom'
     TabOrder = 3
+    ExplicitTop = 374
+    ExplicitWidth = 976
     object EtalonChart: TChart
       Left = 1
       Top = 1
-      Width = 970
+      Width = 1171
       Height = 248
       AllowPanning = pmNone
       BackWall.Size = 2
@@ -205,6 +217,7 @@ object MainForm: TMainForm
       View3D = False
       Align = alClient
       TabOrder = 0
+      ExplicitWidth = 970
       DefaultCanvas = 'TGDIPlusCanvas'
       PrintMargins = (
         15
@@ -238,15 +251,16 @@ object MainForm: TMainForm
   object PanelTop: TPanel
     Left = 0
     Top = 0
-    Width = 976
+    Width = 1177
     Height = 58
     Align = alTop
     TabOrder = 4
+    ExplicitWidth = 976
     object cbTypeSize: TComboBox
       Left = 1
       Top = 1
       Width = 153
-      Height = 37
+      Height = 56
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 0
@@ -266,7 +280,7 @@ object MainForm: TMainForm
     object cbSGGost: TComboBox
       Left = 154
       Top = 1
-      Width = 192
+      Width = 327
       Height = 37
       Margins.Left = 0
       Margins.Top = 0
@@ -287,7 +301,7 @@ object MainForm: TMainForm
         #1043#1054#1057#1058' 633-80')
     end
     object bStart: TButton
-      Left = 451
+      Left = 586
       Top = 1
       Width = 105
       Height = 56
@@ -301,9 +315,11 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 2
       OnClick = bStartClick
+      ExplicitLeft = 515
+      ExplicitTop = -2
     end
     object bCancel: TButton
-      Left = 346
+      Left = 481
       Top = 1
       Width = 105
       Height = 56
@@ -317,9 +333,10 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 3
       OnClick = bCancelClick
+      ExplicitLeft = 346
     end
     object GroupBoxNGr: TGroupBox
-      Left = 576
+      Left = 777
       Top = 1
       Width = 399
       Height = 56
@@ -332,6 +349,7 @@ object MainForm: TMainForm
       Font.Style = []
       ParentFont = False
       TabOrder = 4
+      ExplicitLeft = 576
       object bbtCreateEtalon: TBitBtn
         Left = 277
         Top = 21

@@ -42,7 +42,8 @@ void TFRSensor::SaveSettings(void)
 {   //выдираем параметры из фреймов бред какой-то
 AnsiString strWhere="";
 	ch_par->logicalChannel=SEChannel->Value;
-	strWhere="numLogCh="+IntToStr((int)ch_par->logicalChannel);
+	//strWhere="numLogCh="+IntToStr((int)ch_par->logicalChannel);
+	strWhere = "chName='" + ch_par->chName + "'";
 	SqlDBModule->UpdIntSql("L502ChParams","numLogCh",ch_par->logicalChannel,strWhere);
 	ch_par->adcRangeIndex=CBRange->ItemIndex;
 	SqlDBModule->UpdIntSql("L502ChParams","adcRangeIndex",ch_par->adcRangeIndex,strWhere);

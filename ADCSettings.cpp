@@ -44,8 +44,7 @@ void __fastcall TADCSettForm::FormCreate(TObject *Sender) {
 	TFRSensor* p;
 
 	ltop = vspace + Label1->Top + Label1->Height;
-	p = new TFRSensor(gbSG, sLÑard502->FindChByName("chBarkgausen"),
-		"Áàðêãàóçåí");
+	p = new TFRSensor(gbSG, sLÑard502->FindChByName("chBarkgausen"),"Ñèãíàë");
 	p->Parent = gbSG;
 	p->Name = "chBarkgausen";
 	p->Left = hspace;

@@ -167,7 +167,7 @@ int __fastcall TfmViewMeasure::PrepareChartToShow(TChart *_chart, TMeasuresData*
 		_chart->SeriesList->Clear();
 		int chCount = _countLogCh;
 		TColor cls[] = {clBlue, clRed, clGreen, clBlack};
-		AnsiString legends[] = {"Напряжение", "Ток", "Баркгаузен", "Эталон"};
+		AnsiString legends[] = {"Напряжение", "Ток", "Сигнал", "Эталон"};
 		for (int i = 0; i < chCount; i++)
 		{
 			TFastLineSeries* series = new TFastLineSeries(_chart);

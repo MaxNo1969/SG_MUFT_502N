@@ -215,8 +215,6 @@ bool TLCard502::CheckError(int _err)
 	return (true);
 }
 // ---------------------------------------------------------------------------
-static const unsigned  READ_BLOCK_SIZE = 4096 * 200;
-uint32_t rcv_buf[READ_BLOCK_SIZE];
 // Читает настройки и вбивает в плату
 void TLCard502::LoadAndSetSettings(vector<TLogCh502Params>& _logChannels)
 {
@@ -226,14 +224,21 @@ EnterCriticalSection(&cs);
 	countLogCh = _logChannels.size();
 #ifndef TVIRTLCARD502
 	LFATAL(a, X502_SetLChannelCount(handle, countLogCh));
-	for (int i = 0; i < countLogCh; i++)
+	AnsiString names[] = {"chBarkgausen", "chCurrentControl", "chVoltageSol"};
+	for(int i = 0; i < countLogCh; ++i)
+	for (int z = 0; z < countLogCh; z++)
 	{
-		unsigned logicalChannel = _logChannels[i].logicalChannel;
-		unsigned collectedMode = _logChannels[i].collectedMode;
-		unsigned adcRangeIndex =  _logChannels[i].adcRangeIndex;
-		LFATAL(a, X502_SetLChannel(handle, i,_logChannels[i].logicalChannel,
-			_logChannels[i].collectedMode,_logChannels[i].adcRangeIndex, 0));
+		if(0 == AnsiCompareStr(names[i],_logChannels[z].chName))
+		{
+			unsigned logicalChannel = _logChannels[z].logicalChannel;
+			unsigned collectedMode = _logChannels[z].collectedMode;
+			unsigned adcRangeIndex =  _logChannels[z].adcRangeIndex;
+			LFATAL(a, X502_SetLChannel(handle, i,logicalChannel,
+				collectedMode,adcRangeIndex, 0));
+			break;
+		}
 	}
+
 	// Настраиваем источник частоты синхронизации
 	LFATAL(a, X502_SetSyncMode(handle, syncMode));
 	// Настраиваем  источник запуска сбора

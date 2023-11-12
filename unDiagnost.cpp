@@ -61,7 +61,9 @@ void __fastcall TfmDiagnost::btnStartGenClick(TObject *Sender) {
 			// btnStopGen->Enabled = true;
 			// Включаем ГСПФ
 			//gen->SetSampleFreq(StrToInt(lbeFrecDiscrGSPF052->Text));
-			gen->FormSignal(StrToInt(lbeFrecSignalGSPF052->Text),StrToFloat(lbeVoltageGSPF052->Text));
+			int frec = StrToInt(lbeFrecSignalGSPF052->Text);
+			float volt = StrToFloat(lbeVoltageGSPF052->Text);
+			gen->FormSignal(frec, volt);
 			gen->Start();
 			Sleep(500);
 			// чтение ЛКард
@@ -355,7 +357,7 @@ void __fastcall TfmDiagnost::FormClose(TObject *Sender, TCloseAction &Action) {
 // ---------------------------------------------------------------------------------------------------------
 void __fastcall TfmDiagnost::FormCreate(TObject *Sender) {
 	TExtFunction::PrepareChartToTst(ChartGPSF052, chCount, chartLength, 2000);
-	ChartGPSF052->Series[0]->Title += " Баркгаузен";
+	ChartGPSF052->Series[0]->Title += " Сигнал";
 	ChartGPSF052->Series[1]->Title += " Напряжение";
 	ChartGPSF052->Series[2]->Title += " Ток";
 	int firstFrec = 0;

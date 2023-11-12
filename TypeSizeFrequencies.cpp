@@ -22,8 +22,8 @@ TSFrequencies::TSFrequencies(int _TS_id)
 		Frequency.push_back(SqlDBModule->ADOQueryDB->
 			FieldByName("frequency_value")->AsInteger);
 		//амплитуда сигнала
-		Amplitude.push_back(SqlDBModule->ADOQueryDB->
-			FieldByName("amplValue")->AsFloat);
+		float t = SqlDBModule->ADOQueryDB->FieldByName("amplValue")->AsFloat;
+		Amplitude.push_back(t);
 		SqlDBModule->ADOQueryDB->Next();
 	}
 	SqlDBModule->ADOQueryDB->Close();

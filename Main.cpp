@@ -84,7 +84,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 	// выбор ГОСТа
 	cbSGGost->ItemIndex = mainGlobalSettings.indexCurrentSGGost;
 	TExtFunction::PrepareChartToTst(SignalChart, 3, 600, 2000);
-	SignalChart->Series[0]->Title += " Баркгаузен";
+	SignalChart->Series[0]->Title += " Сигнал";
 	SignalChart->Series[1]->Title += " Напряжение";
 	SignalChart->Series[2]->Title += " Ток";
 
@@ -532,7 +532,7 @@ void TMainForm::Redraw() {
 	int chCount = lCardData->vecMeasuresData[0].vecSensorsData.size();
 	TExtFunction::PrepareChartToTst(SignalChart, chCount, 0, 0);
 	ChangeColor();
-	SignalChart->Series[0]->Title += " Баркгаузен";
+	SignalChart->Series[0]->Title += " Сигнал";
 	SignalChart->Series[1]->Title += " Напряжение";
 	SignalChart->Series[2]->Title += " Ток";
 	// Выводим на экран графики
@@ -971,6 +971,13 @@ void __fastcall TMainForm::FormCloseQuery(TObject *Sender, bool &CanClose)
 	}
 	else {
 		//
+		if(NULL != gen )
+		{
+            gen->Stop();
+			delete gen;
+			gen = NULL;
+			Sleep(2000);
+		}
 	}
 }
 //---------------------------------------------------------------------------
