@@ -50,7 +50,6 @@ object MainForm: TMainForm
       item
         Width = 250
       end>
-    ExplicitWidth = 976
   end
   object BottomPanel: TPanel
     Left = 0
@@ -59,28 +58,28 @@ object MainForm: TMainForm
     Height = 16
     Align = alBottom
     TabOrder = 1
-    ExplicitTop = 628
-    ExplicitWidth = 976
     object lMinScrollbar: TLabel
       Left = 1
       Top = 1
       Width = 16
-      Height = 13
+      Height = 14
       Align = alLeft
       Alignment = taCenter
       Caption = 'Min'
       Transparent = True
       Visible = False
+      ExplicitHeight = 13
     end
     object lMaxScrollbar: TLabel
       Left = 1156
       Top = 1
       Width = 20
-      Height = 13
+      Height = 14
       Align = alRight
       Alignment = taCenter
       Caption = 'Max'
       Visible = False
+      ExplicitHeight = 13
     end
     object scbChartDragger: TScrollBar
       Left = 17
@@ -95,7 +94,6 @@ object MainForm: TMainForm
       TabOrder = 0
       Visible = False
       OnChange = scbChartDraggerChange
-      ExplicitWidth = 938
     end
   end
   object PanelChartTop: TPanel
@@ -107,8 +105,6 @@ object MainForm: TMainForm
     BorderStyle = bsSingle
     Caption = 'PanelChartTop'
     TabOrder = 2
-    ExplicitWidth = 976
-    ExplicitHeight = 271
     object SplitterRes: TSplitter
       Left = 860
       Top = 1
@@ -139,8 +135,6 @@ object MainForm: TMainForm
       View3D = False
       Align = alClient
       TabOrder = 0
-      ExplicitWidth = 658
-      ExplicitHeight = 265
       DefaultCanvas = 'TGDIPlusCanvas'
       PrintMargins = (
         15
@@ -184,8 +178,6 @@ object MainForm: TMainForm
       Font.Style = []
       ParentFont = False
       TabOrder = 1
-      ExplicitLeft = 664
-      ExplicitHeight = 265
     end
   end
   object PanelChartBottom: TPanel
@@ -197,8 +189,6 @@ object MainForm: TMainForm
     BorderStyle = bsSingle
     Caption = 'PanelChartBottom'
     TabOrder = 3
-    ExplicitTop = 374
-    ExplicitWidth = 976
     object EtalonChart: TChart
       Left = 1
       Top = 1
@@ -217,7 +207,6 @@ object MainForm: TMainForm
       View3D = False
       Align = alClient
       TabOrder = 0
-      ExplicitWidth = 970
       DefaultCanvas = 'TGDIPlusCanvas'
       PrintMargins = (
         15
@@ -255,12 +244,11 @@ object MainForm: TMainForm
     Height = 58
     Align = alTop
     TabOrder = 4
-    ExplicitWidth = 976
     object cbTypeSize: TComboBox
       Left = 1
       Top = 1
       Width = 153
-      Height = 56
+      Height = 37
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 0
@@ -315,8 +303,6 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 2
       OnClick = bStartClick
-      ExplicitLeft = 515
-      ExplicitTop = -2
     end
     object bCancel: TButton
       Left = 481
@@ -333,7 +319,6 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 3
       OnClick = bCancelClick
-      ExplicitLeft = 346
     end
     object GroupBoxNGr: TGroupBox
       Left = 777
@@ -349,7 +334,6 @@ object MainForm: TMainForm
       Font.Style = []
       ParentFont = False
       TabOrder = 4
-      ExplicitLeft = 576
       object bbtCreateEtalon: TBitBtn
         Left = 277
         Top = 21
@@ -411,6 +395,10 @@ object MainForm: TMainForm
       object menuExtSet: TMenuItem
         Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1077' '#1085#1072#1089#1090#1088#1086#1081#1082#1080
         OnClick = menuExtSetClick
+      end
+      object N1: TMenuItem
+        Caption = #1055#1072#1088#1086#1083#1100
+        OnClick = N1Click
       end
     end
     object N6: TMenuItem

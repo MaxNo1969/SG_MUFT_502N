@@ -20,6 +20,7 @@
 #include "EtalonDatas.h"
 #include "unExtSettings.h"
 #include "InOutBits.h"
+#include "unPasswordForm.h"
 // -----------------------------------
 
 #pragma resource "*.dfm"
@@ -32,6 +33,7 @@ __fastcall TMainForm::TMainForm(TComponent* Owner) : TForm(Owner) {
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::FormCreate(TObject *Sender) {
+    options = false;
 	lastError = 0;
 	AnsiString applPath = ExtractFilePath(Application->ExeName);
 	mainGlobalSettings.applPath = applPath;
@@ -104,6 +106,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 #ifdef VIRT1730
 	SLD->iCC->Set(true);
 #endif
+	EnableWigits(true);
 }
 
 // ------------------------------------------------------------------------------
@@ -778,7 +781,7 @@ void __fastcall TMainForm::bbtCreateEtalonClick(TObject *Sender) {
 			// fileName = ExtractFilePath(Application->ExeName);
 			// fileName+="\SavedEtalons\\E_";
 		}
-		AnsiString msg = "Сохраняется эталон группы прочности ";
+		AnsiString msg = "Сохраняется образец группы прочности ";
 		// int ss=cbxSG->ItemIndex;
 		msg += cbxSG->Text;
 		// msg += cbxSG->Items[cbxSG->ItemIndex]-> Text;
@@ -888,7 +891,7 @@ void __fastcall TMainForm::bbtCreateEtalonClick(TObject *Sender) {
 		   forSave.push_back(lCardData->vecMeasuresData[freqNum].vecSensorsData[2][i]);
 		}
 		TLog::SaveChTxtDoubleFile(fileName, &(forSave[0]) , arrSize,3); //serg
-		MessageDlg("Эталон сохранен", mtConfirmation, TMsgDlgButtons() << mbOK, NULL);
+		MessageDlg("Образец сохранен", mtConfirmation, TMsgDlgButtons() << mbOK, NULL);
 		err = 0;
 		//
 		// queryTSz->Close();
@@ -970,17 +973,50 @@ void __fastcall TMainForm::FormCloseQuery(TObject *Sender, bool &CanClose)
 		return;
 	}
 	else {
-		//
+		if (threadWork != NULL) {
+				threadWork->Terminate();
+				threadWork->WaitFor();
+				delete threadWork;
+				threadWork = NULL;
+		}
 		if(NULL != gen )
 		{
-            gen->Stop();
-			delete gen;
+			gen->Stop();
+			TGSPF052* x = gen;
 			gen = NULL;
-			Sleep(2000);
+			Sleep(1000);
+			delete x;
+			Sleep(1000);
 		}
 	}
 }
+void TMainForm::EnableWigits(bool b)
+{
+	GroupBoxNGr->Visible = b;
+	PanelChartBottom->Visible = b;
+	menuSettings->Visible = b;
+	menuSGSett->Visible = b;
+	menuColorSett->Visible = b;
+	menuTypeSize->Visible = b;
+	menuEtalons->Visible = b;
+	menuExtSet->Visible = b;
+}
 //---------------------------------------------------------------------------
-
-
+void __fastcall TMainForm::N1Click(TObject *Sender)
+{
+	  if(!GroupBoxNGr->Visible)
+	  {
+		TPasswordForm *f = new TPasswordForm(this);
+		f->ShowModal();
+		if(f->result)
+		{
+		   EnableWigits(true);
+		}
+	  }
+	  else
+	  {
+		   EnableWigits(false);
+	  }
+}
+//---------------------------------------------------------------------------
 

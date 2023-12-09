@@ -123,6 +123,7 @@ __published: // IDE-managed Components
 	TSplitter *SplitterRes;
 	TMenuItem *menuExtSet;
 	TTimer *timerCheck1730;
+	TMenuItem *N1;
 
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
@@ -156,9 +157,10 @@ __published: // IDE-managed Components
 	void __fastcall cbTypeSizeChange(TObject *Sender);
 	void __fastcall menuExtSetClick(TObject *Sender);
 	void __fastcall FormCloseQuery(TObject *Sender, bool &CanClose);
+	void __fastcall N1Click(TObject *Sender);
 
 private: // User declarations
-
+    bool options;
 	// общие настройки программы
 	TGlobalSettings mainGlobalSettings;
 	// LCard502 - указатель на карту
@@ -218,7 +220,8 @@ private: // User declarations
 	//блокируем кнопки
 	void SetAbleButtons(bool _enable);
 	//код последней ошибки
-	int lastError;;
+    void EnableWigits(bool b);
+	int lastError;
 public: // User declarations
 
 	__fastcall TMainForm(TComponent* Owner);

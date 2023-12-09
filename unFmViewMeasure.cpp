@@ -167,7 +167,7 @@ int __fastcall TfmViewMeasure::PrepareChartToShow(TChart *_chart, TMeasuresData*
 		_chart->SeriesList->Clear();
 		int chCount = _countLogCh;
 		TColor cls[] = {clBlue, clRed, clGreen, clBlack};
-		AnsiString legends[] = {"Напряжение", "Ток", "Сигнал", "Эталон"};
+		AnsiString legends[] = {"Напряжение", "Ток", "Сигнал", "Образец"};
 		for (int i = 0; i < chCount; i++)
 		{
 			TFastLineSeries* series = new TFastLineSeries(_chart);
@@ -282,7 +282,7 @@ void __fastcall TfmViewMeasure::ZoomDownClick(TObject *Sender) {
 // ---------------------------------------------------------------------------
 
 void __fastcall TfmViewMeasure::FormCreate(TObject *Sender) {
-	PrepareChartToShow(chartView, pMeasuresData, pMeasuresData->vecSensorsData.size(), 0, 0, "Эталон скачков");
+	PrepareChartToShow(chartView, pMeasuresData, pMeasuresData->vecSensorsData.size(), 0, 0, "Образец скачков");
 	// TChart *_chart, TMeasuresData* _measuresData, int _countLogCh, int _maxY, int _maxX, AnsiString _title
 }
 // ---------------------------------------------------------------------------

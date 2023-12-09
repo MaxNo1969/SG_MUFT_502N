@@ -621,7 +621,7 @@ void __fastcall TfmDiagnost::bbtCreateEtalonClick(TObject *Sender) {
 			}
 			//TLog::SaveChTxtDoubleFile(fileName, &(lCardData->vecMeasure[0]), arrSize,3);
 			TLog::SaveChTxtDoubleFile(fileName, &(forSave[0]), arrSize,3);
-			MessageDlg("Эталон сохранен", mtConfirmation,
+			MessageDlg("Образец сохранен", mtConfirmation,
 				TMsgDlgButtons() << mbOK, NULL);
 			err = 0;
 			//

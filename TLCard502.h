@@ -8,13 +8,14 @@
 #include "TGlobalSettings.h"
 #include <vector>
 #include <fstream>
-#pragma comment(lib, "x502api.lib")
-#pragma comment(lib, "e502api.lib")
+
 #define LCard502_INIT_SIZE 2000
 #define LCard502_ADD_PERCENT 50
 using namespace std;
 // ---------------------------------------------------------------------------
-#if 1
+#if 0
+#pragma comment(lib, "x502api.lib")
+#pragma comment(lib, "e502api.lib")
 class TLCard502
 {
 WORD outBits;
@@ -127,8 +128,6 @@ class TLCard502
 WORD outBits;
 CRITICAL_SECTION cs;
 public:
-	// ! Хендл платы
-	t_x502_hnd handle;
 private:
 	int raw_size;
 	unsigned int* rawi;
@@ -152,13 +151,13 @@ public:
 	AnsiString LastError;
 
 	//Конструктор и открытие платы
-	TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr){}
+	TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr){countLogCh = 2;}
 	//Деструктор и закрытие платы
-	~TLCard502(void){}
+	~TLCard502(void) {}
 	//Старт платы
 	void Start(void){}
 	//Остановка платы
-	void Stop(void);
+	void Stop(void){}
 	//Читаем данные с платы
 	double* Read(int* _size){}
 	//Получить значение с канала

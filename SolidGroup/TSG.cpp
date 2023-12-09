@@ -167,7 +167,7 @@ CSG TSG::Get1FrecSG()
 		ret.probability = 0;
 		ret.group = "ХХХ";
 		ret.color = clWhite;
-		 TExtFunction::ShowBigModalMessage("Не найдены значения эталонов!", clRed);
+		 TExtFunction::ShowBigModalMessage("Не найдены значения образцов!", clRed);
 		return (ret);
 	}else{
 	  //

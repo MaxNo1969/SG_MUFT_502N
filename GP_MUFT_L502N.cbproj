@@ -35,8 +35,8 @@
         <PackageImports>vclimg.bpi;vcl.bpi;vclx.bpi;dbrtl.bpi;Rave90VCL.bpi;bdertl.bpi;rtl.bpi;bcbie.bpi;xmlrtl.bpi;vclactnband.bpi;bcbsmp.bpi;svnui.bpi;svn.bpi;TeeUI.bpi;TeeDB.bpi;Tee.bpi;vcldb.bpi;vcldbx.bpi;vcltouch.bpi;dsnap.bpi;dsnapcon.bpi;vclib.bpi;ibxpress.bpi;adortl.bpi;IndyCore.bpi;IndySystem.bpi;IndyProtocols.bpi;inet.bpi;intrawebdb_110_150.bpi;Intraweb_110_150.bpi;vclie.bpi;websnap.bpi;webdsnap.bpi;inetdb.bpi;inetdbbde.bpi;inetdbxpress.bpi;soaprtl.bpi;vclribbon.bpi;dbexpress.bpi;DbxCommonDriver.bpi;DataSnapIndy10ServerTransport.bpi;DataSnapProviderClient.bpi;DbxClientDriver.bpi;DataSnapClient.bpi;dbxcds.bpi;DataSnapServer.bpi;AzureCloud.bpi;DBXInterBaseDriver.bpi;DBXMySQLDriver.bpi;DBXFirebirdDriver.bpi;DBXSybaseASEDriver.bpi;DBXSybaseASADriver.bpi;DBXOracleDriver.bpi;DBXMSSQLDriver.bpi;DBXInformixDriver.bpi;DBXDb2Driver.bpi;CodeSiteExpressVcl.bpi;$(PackageImports)</PackageImports>
         <OutputExt>exe</OutputExt>
         <LinkPackageStatics>rtl.lib;vcl.lib;Tee.lib;vclimg.lib;dbrtl.lib;adortl.lib;vcldb.lib;bcbsmp.lib;vclx.lib</LinkPackageStatics>
-        <IncludePath>CardsFiles\;CardsFiles\Hantek1025G\;$(BDS)\include\windows\vcl\;From_Buran5033\;CardsFiles\From_Buran5033\;CardsFiles\X502Card\;CardsFiles\RudShell\;SolidGroup\;CardsFiles\A1730\;CardsFiles\L502\;$(IncludePath)</IncludePath>
-        <ILINK_LibraryPath>CardsFiles\;CardsFiles\Hantek1025G\;$(BDS)\include\windows\vcl\;From_Buran5033\;CardsFiles\From_Buran5033\;CardsFiles\X502Card\;CardsFiles\RudShell\;SolidGroup\;CardsFiles\A1730\;CardsFiles\L502\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <IncludePath>Forms\;CardsFiles\;CardsFiles\Hantek1025G\;$(BDS)\include\windows\vcl\;From_Buran5033\;CardsFiles\From_Buran5033\;CardsFiles\X502Card\;CardsFiles\RudShell\;SolidGroup\;CardsFiles\A1730\;CardsFiles\L502\;$(IncludePath)</IncludePath>
+        <ILINK_LibraryPath>Forms\;CardsFiles\;CardsFiles\Hantek1025G\;$(BDS)\include\windows\vcl\;From_Buran5033\;CardsFiles\From_Buran5033\;CardsFiles\X502Card\;CardsFiles\RudShell\;SolidGroup\;CardsFiles\A1730\;CardsFiles\L502\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <UWP_CppLogo150>$(BDS)\bin\Artwork\Windows\UWP\cppreg_UwpDefault_150.png</UWP_CppLogo150>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <AllPackageLibs>rtl.lib;vcl.lib;Tee.lib;vclimg.lib;dbrtl.lib;adortl.lib;vcldb.lib;bcbsmp.lib;vclx.lib</AllPackageLibs>
@@ -80,7 +80,7 @@
         <ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\debug\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <VerInfo_Locale>1049</VerInfo_Locale>
+        <BRCC_IncludePath>..\Forms\;$(BRCC_IncludePath)</BRCC_IncludePath>
         <FinalOutputDir>.\OutExe\</FinalOutputDir>
         <Manifest_File>(None)</Manifest_File>
         <BT_BuildType>Debug</BT_BuildType>
@@ -327,6 +327,12 @@
             <DependentOn>unFmViewMeasure.h</DependentOn>
             <BuildOrder>54</BuildOrder>
         </CppCompile>
+        <CppCompile Include="unPasswordForm.cpp">
+            <Form>PasswordForm</Form>
+            <FormType>dfm</FormType>
+            <DependentOn>unPasswordForm.h</DependentOn>
+            <BuildOrder>63</BuildOrder>
+        </CppCompile>
         <CppCompile Include="unSQLDbModule.cpp">
             <Form>SqlDBModule</Form>
             <FormType>dfm</FormType>
@@ -360,25 +366,26 @@
             <DependentOn>uTFRSensor.h</DependentOn>
             <BuildOrder>43</BuildOrder>
         </CppCompile>
+        <FormResources Include="NewSG.dfm"/>
         <FormResources Include="SGSettings.dfm"/>
         <FormResources Include="unSQLDbModule.dfm"/>
-        <FormResources Include="unFmViewMeasure.dfm"/>
-        <FormResources Include="uTFRSensor.dfm"/>
-        <FormResources Include="uTFProtocol.dfm"/>
-        <FormResources Include="uTFilterSettings.dfm"/>
         <FormResources Include="unFmTypeSizes.dfm"/>
+        <FormResources Include="unFmViewMeasure.dfm"/>
+        <FormResources Include="uTFProtocol.dfm"/>
+        <FormResources Include="uTFRSensor.dfm"/>
+        <FormResources Include="uTFilterSettings.dfm"/>
         <FormResources Include="unDiagnost.dfm"/>
-        <FormResources Include="unEditEtalon.dfm"/>
-        <FormResources Include="unFmMessage.dfm"/>
         <FormResources Include="unFmEditSettings.dfm"/>
+        <FormResources Include="unFmMessage.dfm"/>
+        <FormResources Include="unEditEtalon.dfm"/>
         <FormResources Include="unExtSettings.dfm"/>
-        <FormResources Include="NewSG.dfm"/>
         <FormResources Include="CardsFiles\A1730\uFSignalsState.dfm"/>
         <FormResources Include="CardsFiles\A1730\uFRSigPanel.dfm"/>
-        <FormResources Include="ADCSettings.dfm"/>
         <FormResources Include="ABOUT_NTC_NK_URAN.dfm"/>
+        <FormResources Include="ADCSettings.dfm"/>
         <FormResources Include="ColorSettings.dfm"/>
         <FormResources Include="Main.dfm"/>
+        <FormResources Include="unPasswordForm.dfm"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
