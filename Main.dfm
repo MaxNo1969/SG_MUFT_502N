@@ -135,6 +135,8 @@ object MainForm: TMainForm
       View3D = False
       Align = alClient
       TabOrder = 0
+      ExplicitLeft = 0
+      ExplicitTop = 3
       DefaultCanvas = 'TGDIPlusCanvas'
       PrintMargins = (
         15
@@ -284,9 +286,6 @@ object MainForm: TMainForm
       TabOrder = 1
       Text = 'cbSGGost'
       OnSelect = cbSGGostSelect
-      Items.Strings = (
-        #1043#1054#1057#1058' '#1056'53366-2009'
-        #1043#1054#1057#1058' 633-80')
     end
     object bStart: TButton
       Left = 586

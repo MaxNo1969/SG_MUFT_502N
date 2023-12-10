@@ -21,6 +21,7 @@
 #include "unExtSettings.h"
 #include "InOutBits.h"
 #include "unPasswordForm.h"
+#include "Queries.h"
 // -----------------------------------
 
 #pragma resource "*.dfm"
@@ -33,6 +34,13 @@ __fastcall TMainForm::TMainForm(TComponent* Owner) : TForm(Owner) {
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::FormCreate(TObject *Sender) {
+
+    std::list<UnicodeString> l = GetGost();
+	for(std::list<UnicodeString>::iterator it = l.begin(); it != l.end(); ++it)
+	{
+		cbSGGost->Items->Add(*it);
+	}
+
     options = false;
 	lastError = 0;
 	AnsiString applPath = ExtractFilePath(Application->ExeName);
@@ -437,8 +445,9 @@ void TMainForm::Start() {
 			if (threadWork != NULL) {
 				threadWork->Terminate();
 				threadWork->WaitFor();
-				delete threadWork;
+				ThreadWork *x = threadWork;
 				threadWork = NULL;
+				delete x;
 			}
 			if (!gen) {
 			   //	gen = new TGSPF052(&mainGlobalSettings, err);
@@ -976,8 +985,9 @@ void __fastcall TMainForm::FormCloseQuery(TObject *Sender, bool &CanClose)
 		if (threadWork != NULL) {
 				threadWork->Terminate();
 				threadWork->WaitFor();
-				delete threadWork;
+				ThreadWork *x = threadWork;
 				threadWork = NULL;
+				delete x;
 		}
 		if(NULL != gen )
 		{
