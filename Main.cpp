@@ -471,9 +471,9 @@ void TMainForm::Start() {
 				return;
 			}
 		   //	gen->SetSampleFreq(mainGlobalSettings.discrFrecGSPF);
-			double a = TSFreqs.Frequency[0];
-			a = TSFreqs.Amplitude[0];
-			gen->FormSignal(TSFreqs.Frequency[0], TSFreqs.Amplitude[0]);
+			int f = TSFreqs.Frequency[0];
+			double a = TSFreqs.Amplitude[0];
+			gen->FormSignal(f, a);
 			threadWork = new ThreadWork(true, lCardData, &mainGlobalSettings, gen);
 			SLD->SetAlarm(true);
 		}
