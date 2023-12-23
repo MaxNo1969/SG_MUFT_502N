@@ -18,7 +18,9 @@ typedef int (__stdcall *LPDDSSetSingleWave)(int index, BOOL bSingle);
 #if 1
 class Hantek1025G
 {
+public:
 	HINSTANCE hDLL;
+private:
 	LPDDSSearch DDSSearch;
 	LPDDSDownload DDSDownload;
 	LPDDSResetCounter DDSResetCounter;

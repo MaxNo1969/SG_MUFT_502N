@@ -452,7 +452,16 @@ void TMainForm::Start() {
 			if (!gen) {
 			   //	gen = new TGSPF052(&mainGlobalSettings, err);
 			   gen = new TGSPF052();
-               if(NULL == gen) return;
+			   if(NULL == gen->hDLL)
+			   {
+					delete gen;
+					gen = NULL;
+                    SetAbleButtons(true);
+					inWork = false;
+					SLD->oSENSORON->Set(false);
+					SLD->LatchesTerminate();
+					return;
+			   }
 			}
 			//gen->SetSampleFreq(mainGlobalSettings.discrFrecGSPF);
 			TSFrequencies TSFreqs = TSFrequencies(mainGlobalSettings.indexCurrentTypeSize);
@@ -929,7 +938,7 @@ void TMainForm::SetAbleButtons(bool _enable) {
 	MainMenu->Items->Find("Диагностика")->Enabled = _enable;
 	MainMenu->Items->Find("Результат")->Enabled = _enable;
 	MainMenu->Items->Find("Помощь")->Enabled = _enable;
-	GroupBoxNGr->Visible = _enable;
+ //	GroupBoxNGr->Visible = _enable;
 	bStart->Enabled = _enable;
 	cbTypeSize->Enabled = _enable;
 	cbSGGost->Enabled = _enable;
