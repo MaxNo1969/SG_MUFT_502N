@@ -383,6 +383,16 @@ void __fastcall TfmDiagnost::FormCreate(TObject *Sender) {
 	// lbeStepCountGSPF052->Text =IntToStr(SqlDBModule->GetIntFieldSQL("GSPF052Params","count(*) as F1","isUsed=1", 0,err));
 	if (!gen) {
 		gen = new TGSPF052();//(pGlobalSettings, err);
+        if(NULL == gen->hDLL)
+			   {
+					delete gen;
+					gen = NULL;
+                    SetAbleButtons(true);
+					inWork = false;
+					SLD->oSENSORON->Set(false);
+					SLD->LatchesTerminate();
+					return;
+			   }
 	}
 	else {
 		//
