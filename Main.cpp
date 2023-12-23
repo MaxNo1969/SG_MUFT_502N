@@ -114,7 +114,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 #ifdef VIRT1730
 	SLD->iCC->Set(true);
 #endif
-	EnableWigits(true);
+	EnableWigits(false);
 }
 
 // ------------------------------------------------------------------------------
@@ -452,6 +452,7 @@ void TMainForm::Start() {
 			if (!gen) {
 			   //	gen = new TGSPF052(&mainGlobalSettings, err);
 			   gen = new TGSPF052();
+               if(NULL == gen) return;
 			}
 			//gen->SetSampleFreq(mainGlobalSettings.discrFrecGSPF);
 			TSFrequencies TSFreqs = TSFrequencies(mainGlobalSettings.indexCurrentTypeSize);
