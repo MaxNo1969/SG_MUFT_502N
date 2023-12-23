@@ -13,7 +13,7 @@
 #define LCard502_ADD_PERCENT 50
 using namespace std;
 // ---------------------------------------------------------------------------
-#if 0
+#if 1
 #pragma comment(lib, "x502api.lib")
 #pragma comment(lib, "e502api.lib")
 class TLCard502
