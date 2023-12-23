@@ -387,8 +387,6 @@ void __fastcall TfmDiagnost::FormCreate(TObject *Sender) {
 			   {
 					delete gen;
 					gen = NULL;
-                    SetAbleButtons(true);
-					inWork = false;
 					SLD->oSENSORON->Set(false);
 					SLD->LatchesTerminate();
 					return;

@@ -129,12 +129,15 @@ UnicodeString ThreadWork::PrepareForWork() {
 struct ExitLoop
 {
 	bool &exitLoop;
-	ExitLoop(bool &val): exitLoop(val)
+	TGSPF052 *gen;
+	ExitLoop(bool &val, TGSPF052 *g): exitLoop(val)
 	{
+		gen = g;
 		exitLoop = true;
 	}
-	~ExitLoop()(
+	~ExitLoop()
 	{
+	    gen->Stop());
 		exitLoop = false;
     }
 };
