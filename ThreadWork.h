@@ -11,6 +11,7 @@
 class ThreadWork : public TThread {
 protected:
 	void __fastcall Execute();
+	  bool exitLoop;
 public:
 	// изменено
 	// __fastcall ThreadWork(TIniFile* _ini, AnsiString _SGFix, TLCardData* _lCardData);
@@ -21,12 +22,12 @@ public:
 	static const WPARAM UPDATE_STATUS = 3;
 	static const WPARAM COMPLETE = 5;
 	static const WPARAM NEXT_MUFT = 6;
-    bool exitLoop;
+    bool TestExitLoop();
 	AnsiString GetStext1(void);
 	AnsiString GetStext2(void);
 	// Установить указанный результат расчета //todo а нужно ли?
 	void SetCalc(); // (bool _IsBrak);
-
+	bool BoolExitLoop();
 	// Возвращает текущую группу прочности
 	CSG GetSG(void);
 	// ---------------
