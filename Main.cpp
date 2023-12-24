@@ -122,6 +122,7 @@ void __fastcall TMainForm::FormDestroy(TObject * Sender) {
 	if (threadWork) {
 		threadWork->Terminate();
 		threadWork->WaitFor();
+		while(threadWork->exitLoop)Sleep(100);
 		threadWork = NULL;
 	}
 
@@ -301,6 +302,7 @@ void __fastcall TMainForm::ApplicationEventsMessage(tagMSG & Msg, bool &Handled)
 				SLD->LatchesTerminate();
 				SLD->SetAlarm(false);
 				threadWork->WaitFor();
+				while(threadWork->exitLoop)Sleep(100);
 				delete threadWork;
 				threadWork = NULL;
 				SetAbleButtons(true);
@@ -445,6 +447,7 @@ void TMainForm::Start() {
 			if (threadWork != NULL) {
 				threadWork->Terminate();
 				threadWork->WaitFor();
+				while(threadWork->exitLoop)Sleep(100);
 				ThreadWork *x = threadWork;
 				threadWork = NULL;
 				delete x;
@@ -511,6 +514,7 @@ void TMainForm::Stop() {
 	threadWork->Terminate();
 	threadWork->SetCalc();
 	threadWork->WaitFor();
+	while(threadWork->exitLoop)Sleep(100);
 	delete threadWork;
 	threadWork = NULL;
 	// отключим генератор
@@ -995,6 +999,7 @@ void __fastcall TMainForm::FormCloseQuery(TObject *Sender, bool &CanClose)
 		if (threadWork != NULL) {
 				threadWork->Terminate();
 				threadWork->WaitFor();
+				while(threadWork->exitLoop)Sleep(100);
 				ThreadWork *x = threadWork;
 				threadWork = NULL;
 				delete x;

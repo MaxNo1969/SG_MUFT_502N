@@ -21,7 +21,7 @@ public:
 	static const WPARAM UPDATE_STATUS = 3;
 	static const WPARAM COMPLETE = 5;
 	static const WPARAM NEXT_MUFT = 6;
-
+    bool exitLoop;
 	AnsiString GetStext1(void);
 	AnsiString GetStext2(void);
 	// Установить указанный результат расчета //todo а нужно ли?

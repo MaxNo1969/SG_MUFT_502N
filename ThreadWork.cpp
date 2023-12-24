@@ -126,7 +126,23 @@ UnicodeString ThreadWork::PrepareForWork() {
 
 // -------------------------------------------------------------------------------
 // ----онлайн цикл, крутящийся бесконечно и проверяющий все события---------------
+struct ExitLoop
+{
+	bool &exitLoop;
+	TGSPF052 *gen;
+	ExitLoop(bool &val, TGSPF052 *g): exitLoop(val)
+	{
+		gen = g;
+		exitLoop = true;
+	}
+	~ExitLoop()
+	{
+	    gen->Stop());
+		exitLoop = false;
+    }
+};
 bool ThreadWork::OnlineCycle() {
+	ExitLoop _exitLoop(exitLoop);
 	TProtocol::ProtocolSave("Работа: Режим работа");
 	bool result = true; // общий результат успешности цикла
 	AnsiString msg = "";
