@@ -58,7 +58,6 @@ Hantek1025G::~Hantek1025G()
 {
 	if(NULL == hDLL) return;
 	Stop();
-    Sleep(1000);
 	FreeLibrary(hDLL);
 }
 void Hantek1025G::Start()

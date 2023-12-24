@@ -281,7 +281,7 @@ void __fastcall TMainForm::ApplicationEventsMessage(tagMSG & Msg, bool &Handled)
 	if (Msg.message == mainGlobalSettings.threadMsg) { // Handled = true;
 		switch (Msg.wParam) {
 		case ThreadWork::REDRAW: {
-                if(NULL == threadWork)break;
+                if(NULL == threadWork) break;
 				TProtocol::ProtocolSave("Сообщение: перерисовать");
 				csg = threadWork->GetSG();
 				Redraw();
@@ -424,8 +424,7 @@ void __fastcall TMainForm::bStartClick(TObject * Sender) {
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::bCancelClick(TObject * Sender) {
-	mainGlobalSettings.isWork=false;
-    if(gen) gen->Stop();
+    mainGlobalSettings.isWork=false;
 	Stop();
 }
 
@@ -513,15 +512,15 @@ void TMainForm::Stop() {
 		return;
 	}
 	// удалим поток
-   	threadWork->Terminate();
-  //	threadWork->exitFromLoop = true;
-	//threadWork->SetCalc();
+	threadWork->Terminate();
+   //	threadWork->SetCalc();
 	threadWork->WaitFor();
-	Sleep(1000);
 	threadWork->TestExitLoop();
 	ThreadWork *x = threadWork;
+    Sleep(1000);
 	threadWork = NULL;
 	delete x;
+
 	// отключим генератор
   //	if (gen) {
   //		delete gen;
