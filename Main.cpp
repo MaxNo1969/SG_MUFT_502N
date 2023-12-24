@@ -281,13 +281,14 @@ void __fastcall TMainForm::ApplicationEventsMessage(tagMSG & Msg, bool &Handled)
 	if (Msg.message == mainGlobalSettings.threadMsg) { // Handled = true;
 		switch (Msg.wParam) {
 		case ThreadWork::REDRAW: {
-                if(NULL == threadWork) break;
+				if(NULL == threadWork) break;
 				TProtocol::ProtocolSave("Сообщение: перерисовать");
 				csg = threadWork->GetSG();
 				Redraw();
 				break;
 			}
 		case ThreadWork::COMPUTE: {
+				if(NULL == threadWork) break;
 				AnsiString a = "Сообщение: расчет треда, код: ";
 				a += Msg.lParam;
 				TProtocol::ProtocolSave(a);
@@ -296,6 +297,7 @@ void __fastcall TMainForm::ApplicationEventsMessage(tagMSG & Msg, bool &Handled)
 				break;
 			}
 		case ThreadWork::COMPLETE: { {
+		        if(NULL == threadWork) break;
 					AnsiString a = "Сообщение: завершение треда, код: ";
 					a += Msg.lParam;
 					TProtocol::ProtocolSave(a);
@@ -517,8 +519,8 @@ void TMainForm::Stop() {
 	threadWork->WaitFor();
 	threadWork->TestExitLoop();
 	ThreadWork *x = threadWork;
-    Sleep(1000);
 	threadWork = NULL;
+	Sleep(1000);
 	delete x;
 
 	// отключим генератор

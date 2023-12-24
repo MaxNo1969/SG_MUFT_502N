@@ -7,7 +7,7 @@
 #include <math.h>
 // #include "TLCard502.h"
 // #include "TLogCh502Params.h"
-//#include "GSPF052.h"
+// #include "GSPF052.h"
 #include "TSG.h"
 #include "TProtocol.h"
 #include <ctime.h>
@@ -20,7 +20,8 @@
 // ---------------------------------------------------------------------------
 
 // ----конструктор - переносим внешние переменные на внутренние---------------
-__fastcall ThreadWork::ThreadWork(bool _createSuspended, TLCardData* _lCardData, TGlobalSettings* _globalSettings, TGSPF052* _gen) {
+__fastcall ThreadWork::ThreadWork(bool _createSuspended, TLCardData* _lCardData,
+	TGlobalSettings* _globalSettings, TGSPF052* _gen) {
 	thGlobalSettings = _globalSettings;
 	lCardData = _lCardData;
 	int err = -101;
@@ -36,18 +37,19 @@ __fastcall ThreadWork::~ThreadWork(void) {
 	Terminate();
 	WaitFor();
 
-   //	if (GSPF) {
-  //		delete GSPF;
-   //		GSPF = NULL;
-  //	}
-	if(gspfStart)GSPF->Stop();
+	// if (GSPF) {
+	// delete GSPF;
+	// GSPF = NULL;
+	// }
+	if (gspfStart)
+		GSPF->Stop();
 	if (solidGroup) {
 		delete solidGroup;
 		solidGroup = NULL;
 	}
 
 	delete calc_event;
- 	delete cs;
+	delete cs;
 }
 
 // -----запуск потока работы--------------------------------------------------
@@ -55,7 +57,7 @@ void __fastcall ThreadWork::Execute() {
 
 	SetStext1("Режим \"Работа\"");
 	SetStext2("Готовим к исходному положению");
- 	TProtocol::ProtocolSave("-----------");
+	TProtocol::ProtocolSave("-----------");
 	TProtocol::ProtocolSave(stext1);
 	Post(UPDATE_STATUS);
 
@@ -105,7 +107,8 @@ void __fastcall ThreadWork::Execute() {
 
 // ---------------------------------------------------------------------------
 void ThreadWork::Post(WPARAM _w, LPARAM _l) {
-	if (PostMessage(Application->Handle, thGlobalSettings->threadMsg, _w, _l) == 0)
+	if (PostMessage(Application->Handle, thGlobalSettings->threadMsg, _w,
+		_l) == 0)
 		TExtFunction::FATAL("ThreadOnLine::Post: не могу послать сообщение");
 	AnsiString a = "ThreadOnLine::Post: послали ";
 	a += _w;
@@ -126,25 +129,24 @@ UnicodeString ThreadWork::PrepareForWork() {
 
 // -------------------------------------------------------------------------------
 // ----онлайн цикл, крутящийся бесконечно и проверяющий все события---------------
-struct ExitLoop
-{
+struct ExitLoop {
 	bool &exitLoop;
 	TGSPF052 *gen;
-	ExitLoop(bool &val, TGSPF052 *g): exitLoop(val)
-	{
+
+	ExitLoop(bool &val, TGSPF052 *g) : exitLoop(val) {
 		gen = g;
 		exitLoop = true;
 	}
-	~ExitLoop()
-	{
-	    gen->Stop();
+
+	~ExitLoop() {
+		gen->Stop();
 		exitLoop = false;
-    }
+	}
 };
 
-bool ThreadWork::TestExitLoop()
-{
-	while(exitLoop)Sleep(1000);
+bool ThreadWork::TestExitLoop() {
+	while (exitLoop)
+		Sleep(1000);
 	return true;
 }
 
@@ -169,24 +171,26 @@ bool ThreadWork::OnlineCycle() {
 		// TExtFunction::ShowBigModalMessage(msg,clBlue);
 		TProtocol::ProtocolSave(msg);
 		return false;
-	}      /*
-	timeFlag = CheckMufta(true, 60000);
-	if (!timeFlag) // если превышено время ожидания, то выходим
-	{
-		// проверяем наличие цепей питания
-		if (SLD->iCC->WasConst(false, 50))
-			msg = "Работа: пропал сигнал цепи управления";
-		else
-			msg = "Работа: Не дождались пока поставят муфту";
-		SetStext2(msg);
-		Post(UPDATE_STATUS);
-		// TExtFunction::ShowBigModalMessage(msg,clBlue);
-		TProtocol::ProtocolSave(msg);
-		return false;
-	}     */
+	}
+
+	 timeFlag = CheckMufta(true, 60000);
+	 if (!timeFlag) // если превышено время ожидания, то выходим
+	 {
+	 // проверяем наличие цепей питания
+	 if (SLD->iCC->WasConst(false, 50))
+	 msg = "Работа: пропал сигнал цепи управления";
+	 else
+	 msg = "Работа: Не дождались пока поставят муфту";
+	 SetStext2(msg);
+	 Post(UPDATE_STATUS);
+	 // TExtFunction::ShowBigModalMessage(msg,clBlue);
+	 TProtocol::ProtocolSave(msg);
+	 return false;
+	 }
+
 	// gen = new TGSPF052(dGlobalSettings,err);
 	if (solidGroup != NULL) {
-	   	delete solidGroup;
+		delete solidGroup;
 	}
 	lCardData->ClearSGM();
 
@@ -219,8 +223,10 @@ bool ThreadWork::OnlineCycle() {
 	// рассчитываем ГП
 	int err = 0;
 	csg = solidGroup->Get1FrecSG();
-	csg.group = SqlDBModule->GetStrFieldSQL("SolidGroups", "SGName", "rec_id=" + IntToStr(csg.group_id), "X", err);
-	csg.color = (TColor)SqlDBModule->GetIntFieldSQL("SolidGroups", "Color", "rec_id=" + IntToStr(csg.group_id), 65535, err);
+	csg.group = SqlDBModule->GetStrFieldSQL("SolidGroups", "SGName",
+		"rec_id=" + IntToStr(csg.group_id), "X", err);
+	csg.color = (TColor)SqlDBModule->GetIntFieldSQL("SolidGroups", "Color",
+		"rec_id=" + IntToStr(csg.group_id), 65535, err);
 	// PanelSG->Caption = csg.group+" "+IntToStr((int)(csg.probability*100))+"%";
 	// PanelSG->Color = csg.color;
 	// Выводим на экран графики
@@ -342,7 +348,8 @@ bool ThreadWork::CheckMufta(bool _waitStatus, int _waitTime) {
 		SetStext2("Уберите муфту из датчика!");
 	Post(UPDATE_STATUS);
 
-	TLCardData * muftаSearchData = new TLCardData(lCardData->GetLCard502(), 1, lCardData->GetLCard502()->countLogCh);
+	TLCardData * muftаSearchData = new TLCardData(lCardData->GetLCard502(), 1,
+		lCardData->GetLCard502()->countLogCh);
 	TSG* muftаSearch = new TSG(thGlobalSettings, muftаSearchData);
 	while (true) {
 		while (true) {
@@ -350,7 +357,8 @@ bool ThreadWork::CheckMufta(bool _waitStatus, int _waitTime) {
 				break;
 		}
 		muftаSearch->ResetState();
-		bool result = muftаSearchData->CheckMufta(thGlobalSettings->checkMuftaChannel);
+		bool result = muftаSearchData->CheckMufta
+			(thGlobalSettings->checkMuftaChannel);
 		if (result == _waitStatus) {
 			break;
 		}
