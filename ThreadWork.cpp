@@ -137,10 +137,17 @@ struct ExitLoop
 	}
 	~ExitLoop()
 	{
-	    gen->Stop());
+	    gen->Stop();
 		exitLoop = false;
     }
 };
+
+bool ThreadWork::TestExitLoop()
+{
+	while(exitLoop)Sleep(1000);
+	return true;
+}
+
 bool ThreadWork::OnlineCycle() {
 	ExitLoop _exitLoop(exitLoop);
 	TProtocol::ProtocolSave("Работа: Режим работа");
