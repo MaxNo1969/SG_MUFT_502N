@@ -148,8 +148,9 @@ bool ThreadWork::TestExitLoop()
 	return true;
 }
 
-bool ThreadWork::OnlineCycle() {
-	ExitLoop _exitLoop(exitLoop);
+bool ThreadWork::OnlineCycle()
+{
+	ExitLoop _exitLoop(exitLoop, GSPF);
 	TProtocol::ProtocolSave("Работа: Режим работа");
 	bool result = true; // общий результат успешности цикла
 	AnsiString msg = "";
@@ -169,7 +170,7 @@ bool ThreadWork::OnlineCycle() {
 		// TExtFunction::ShowBigModalMessage(msg,clBlue);
 		TProtocol::ProtocolSave(msg);
 		return false;
-	}
+	} /*
 	timeFlag = CheckMufta(true, 60000);
 	if (!timeFlag) // если превышено время ожидания, то выходим
 	{
@@ -184,6 +185,7 @@ bool ThreadWork::OnlineCycle() {
 		TProtocol::ProtocolSave(msg);
 		return false;
 	}
+    */
 	// gen = new TGSPF052(dGlobalSettings,err);
 	if (solidGroup != NULL) {
 	   	delete solidGroup;
@@ -199,14 +201,16 @@ bool ThreadWork::OnlineCycle() {
 	SLD->oSENSORON->Set(true);
 	// Включаем ГСПФ
 	gspfStart = true;
-	GSPF->Start();
+  //	GSPF->Start();
 	Sleep(500);
 	// чтение ЛКард
+
 	while (true) {
 		if (solidGroup->Exec(0) == 2) {
 			break;
 		}
 	}
+
 	// Сбрасываем состояние ГП и останавливаем ГСПФ
 	solidGroup->ResetState();
 	GSPF->Stop();
@@ -225,6 +229,7 @@ bool ThreadWork::OnlineCycle() {
 	// PanelSG->Color = csg.color;
 	// Выводим на экран графики
 	Post(REDRAW);
+
 	// ------
 	if (Terminated) // если прервали
 	{

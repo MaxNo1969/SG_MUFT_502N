@@ -14,6 +14,7 @@ protected:
 	  bool exitLoop;
 public:
 	// изменено
+    bool exitFromLoop;
 	// __fastcall ThreadWork(TIniFile* _ini, AnsiString _SGFix, TLCardData* _lCardData);
 	__fastcall ThreadWork(bool _createSuspended, TLCardData* _lCardData,TGlobalSettings* _globalSettings, TGSPF052* _gen);
 	__fastcall ~ThreadWork(void);
