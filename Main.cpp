@@ -591,7 +591,7 @@ void TMainForm::Redraw() {
 	int tst = queryEtalon->RecordCount;
 	// serg
 	if (tst == 0) {
-		MessageDlg("Не найдены значения порогов! Проверьте наличие эталонов.", mtWarning, TMsgDlgButtons() << mbOK, NULL);
+		MessageDlg("Не найдены значения порогов! Проверьте наличие образцов.", mtWarning, TMsgDlgButtons() << mbOK, NULL);
 		return;
 	}
 	else {
