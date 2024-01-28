@@ -124,6 +124,8 @@ __published: // IDE-managed Components
 	TMenuItem *menuExtSet;
 	TTimer *timerCheck1730;
 	TMenuItem *N1;
+	TMenuItem *N2;
+	TButton *btnExit;
 
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
@@ -157,7 +159,7 @@ __published: // IDE-managed Components
 	void __fastcall cbTypeSizeChange(TObject *Sender);
 	void __fastcall menuExtSetClick(TObject *Sender);
 	void __fastcall FormCloseQuery(TObject *Sender, bool &CanClose);
-	void __fastcall N1Click(TObject *Sender);
+	void __fastcall ExitEvent(TObject *Sender);
 
 private: // User declarations
     bool options;
@@ -169,7 +171,9 @@ private: // User declarations
 	TLCardData* lCardData;
     AnsiString lastMsg;
 	// vector<TEdit*> eThresholds; // Поля для отображения порогов
+	public:
 	void ClearCharts(void); // очищает график
+    private:
 	void DrawOnChart(); // рисует на чарте
 	void DrawThresholds(); // рисует пороги на чарте
 	void UpdateStatus(AnsiString _text1, AnsiString _text2);
@@ -216,7 +220,7 @@ private: // User declarations
 	void Stop();
 	//Перерисовываем графики
 	void Redraw();
-
+   private:
 	//блокируем кнопки
 	void SetAbleButtons(bool _enable);
 	//код последней ошибки

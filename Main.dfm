@@ -135,8 +135,6 @@ object MainForm: TMainForm
       View3D = False
       Align = alClient
       TabOrder = 0
-      ExplicitLeft = 0
-      ExplicitTop = 3
       DefaultCanvas = 'TGDIPlusCanvas'
       PrintMargins = (
         15
@@ -246,6 +244,7 @@ object MainForm: TMainForm
     Height = 58
     Align = alTop
     TabOrder = 4
+    ExplicitTop = -6
     object cbTypeSize: TComboBox
       Left = 1
       Top = 1
@@ -302,6 +301,8 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 2
       OnClick = bStartClick
+      ExplicitLeft = 547
+      ExplicitTop = -2
     end
     object bCancel: TButton
       Left = 481
@@ -325,7 +326,7 @@ object MainForm: TMainForm
       Width = 399
       Height = 56
       Align = alRight
-      Caption = #1053#1086#1074#1099#1081' '#1101#1090#1072#1083#1086#1085
+      Caption = #1053#1086#1074#1099#1081' '#1086#1073#1088#1072#1079#1077#1094
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
@@ -365,6 +366,24 @@ object MainForm: TMainForm
         Text = #1042#1099#1073#1088#1072#1090#1100' '#1075#1088#1091#1087#1087#1091' '#1087#1088#1086#1095#1085#1086#1089#1090#1080
       end
     end
+    object btnExit: TButton
+      Left = 672
+      Top = 1
+      Width = 105
+      Height = 56
+      Align = alRight
+      Caption = #1042#1099#1093#1086#1076
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 5
+      OnClick = ExitEvent
+      ExplicitLeft = 668
+      ExplicitTop = -4
+    end
   end
   object MainMenu: TMainMenu
     Left = 736
@@ -388,7 +407,7 @@ object MainForm: TMainForm
         OnClick = menuTypeSizeClick
       end
       object menuEtalons: TMenuItem
-        Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1101#1090#1072#1083#1086#1085#1086#1074
+        Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1086#1073#1088#1072#1079#1094#1086#1074
         OnClick = menuEtalonsClick
       end
       object menuExtSet: TMenuItem
@@ -396,8 +415,10 @@ object MainForm: TMainForm
         OnClick = menuExtSetClick
       end
       object N1: TMenuItem
-        Caption = #1055#1072#1088#1086#1083#1100
-        OnClick = N1Click
+        Caption = #1056#1072#1073#1086#1090#1072' '#1089' '#1086#1073#1088#1072#1079#1094#1072#1084#1080
+        OnClick = ExitEvent
+      end
+      object N2: TMenuItem
       end
     end
     object N6: TMenuItem

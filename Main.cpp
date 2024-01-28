@@ -55,7 +55,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 	else {
 		//
 	}
-	PanelSG->Width = 180;
+	PanelSG->Width = 350;
 	lСard502 = new TLCard502(&mainGlobalSettings, lastError);
 	// serg
 	if (lastError < 0) {
@@ -344,7 +344,13 @@ void TMainForm::UpdateStatus(AnsiString _text1, AnsiString _text2) {
 
 // ---------------------------------------------------------------------------
 void TMainForm::ClearCharts(void) {
-	// SignalChart->SeriesList->Clear();
+	 int count = SignalChart->SeriesCount();
+	 for(int i = 0; i < count; ++i)
+	 {
+		  SignalChart->Series[i]->Clear();
+	 }
+	 PanelSG->Caption = "ИТОГ";
+	 PanelSG->Color = clBtnFace;
 }
 
 // ---------------------------------------------------------------------------
@@ -591,7 +597,7 @@ void TMainForm::Redraw() {
 	int tst = queryEtalon->RecordCount;
 	// serg
 	if (tst == 0) {
-		MessageDlg("Не найдены значения порогов! Проверьте наличие эталонов.", mtWarning, TMsgDlgButtons() << mbOK, NULL);
+		MessageDlg("Не найдены значения порогов! Проверьте наличие образцов.", mtWarning, TMsgDlgButtons() << mbOK, NULL);
 		return;
 	}
 	else {

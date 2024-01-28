@@ -258,7 +258,8 @@ int TLCardData::SearchOfZeroTransitionPeriod(int _sensNum)
 bool TLCardData::CheckMufta(int _sensNum)
 {
 	//мы нашли превышение уровня
-	bool flag = false;
+	int count = 0;
+	int const maxCounts = 3;
 	//количество кадров
 	int kadrsQuantity = vecMeasuresData[freqNum].vecSensorsData[0].size();
 	//отфильтруем
@@ -268,9 +269,12 @@ bool TLCardData::CheckMufta(int _sensNum)
 	for(int i = 0; i < kadrsQuantity; i++)
 	{
 		double val = vecMeasuresData[freqNum].vecSensorsData[_sensNum][i];
-		if(!flag && val > thresVal)
+		if(val > thresVal)
 		{
-			flag = true; //нашли превышение уровня
+			if(++count > maxCounts)
+			{
+				return true;
+			}
 //			AnsiString s="";
 //			s = "..\\..\\SavedResult\\";
 //			s += FormatDateTime("yyyy_mm_dd_hh_mm_ss_", Now());
@@ -279,10 +283,9 @@ bool TLCardData::CheckMufta(int _sensNum)
 //			TLog::SaveTxtVectDoubleFile(ExtractFilePath(Application->ExeName)+s
 //				,lCardData->vecMeasuresData[0].vecSensorsData[_sensNum]
 //				,lCardData->vecMeasuresData[0].vecSensorsData[_sensNum].size());
-			break;
 		}
 	}
-	return flag;
+	return false;
 }
 // ---------------------------------------------------------------------------
 vector<double> TLCardData::GetBarkValues(vector<int> &_Thresholds)

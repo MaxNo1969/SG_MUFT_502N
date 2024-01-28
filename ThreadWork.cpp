@@ -15,6 +15,7 @@
 #include "SignalListDef.h"
 #include "unSQLDbModule.h"
 #include "TypeSizeFrequencies.h"
+#include "Main.h"
 // #include <boost\ratio\ratio.hpp>
 // #include <chrono.hpp>
 // ---------------------------------------------------------------------------
@@ -158,7 +159,7 @@ bool ThreadWork::OnlineCycle() {
 	// Ждем муфту
 	bool timeFlag;
 	gspfStart = false;
-	timeFlag = CheckMufta(false, 60000);
+	timeFlag = CheckMufta(false, 60000 * 5);
 	if (!timeFlag) // если превышено время ожидания, то выходим
 	{
 		// проверяем наличие цепей питания
@@ -173,7 +174,7 @@ bool ThreadWork::OnlineCycle() {
 		return false;
 	}
 
-	 timeFlag = CheckMufta(true, 60000);
+	 timeFlag = CheckMufta(true, 60000 * 5);
 	 if (!timeFlag) // если превышено время ожидания, то выходим
 	 {
 	 // проверяем наличие цепей питания
@@ -337,13 +338,22 @@ void ThreadWork::SetSG(CSG _csg) {
 }
 
 // ---------------------------------------------------------------------------
+void __fastcall ThreadWork::MainRedraw()
+{
+	MainForm->ClearCharts();
+}
 // проверка наличия муфты. Возвращает true если за указанное время статус изменился на ожидаемый
 bool ThreadWork::CheckMufta(bool _waitStatus, int _waitTime) {
 	// Ждем муфту
+	int const maxCount = 9;
+    int counter = 0;
 	bool timeFlag = false;
 	DWORD StartTime = GetTickCount();
 	if (_waitStatus)
+	{
+ 		Synchronize(MainRedraw);
 		SetStext2("Поставьте муфту в датчик!");
+	}
 	else
 		SetStext2("Уберите муфту из датчика!");
 	Post(UPDATE_STATUS);
@@ -359,9 +369,28 @@ bool ThreadWork::CheckMufta(bool _waitStatus, int _waitTime) {
 		muftаSearch->ResetState();
 		bool result = muftаSearchData->CheckMufta
 			(thGlobalSettings->checkMuftaChannel);
-		if (result == _waitStatus) {
-			break;
+			///////////////////////////////////////
+		//if (result == _waitStatus) {
+		//	break;
+		//}
+
+		if(!result && !_waitStatus)
+		{
+			++counter;
+			if(counter >=maxCount)
+			{
+				break;
+			}
 		}
+		 if(result && !_waitStatus)
+		 {
+			 counter = 0;
+		 }
+		 if(result && _waitStatus)
+		 {
+             break;
+         }
+		///////////////////////////////////////
 		muftаSearchData->ClearSGM();
 		if (GetTickCount() - StartTime > _waitTime) {
 			timeFlag = true;

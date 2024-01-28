@@ -76,6 +76,7 @@ private:
 	void Finally();
 	void ErrFinally(AnsiString _msg, bool* _Collect, bool* _result);
 	void Post(WPARAM _w, LPARAM _l = 0);
+    void __fastcall MainRedraw();
 
 };
 // ---------------------------------------------------------------------------

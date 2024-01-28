@@ -1,7 +1,7 @@
 object fmEditEtalon: TfmEditEtalon
   Left = 0
   Top = 0
-  Caption = #1057#1054#1055' '#1087#1086' '#1084#1091#1092#1090#1072#1084
+  Caption = #1054#1073#1088#1072#1079#1094#1099' '#1087#1086' '#1084#1091#1092#1090#1072#1084
   ClientHeight = 510
   ClientWidth = 1125
   Color = clBtnFace
@@ -21,8 +21,10 @@ object fmEditEtalon: TfmEditEtalon
     Width = 593
     Height = 485
     Align = alLeft
-    Caption = #1069#1090#1072#1083#1086#1085
+    Caption = #1054#1073#1088#1072#1079#1077#1094
     TabOrder = 0
+    ExplicitLeft = -4
+    ExplicitTop = 28
     object navEtalon: TDBNavigator
       Left = 2
       Top = 458
@@ -90,7 +92,7 @@ object fmEditEtalon: TfmEditEtalon
     Width = 332
     Height = 485
     Align = alClient
-    Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1101#1090#1072#1083#1086#1085#1072
+    Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1086#1073#1088#1072#1079#1094#1072
     TabOrder = 1
     object navEtalonVal: TDBNavigator
       Left = 2
@@ -188,9 +190,11 @@ object fmEditEtalon: TfmEditEtalon
       Width = 112
       Height = 23
       Align = alLeft
-      Caption = #1055#1077#1088#1077#1089#1095#1077#1090' '#1101#1090#1072#1083#1086#1085#1072
+      Caption = #1055#1077#1088#1077#1089#1095#1077#1090' '#1086#1073#1088#1072#1079#1094#1072
       TabOrder = 2
       OnClick = bbtRecalcClick
+      ExplicitLeft = 345
+      ExplicitTop = -4
     end
     object bbtRecalcAll: TBitBtn
       Left = 463
