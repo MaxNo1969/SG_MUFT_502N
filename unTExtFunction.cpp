@@ -621,7 +621,7 @@ void TExtFunction::PrepareChartToTst(TChart *chart, int _countChLog,
 		chart->AddSeries(series);
 		// нафига нам ось в легенде
 		if (i < _countChLog) {
-			series->Title = "Вход АЦП: " + IntToStr(i);
+			series->Title = IntToStr(i);
 			series->ShowInLegend = true;
 		}
 		else {

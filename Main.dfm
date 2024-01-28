@@ -380,7 +380,7 @@ object MainForm: TMainForm
       Font.Style = []
       ParentFont = False
       TabOrder = 5
-      OnClick = ExitEvent
+      OnClick = btnExitClick
       ExplicitLeft = 668
       ExplicitTop = -4
     end
@@ -416,7 +416,6 @@ object MainForm: TMainForm
       end
       object N1: TMenuItem
         Caption = #1056#1072#1073#1086#1090#1072' '#1089' '#1086#1073#1088#1072#1079#1094#1072#1084#1080
-        OnClick = ExitEvent
       end
       object N2: TMenuItem
       end

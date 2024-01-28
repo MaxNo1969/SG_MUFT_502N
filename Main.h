@@ -159,7 +159,8 @@ __published: // IDE-managed Components
 	void __fastcall cbTypeSizeChange(TObject *Sender);
 	void __fastcall menuExtSetClick(TObject *Sender);
 	void __fastcall FormCloseQuery(TObject *Sender, bool &CanClose);
-	void __fastcall ExitEvent(TObject *Sender);
+	void __fastcall N1Click(TObject *Sender);
+	void __fastcall btnExitClick(TObject *Sender);
 
 private: // User declarations
     bool options;

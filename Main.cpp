@@ -1057,3 +1057,9 @@ void __fastcall TMainForm::N1Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TMainForm::btnExitClick(TObject *Sender)
+{
+	 Close();
+}
+//---------------------------------------------------------------------------
+
