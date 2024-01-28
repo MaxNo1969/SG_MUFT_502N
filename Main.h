@@ -124,8 +124,8 @@ __published: // IDE-managed Components
 	TMenuItem *menuExtSet;
 	TTimer *timerCheck1730;
 	TMenuItem *N1;
-	TMenuItem *N2;
 	TButton *btnExit;
+	TMenuItem *mnAbaut;
 
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
@@ -161,6 +161,7 @@ __published: // IDE-managed Components
 	void __fastcall FormCloseQuery(TObject *Sender, bool &CanClose);
 	void __fastcall N1Click(TObject *Sender);
 	void __fastcall btnExitClick(TObject *Sender);
+	void __fastcall mnAbautClick(TObject *Sender);
 
 private: // User declarations
     bool options;

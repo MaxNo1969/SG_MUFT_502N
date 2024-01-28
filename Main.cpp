@@ -22,6 +22,7 @@
 #include "InOutBits.h"
 #include "unPasswordForm.h"
 #include "Queries.h"
+#include "About.h"
 // -----------------------------------
 
 #pragma resource "*.dfm"
@@ -1060,6 +1061,14 @@ void __fastcall TMainForm::N1Click(TObject *Sender)
 void __fastcall TMainForm::btnExitClick(TObject *Sender)
 {
 	 Close();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::mnAbautClick(TObject *Sender)
+{
+   TAboutBox *a = new TAboutBox((TComponent *)Sender);
+   a->ShowModal();
+   a->Free();
 }
 //---------------------------------------------------------------------------
 

@@ -416,8 +416,7 @@ object MainForm: TMainForm
       end
       object N1: TMenuItem
         Caption = #1056#1072#1073#1086#1090#1072' '#1089' '#1086#1073#1088#1072#1079#1094#1072#1084#1080
-      end
-      object N2: TMenuItem
+        OnClick = N1Click
       end
     end
     object N6: TMenuItem
@@ -454,6 +453,10 @@ object MainForm: TMainForm
         Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
         OnClick = menuAboutClick
       end
+    end
+    object mnAbaut: TMenuItem
+      Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
+      OnClick = mnAbautClick
     end
   end
   object OpenDialog: TOpenDialog
