@@ -10,6 +10,5 @@ OutExe/
 **/__recovery
 **/*.lib
 
-/GP_MUFT_L502N.cbproj.local
-/GP_MUFT_L502N.stat
-/GP_MUFT_L502N.stat
+*.cbproj.local
+*.stat
