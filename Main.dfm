@@ -244,9 +244,8 @@ object MainForm: TMainForm
     Height = 58
     Align = alTop
     TabOrder = 4
-    ExplicitTop = -6
     object cbTypeSize: TComboBox
-      Left = 1
+      Left = 297
       Top = 1
       Width = 153
       Height = 37
@@ -267,9 +266,9 @@ object MainForm: TMainForm
       OnSelect = cbTypeSizeSelect
     end
     object cbSGGost: TComboBox
-      Left = 154
+      Left = 1
       Top = 1
-      Width = 327
+      Width = 296
       Height = 37
       Margins.Left = 0
       Margins.Top = 0
@@ -287,7 +286,7 @@ object MainForm: TMainForm
       OnSelect = cbSGGostSelect
     end
     object bStart: TButton
-      Left = 586
+      Left = 555
       Top = 1
       Width = 105
       Height = 56
@@ -301,11 +300,9 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 2
       OnClick = bStartClick
-      ExplicitLeft = 547
-      ExplicitTop = -2
     end
     object bCancel: TButton
-      Left = 481
+      Left = 450
       Top = 1
       Width = 105
       Height = 56
@@ -381,8 +378,6 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 5
       OnClick = btnExitClick
-      ExplicitLeft = 668
-      ExplicitTop = -4
     end
   end
   object MainMenu: TMainMenu
@@ -413,6 +408,11 @@ object MainForm: TMainForm
       object menuExtSet: TMenuItem
         Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1077' '#1085#1072#1089#1090#1088#1086#1081#1082#1080
         OnClick = menuExtSetClick
+      end
+      object menuGosts: TMenuItem
+        Caption = #1043#1054#1057#1058#1099
+        Visible = False
+        OnClick = menuGostsClick
       end
       object N1: TMenuItem
         Caption = #1056#1072#1073#1086#1090#1072' '#1089' '#1086#1073#1088#1072#1079#1094#1072#1084#1080
@@ -451,7 +451,6 @@ object MainForm: TMainForm
       Visible = False
       object menuAbout: TMenuItem
         Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
-        OnClick = menuAboutClick
       end
     end
     object mnAbaut: TMenuItem

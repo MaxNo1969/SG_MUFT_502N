@@ -7,8 +7,6 @@
 //---------------------
 #include "TLogCh502Params.h"
 #include "TMeasuresData.h"
-#define LCard502_INIT_SIZE 2000
-#define LCard502_ADD_PERCENT 50
 using namespace std;
 
 // ---------------------------------------------------------------------------
@@ -40,14 +38,15 @@ private:
 	int SearchOfZeroTransitionPeriod(int _sensNum);
 	//отфильтрованный вектор указанного канала
 	vector<double> vecZeroTransition;
+	//Настройки для фильтров и т.п.
+	TGlobalSettings *pSettings;
 public:
-	TLCardData(TLCard502* _lcard502,int _countFrequencies, int _chLogCount);
+	TLCardData(TLCard502* _lcard502,int _countFrequencies, int _chLogCount, TGlobalSettings* _pGSettings);
 	~TLCardData(void);
 
 	AnsiString lastError;
 
-	void LoadSettings(void);
-		//вектор измерений
+	//вектор измерений
 	vector<double> vecMeasure;
 	vector<TMeasuresData> vecMeasuresData;
 	void StartSGM(int _freqNum);
@@ -65,7 +64,7 @@ public:
 	double GetValueAvg5ByChName(AnsiString _name);
 	inline double GetBufTime()
 	{
-    	return BufTime;
+		return BufTime;
 	}
 	bool Read(int _freqNum);
 	//перессчитываем измерения и разделяем на датчики

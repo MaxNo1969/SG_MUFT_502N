@@ -44,7 +44,7 @@ Hantek1025G::Hantek1025G()
 		{
 			 FreeLibrary(hDLL);
 			 hDLL = NULL;
-			 MessageDlg("Генератор не инициализировался", mtError, TMsgDlgButtons() << mbOK, NULL);
+			 //MessageDlg("Генератор не инициализировался", mtError, TMsgDlgButtons() << mbOK, NULL);
 			 return;
 		}
 		DDSSetPowerOnOutput(m_iDevice, 0);

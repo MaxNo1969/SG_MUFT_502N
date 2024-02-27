@@ -1,38 +1,15 @@
 #pragma hdrstop
 #include "SignalList.h"
 #include "TProtocol.h"
-// #ifndef NO1730
-////#include "A1730_real.h"
-//#include "A1730_DAQNavi.h"
-// #else
-// #include "A1730_pseudo.h"
-// #endif
 #include "unSQLDbModule.h"
 #include "unTExtFunction.h"
 #pragma package(smart_init)
 
-// SignalList::SignalList(TIniFile* _ini)
-// список сигналов  адвантех 1730
 SignalList::SignalList(int &_err) {
-    dev = NULL;
+	dev = NULL;
 	cs = new TCriticalSection();
-	// period=_ini->ReadInteger("OtherSettings","SignalListPeriod",200);
-	period = SqlDBModule->GetIntFieldSQL("PCIE1730Params", "SignalListTimeout", NULL, 50, _err);
-	// AnsiString fname=_ini->ReadString("OtherSettings","SignalListFile","..\\..\\Settings\\IO_Management.ini");
-	// TIniFile *ini=new TIniFile(fname);
-	// int dev_num = SqlDBModule->GetIntFieldSQL("PCIE1730Params", "devnum",NULL);
-	// TStringList *sections=new TStringList();
-	// TStringList *keys=new TStringList();
-	// ini->ReadSections(sections);
-
-	// if(sections->Count==0)
-	// {
-	// AnsiString a="SignalList::SignalList: файл ";
-	// a+=fname;
-	// a+=" либо не существует, либо пуст";
-	// FATAL(a);
-	// }
-	// // вычитаем параметры сигналов
+	int err;
+	period = SqlDBModule->GetIntFieldSQL("PCIE1730Params", "SignalListTimeout", NULL, 50, err);
 	SqlDBModule->ADOQueryDB->Close();
 	AnsiString sql = "select rec_id,SignalListTimeout,Devnum,fName,fchNum,fIsIn,fHint,";
 	sql += "(CASE fIsIzol WHEN 1 THEN fchNum+16  ELSE fchNum+0 END) as realChNum";
@@ -50,57 +27,14 @@ SignalList::SignalList(int &_err) {
 		int chNum = SqlDBModule->ADOQueryDB->FieldByName("fchNum")->AsInteger;
 		// номер канала реальный с учетом типа канала изолированный или ТТЛ
 		int realChNum = SqlDBModule->ADOQueryDB->FieldByName("realChNum")->AsInteger;
-		// (AnsiString _name, bool _in, int _index, tagOnSet _OnSet,TCriticalSection* _cs, tagOnWait _OnWait
-		// CSignal(AnsiString _name, bool _in, int _index, tagOnSet _OnSet,CriticalSection* _cs, tagOnWait _OnWait
 		listSignal.Add(new CSignal(name, isIn, realChNum, WriteSignals, cs, Wait));
 		SqlDBModule->ADOQueryDB->Next();
 	}
 	SqlDBModule->ADOQueryDB->Close();
-	// --------------
-	// for(int i=0;i<sections->Count;i++)
-	// {
-	// AnsiString Sect=sections->Strings[i];
-	// bool in=Sect.SubString(8,3)=="IN_";
-	// if(Sect.SubString(1,5)=="ACard")
-	// {
-	// ini->ReadSection(Sect,keys);
-	// for(int j=0;j<keys->Count;j++)
-	// {
-	// AnsiString Key=keys->Strings[j];
-	// AnsiString MapKey=ini->ReadString(Sect,Key,"");
-	// S.Add(new CSignal(MapKey,in,keys->Strings[j].ToInt(),WriteSignals,cs,Wait));
-	// AnsiString a=MapKey;
-	// a+="[";
-	// a+=keys->Strings[j];
-	// a+="] ";
-	// if(in)
-	// a+="IN";
-	// else
-	// a+="OUT";
-	// TPr::pr(a);
-	// }
-	// }
-	// }
-	// delete keys;
-	// delete sections;
-	// delete ini;
-#ifndef NO1730
-	// dev=new A1730_real(_ini->ReadInteger("OtherSettings","SignalListDevice",0));
-	//int dd = SqlDBModule->GetIntFieldSQL("PCIE1730Params", "devnum", NULL, 0, _err);
-	//dev = new A1730_DAQNavi(dd, _err);
-	//if (_err < 0) {
-	//	TExtFunction::ShowBigModalMessage("Критическая ошибка! A1730_DAQNavi(dd,err)", clRed);
-	//	return;
-	//}
-	//else {
-		//
-	//}
-#else
-	// dev=new A1730_pseudo(_ini->ReadInteger("OtherSettings","SignalListDevice",0));
-#endif
 	IsAlarm = false;
 	wasAlarm = false;
 	AlarmList = new TStringList();
+    _err = 0;
 }
 
 __fastcall SignalList::~SignalList(void) {
@@ -127,12 +61,6 @@ void SignalList::FlushSignals(DWORD _buf, DWORD _tick) {
 		if (value != p->value) {
 			p->value = value;
 			p->last_changed = _tick;
-			// AnsiString a=p->name;
-			// if(p->value)
-			// a+="=true";
-			// else
-			// a+="=false";
-			// TPr::pr(a);
 		}
 	}
 }
@@ -211,7 +139,6 @@ CSignal* SignalList::Find(AnsiString _name, bool _in) {
 	a += _name;
 	a += " не найден";
 	TExtFunction::FATAL(a);
-	// return (NULL);
 }
 
 void SignalList::SetPeriod(int _period) {

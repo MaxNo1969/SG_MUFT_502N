@@ -155,7 +155,7 @@ void __fastcall TADCSettForm::bSaveClick(TObject *Sender) {
 	// SqlDBModule->UpdIntSql("L502Params","measures_frequency_kHz",sLÑard502->measures_frequency_kHz,NULL);
 	SqlDBModule->UpdFloatSql("SettingsGlobal", "checkMuftaLevel",
 		sLÑard502->globalSettings->checkMuftaLevel, NULL);
-	sLÑard502->LoadAndSetSettings(sLÑard502->vecLogChannels);
+	sLÑard502->LoadAndSetSettings();
 	FSSG->Save("SG");
 	// ini->WriteBool("Filters", "isFilterSG", FSSG->IsUsed());
 	SGFilter->setSettingsFromDB();

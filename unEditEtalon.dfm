@@ -23,8 +23,6 @@ object fmEditEtalon: TfmEditEtalon
     Align = alLeft
     Caption = #1054#1073#1088#1072#1079#1077#1094
     TabOrder = 0
-    ExplicitLeft = -4
-    ExplicitTop = 28
     object navEtalon: TDBNavigator
       Left = 2
       Top = 458
@@ -193,8 +191,6 @@ object fmEditEtalon: TfmEditEtalon
       Caption = #1055#1077#1088#1077#1089#1095#1077#1090' '#1086#1073#1088#1072#1079#1094#1072
       TabOrder = 2
       OnClick = bbtRecalcClick
-      ExplicitLeft = 345
-      ExplicitTop = -4
     end
     object bbtRecalcAll: TBitBtn
       Left = 463

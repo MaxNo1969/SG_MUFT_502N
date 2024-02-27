@@ -3,6 +3,8 @@
 #include <vcl.h>
 #pragma hdrstop
 #include <tchar.h>
+#include "unTExtFunction.h"
+
 //---------------------------------------------------------------------------
 USEFORM("SGSettings.cpp", SGSettForm);
 USEFORM("unSQLDbModule.cpp", SqlDBModule); /* TDataModule: File Type */
@@ -17,14 +19,14 @@ USEFORM("unFmMessage.cpp", fmMessage);
 USEFORM("unFmTypeSizes.cpp", fmTypeSizes);
 USEFORM("unExtSettings.cpp", fmExtSettings);
 USEFORM("unFmEditSettings.cpp", fmSettings);
+USEFORM("NewSG.cpp", NewSGForm);
 USEFORM("CardsFiles\A1730\uFSignalsState.cpp", FSignalsState);
 USEFORM("CardsFiles\A1730\uFRSigPanel.cpp", FRSigPanel); /* TFrame: File Type */
-USEFORM("ABOUT_NTC_NK_URAN.cpp", fmAboutBox);
+USEFORM("ABOUT.cpp", AboutBox);
 USEFORM("ADCSettings.cpp", ADCSettForm);
 USEFORM("ColorSettings.cpp", FormColor);
 USEFORM("Main.cpp", MainForm);
-USEFORM("NewSG.cpp", NewSGForm);
-USEFORM("ABOUT.cpp", AboutBox);
+USEFORM("FRGosts.cpp", FRSprGost);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
@@ -34,12 +36,12 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 		Application->MainFormOnTaskBar = true;
 		Application->CreateForm(__classid(TSqlDBModule), &SqlDBModule);
 		Application->CreateForm(__classid(TMainForm), &MainForm);
-		Application->CreateForm(__classid(TAboutBox), &AboutBox);
 		Application->Run();
 	}
 	catch (Exception &exception)
 	{
-		Application->ShowException(&exception);
+		//Application->ShowException(&exception);
+		TExtFunction::ShowBigModalMessage(exception.ToString(), clRed);
 	}
 	catch (...)
 	{
@@ -49,7 +51,8 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 		}
 		catch (Exception &exception)
 		{
-			Application->ShowException(&exception);
+			//Application->ShowException(&exception);
+            TExtFunction::ShowBigModalMessage(exception.ToString(), clRed);
 		}
 	}
 	return 0;

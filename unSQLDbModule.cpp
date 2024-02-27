@@ -3,7 +3,7 @@
 #pragma hdrstop
 
 #include "unSQLDbModule.h"
-#include "unTUtils.h"
+#include "TProtocol.h"
 // ---------------------------------------------------------------------------
 // #pragma package(smart_init)
 #pragma classgroup "Vcl.Controls.TControl"
@@ -17,6 +17,64 @@ __fastcall TSqlDBModule::TSqlDBModule(TComponent* Owner) : TDataModule(Owner) {
 	pathUDL = ExtractFilePath(Application->ExeName) + "connectSQL.udl";
 	ADOConnectionDB->ConnectionString = "FILE NAME=" + pathUDL;
 }
+
+bool TSqlDBModule::GetBoolParam(AnsiString _paramName)
+{
+	bool result = false;
+	AnsiString val;
+	try
+	{
+		if (!ADOConnectionDB->Connected) {
+			ADOConnectionDB->Open();
+		}
+		else {
+			ADOQueryDB->Close();
+		}
+		ADOQueryDB->SQL->Text = "select value from params where name='" + _paramName+"'";
+		ADOQueryDB->Open();
+		val = ADOQueryDB->FieldByName("value")->AsAnsiString;
+		if(val.Trim().LowerCase()=="true" || val.Trim().LowerCase()=="да")
+		  return true;
+		if(val.Trim().LowerCase()=="false" || val.Trim().LowerCase()=="нет")
+		  return false;
+		ADOQueryDB->Close();
+		return result;
+	}
+	catch (Exception *ex) {
+		//TLog::ErrFullSaveLog(ex);
+		TProtocol::ProtocolSave(ex->Message);
+		result = false;
+	}
+	return result;
+}
+
+AnsiString TSqlDBModule::GetStringParam(AnsiString _paramName)
+{
+	AnsiString result;
+	try
+	{
+		if (!ADOConnectionDB->Connected) {
+			ADOConnectionDB->Open();
+		}
+		else {
+			ADOQueryDB->Close();
+		}
+		ADOQueryDB->SQL->Text = "select value from params where name='" + _paramName+"'";
+		ADOQueryDB->Open();
+		result = ADOQueryDB->FieldByName("value")->AsAnsiString;
+		return result;
+		ADOQueryDB->Close();
+		return result;
+	}
+	catch (Exception *ex) {
+		//TLog::ErrFullSaveLog(ex);
+		TProtocol::ProtocolSave(ex->Message);
+		result = "";
+	}
+	return result;
+}
+
+
 
 // ---------------------------------------------------------------------------
 // функции для чтения полей из БД
@@ -43,7 +101,7 @@ int TSqlDBModule::GetIntFieldSQL(AnsiString _tableName, AnsiString _fieldName, A
 		err = 0;
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
+		TProtocol::ProtocolSave(ex->Message);
 		result = _default;
 		err = -1;
 	}
@@ -73,7 +131,7 @@ bool TSqlDBModule::GetBoolFieldSQL(AnsiString _tableName, AnsiString _fieldName,
 		// return result;
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
+		TProtocol::ProtocolSave(ex->Message);
 		result = _default;
 		err = -1;
 	}
@@ -103,7 +161,7 @@ AnsiString TSqlDBModule::GetStrFieldSQL(AnsiString _tableName, AnsiString _field
 		err = 0;
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
+		TProtocol::ProtocolSave(ex->Message);
 		result = _default;
 		err = -1;
 	}
@@ -132,7 +190,7 @@ double TSqlDBModule::GetFloatFieldSQL(AnsiString _tableName, AnsiString _fieldNa
 		err = 0;
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
+		TProtocol::ProtocolSave(ex->Message);
 		result = _default;
 		err = -1;
 	}
@@ -178,8 +236,7 @@ int TSqlDBModule::ExecStrSql(AnsiString _strSql) {
 	}
 	catch (Exception *ex) {
 		err = -2;
-		TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		TProtocol::ProtocolSave(ex->Message);
 	}
 	return err;
 }
@@ -201,8 +258,7 @@ int TSqlDBModule::SelectStrSql(AnsiString _strSql, int &_err) {
 	}
 	catch (Exception *ex) {
 		_err = -2;
-		TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		TProtocol::ProtocolSave(ex->Message);
 	}
 	return _err;
 }
@@ -227,8 +283,7 @@ int TSqlDBModule::GetIntFromSql(AnsiString _strSql) {
 	}
 	catch (Exception *ex) {
 		result = -2;
-		TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		TProtocol::ProtocolSave(ex->Message);
 	}
 	return result;
 }
@@ -248,7 +303,7 @@ int TSqlDBModule::FillComboBox(AnsiString _tableName, AnsiString _fieldName, TCo
 	}
 	ADOQueryDB->SQL->Text = "select rec_id," + _fieldName + " from " +
 		// _tableName + " order by rec_id";
-	   	_tableName + " order by " + _fieldName;
+		_tableName + " order by " + _fieldName;
 	ADOQueryDB->Open();
 	result = ADOQueryDB->RecordCount;
 	_comboBox->Clear();
@@ -315,8 +370,7 @@ int TSqlDBModule::UpdIntSql(AnsiString _tableName, AnsiString _fieldName, int _f
 	}
 	catch (Exception *ex) {
 		err = -2;
-		TLog::ErrFullSaveLog(ex);
-		MessageDlg("TSqlDBModule::UpdIntSql" + ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		TProtocol::ProtocolSave(ex->Message);
 	}
 	return err;
 }
@@ -343,8 +397,7 @@ int TSqlDBModule::UpdStrSql(AnsiString _tableName, AnsiString _fieldName, AnsiSt
 	}
 	catch (Exception *ex) {
 		err = -2;
-		TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		TProtocol::ProtocolSave(ex->Message);
 	}
 	return err;
 }
@@ -372,8 +425,7 @@ int TSqlDBModule::UpdFloatSql(AnsiString _tableName, AnsiString _fieldName, doub
 	}
 	catch (Exception *ex) {
 		err = -2;
-		TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		TProtocol::ProtocolSave(ex->Message);
 	}
 	return err;
 }
@@ -386,7 +438,6 @@ void __fastcall TSqlDBModule::ADOConnectionDBBeforeConnect(TObject *Sender) {
 		ADOConnectionDB->Cancel();
 		ADOConnectionDB->Close();
 		AnsiString msg = "Файл соединения с БД не найден!!!";
-		MessageDlg(msg, mtError, TMsgDlgButtons() << mbOK, NULL);
 	}
 }
 
@@ -412,7 +463,7 @@ double TSqlDBModule::GetFloatExtFieldSQL(TADOQuery *_query, AnsiString _tableNam
 		err = 0;
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
+		TProtocol::ProtocolSave(ex->Message);
 		result = _default;
 		err = -1;
 	}

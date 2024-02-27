@@ -9,7 +9,6 @@
 #include "Filters.h"
 // ---------------------------------------------------------------------------
 #include "unFmMessage.h"
-#include "ABOUT_NTC_NK_URAN.h"
 #include "unTExtFunction.h"
 #include "unDiagnost.h"
 #include "unFmEditSettings.h"
@@ -21,7 +20,7 @@
 #include "unExtSettings.h"
 #include "InOutBits.h"
 #include "unPasswordForm.h"
-#include "Queries.h"
+#include "FRGosts.h"
 #include "About.h"
 // -----------------------------------
 
@@ -31,56 +30,52 @@ TMainForm *MainForm;
 // ---------------------------------------------------------------------------
 __fastcall TMainForm::TMainForm(TComponent* Owner) : TForm(Owner) {
 
+	AnsiString applPath = ExtractFilePath(Application->ExeName);
+	mainGlobalSettings.applPath = applPath;
+	applPath += "connectSQL.udl";
+	//Проверим наличие файла
+	if(!FileExists(applPath,False))
+	{
+		AnsiString err = "Нет файла соединения с БД: " + applPath;
+		//TExtFunction::ShowBigModalMessage(err, clRed);
+		throw Exception(err);
+	}
+	mainGlobalSettings.LoadPRGSettings(applPath);
+	mainGlobalSettings.threadMsg = RegisterWindowMessage(L"Thread");
+	mainGlobalSettings.mainHandle = this->Handle;
+	if (mainGlobalSettings.threadMsg == 0)
+	{
+		throw Exception("TMainForm::TMainForm не могу зарегистрировать сообщение");
+	}
+
+	lСard502 = new TLCard502(&mainGlobalSettings, lastError);
+	TSFreqs = new TSFrequencies(mainGlobalSettings.indexCurrentTypeSize);
+	int freqCount = TSFreqs->Frequency.size();
+	lCardData = new TLCardData(lСard502, freqCount, 3, &mainGlobalSettings); // todo Временно 1 частота
+	lastError = 1;
+	SLD = new SignalListDef(&lastError);
+	SLD->dev = new InOutBits(lСard502);
+	SGFilter = new Filters("SG");
+	SGFilter->setSettingsFromDB();
 }
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::FormCreate(TObject *Sender) {
-
-    std::list<UnicodeString> l = GetGost();
-	for(std::list<UnicodeString>::iterator it = l.begin(); it != l.end(); ++it)
-	{
-		cbSGGost->Items->Add(*it);
-	}
-
-    options = false;
+	options = false;
 	lastError = 0;
-	AnsiString applPath = ExtractFilePath(Application->ExeName);
-	mainGlobalSettings.applPath = applPath;
-	applPath += "connectSQL.udl";
-	mainGlobalSettings.LoadPRGSettings(applPath);
-	mainGlobalSettings.threadMsg = RegisterWindowMessage(L"Thread");
-	mainGlobalSettings.mainHandle = this->Handle;
-	if (mainGlobalSettings.threadMsg == 0) {
-		Application->MessageBoxW(L"TMainForm::FormCreate: не могу зарегистрировать сообщение", L"Ошибка", MB_ICONERROR | MB_OK);
-	}
-	else {
-		//
-	}
 	PanelSG->Width = 350;
-	lСard502 = new TLCard502(&mainGlobalSettings, lastError);
-	// serg
-	if (lastError < 0) {
-		return;
-	}
-	else {
-		//
-	}
-	TSFreqs = new TSFrequencies(mainGlobalSettings.indexCurrentTypeSize);
-	int freqCount = TSFreqs->Frequency.size();
-	lCardData = new TLCardData(lСard502, freqCount, lСard502?lСard502->countLogCh:0); // todo Временно 1 частота
-	lastError = 1;
-	SLD = new SignalListDef(&lastError);
-	SLD->dev = new InOutBits(lСard502);
-	// serg
-	if (lastError < 0) {
-		return;
-	}
-	else {
-		//
-	}
-	SGFilter = new Filters("SG");
-	SGFilter->setSettingsFromDB();
 
+	// выбор ГОСТа
+	SqlDBModule->FillComboBox("GOST", "Name", cbSGGost);
+	for (int i = 0; i < cbSGGost->Items->Count; i++) {
+		if ((int)cbSGGost->Items->Objects[i] == mainGlobalSettings.indexCurrentSGGost) {
+			cbSGGost->ItemIndex = i;
+			break;
+		}
+		else {
+			cbSGGost->ItemIndex = -1;
+		}
+	}
 	// выбор типоразмера
 	SqlDBModule->FillComboBox("TypeSizes", "TSName", cbTypeSize);
 	for (int i = 0; i < cbTypeSize->Items->Count; i++) {
@@ -92,8 +87,13 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 			cbTypeSize->ItemIndex = -1;
 		}
 	}
-	// выбор ГОСТа
-	cbSGGost->ItemIndex = mainGlobalSettings.indexCurrentSGGost;
+
+	// Заполним список ГП
+	SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +
+		IntToStr(mainGlobalSettings.indexCurrentSGGost), cbxSG);
+	cbxSG->ItemIndex = -1;
+	queryEtalon->Connection = SqlDBModule->ADOConnectionDB;
+
 	TExtFunction::PrepareChartToTst(SignalChart, 3, 600, 2000);
 	SignalChart->Series[0]->Title += " Сигнал";
 	SignalChart->Series[1]->Title += " Напряжение";
@@ -101,20 +101,6 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 
 	ChangeColor();
 	TExtFunction::PrepareChartToTst(EtalonChart, 3, 10, 2000);
-	// Заполним список ГП
-	// SqlDBModule->FillComboBox("SolidGroups", "SGName", cbxSG);
-	SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +
-		IntToStr(mainGlobalSettings.indexCurrentSGGost), cbxSG);
-	cbxSG->ItemIndex = -1;
-	queryEtalon->Connection = SqlDBModule->ADOConnectionDB;
-
-	// на всякий случай сбросим сигналы при включении
-	SLD->oSENSORON->Set(false);
-	// включим слаботочку
-	SLD->oSENSLOWPOW->Set(true);
-#ifdef VIRT1730
-	SLD->iCC->Set(true);
-#endif
 	EnableWigits(false);
 }
 
@@ -169,8 +155,11 @@ void TMainForm::LoadFromFile(UnicodeString FileName) {
 		Redraw();
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString err;
+		const TVarRec args[] = {FileName,ex->ToString()};
+		err.Format("Ошибка загрузки файла \"%s\": %s",args,2);
+		TProtocol::ProtocolSave(err);
+		TExtFunction::ShowBigModalMessage(err, clRed);
 	}
 }
 
@@ -182,23 +171,27 @@ void TMainForm::SaveToFile(UnicodeString FileName) {
 		TLog::SaveChTxtDoubleFile(FileName, &(lCardData->vecMeasure[0]), arrSize, 3); //serg
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString err;
+		const TVarRec args[] = {FileName,ex->ToString()};
+		err.Format("Ошибка сохранения файла \"%s\": %s",args,2);
+		TProtocol::ProtocolSave(err);
+		TExtFunction::ShowBigModalMessage(err, clRed);
 	}
 }
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::menuSaveClick(TObject * Sender) {
 	int arrS = SignalChart->Series[0]->Count();
-	if (arrS > 0) {
-		//
+	if (arrS > 0)
+	{
+		if (SaveDialog->Execute())SaveToFile(SaveDialog->FileName);
 	}
-	else {
-		MessageDlg("Соберите данные!!!", mtError, TMsgDlgButtons() << mbOK, NULL);
-		return;
+	else
+	{
+		AnsiString err = "Нет данных для сохранения";
+		TProtocol::ProtocolSave(err);
+		TExtFunction::ShowBigModalMessage(err, clRed);
 	}
-	if (SaveDialog->Execute())
-		SaveToFile(SaveDialog->FileName);
 }
 
 // ---------------------------------------------------------------------------
@@ -209,9 +202,9 @@ void __fastcall TMainForm::menuOpenClick(TObject * Sender) {
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::WmDropFiles(TWMDropFiles & Message) {
-	// HDROP drop_handle = (HDROP)Message.Drop;
-	// wchar_t fName[MAXPATH];
-	// int filenum = DragQueryFile(drop_handle, -1, NULL, NULL);
+	//HDROP drop_handle = (HDROP)Message.Drop;
+	//wchar_t fName[MAXPATH];
+	//int filenum = DragQueryFile(drop_handle, -1, NULL, NULL);
 	// for (int i = 0; i < filenum; i++)
 	// {
 	// DragQueryFile(drop_handle, i, fName, MAXPATH);
@@ -440,21 +433,25 @@ void __fastcall TMainForm::bCancelClick(TObject * Sender) {
 // ---------------------------------------------------------------------------
 void TMainForm::Start() {
 	int err = 0;
-	try {
-		bool isControl = SLD->iCC->Get(); // проверяем цепи управления
-		if (isControl) {
+	try
+	{
+		if(!lСard502->CheckCardMsg())return;
+		// на всякий случай сбросим сигналы при включении
+		SLD->oSENSORON->Set(false);
+		if (SLD->iCC->Get())// проверяем цепи управления
+		{
 			SetAbleButtons(false);
-			if (threadWork != NULL) {
+			if (threadWork != NULL)
+			{
 				TProtocol::ProtocolSave("TMainForm::Start: работа уже запущена");
 				return;
 			}
 			inWork = true;
+			// включим слаботочку
 			SLD->oSENSLOWPOW->Set(true);
-			// SLD->oSENSORON->Set(true);//вкл 12В
-
-			// TProtocol::Clear();
-			// bCancel->Enabled = true; //пусть всегда будет доступна
-			if (threadWork != NULL) {
+			//SLD->oSENSORON->Set(true);//вкл 12В
+			if (threadWork != NULL)
+			{
 				threadWork->Terminate();
 				threadWork->WaitFor();
 				threadWork->TestExitLoop();
@@ -462,28 +459,30 @@ void TMainForm::Start() {
 				threadWork = NULL;
 				delete x;
 			}
-			if (!gen) {
-			   //	gen = new TGSPF052(&mainGlobalSettings, err);
+			if (!gen)
+			{
 			   gen = new TGSPF052();
 			   if(NULL == gen->hDLL)
-			   {
+				{
 					delete gen;
 					gen = NULL;
-                    SetAbleButtons(true);
+					SetAbleButtons(true);
 					inWork = false;
 					SLD->oSENSORON->Set(false);
 					SLD->LatchesTerminate();
+					TProtocol::ProtocolSave("Работа: не удалось запустить генератор");
+					TExtFunction::ShowBigModalMessage("Работа: не удалось запустить генератор", clBlue);
 					return;
-			   }
+				}
 			}
-			//gen->SetSampleFreq(mainGlobalSettings.discrFrecGSPF);
+
 			TSFrequencies TSFreqs = TSFrequencies(mainGlobalSettings.indexCurrentTypeSize);
-			if (TSFreqs.Frequency.size() <= 0) {
+			if (TSFreqs.Frequency.size() <= 0)
+			{
 				TProtocol::ProtocolSave("Работа: частот для этого типоразмера нет в базе данных");
 				TExtFunction::ShowBigModalMessage("Работа: частот для этого типоразмера нет в базе данных", clBlue);
 				return;
 			}
-		   //	gen->SetSampleFreq(mainGlobalSettings.discrFrecGSPF);
 			int f = TSFreqs.Frequency[0];
 			double a = TSFreqs.Amplitude[0];
 			gen->FormSignal(f, a);
@@ -717,20 +716,12 @@ void __fastcall TMainForm::menuTypeSizeClick(TObject * Sender) {
 }
 // ---------------------------------------------------------------------------
 
-void __fastcall TMainForm::menuAboutClick(TObject * Sender) {
-	fmAboutBox = new TfmAboutBox(this);
-	fmAboutBox->ShowModal();
-	fmAboutBox->Close();
-	fmAboutBox = NULL;
-}
-// ---------------------------------------------------------------------------
-
 void __fastcall TMainForm::menuSGSettClick(TObject * Sender) {
 
 	SGSettForm = new TSGSettForm(this, &mainGlobalSettings);
 	SGSettForm->ShowModal();
 	SGSettForm->Close();
-	SGSettForm = NULL;
+	delete SGSettForm;
 }
 
 // ---------------------------------------------------------------------------
@@ -747,6 +738,7 @@ void __fastcall TMainForm::PanelONClick(TObject * Sender) {
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::mnuCheckGenClick(TObject * Sender) {
+	if(!lСard502->CheckCardMsg())return;
 	fmDiagnost = new TfmDiagnost(this, &mainGlobalSettings, lСard502, lCardData);
 	// fmDiagnost->Show();
 	fmDiagnost->ShowModal();
@@ -756,8 +748,9 @@ void __fastcall TMainForm::mnuCheckGenClick(TObject * Sender) {
 // ---------------------------------------------------------------------------
 
 void __fastcall TMainForm::mnuCheck1730Click(TObject * Sender) {
-		FSignalsState = new TFSignalsState(this, &mainGlobalSettings, SLD);
-		FSignalsState->Show();
+	if(!lСard502->CheckCardMsg())return;
+	FSignalsState = new TFSignalsState(this, &mainGlobalSettings, SLD);
+	FSignalsState->Show();
 }
 
 // ---------------------------------------------------------------------------
@@ -777,7 +770,7 @@ void __fastcall TMainForm::cbTypeSizeSelect(TObject *Sender) {
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::cbSGGostSelect(TObject *Sender) {
 	int ind = cbSGGost->ItemIndex;
-	mainGlobalSettings.indexCurrentSGGost = ind;
+	mainGlobalSettings.indexCurrentSGGost = (int)cbSGGost->Items->Objects[ind];
 	SqlDBModule->UpdIntSql("SettingsGlobal", "indexCurrentSGGost", mainGlobalSettings.indexCurrentSGGost, NULL);
 	// serg
 	// SqlDBModule->FillComboBox("SolidGroups", "SGName", cbxSG);
@@ -985,7 +978,7 @@ void __fastcall TMainForm::SplitterResMoved(TObject *Sender) {
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::cbTypeSizeChange(TObject *Sender)
 {
-   	int ind = cbTypeSize->ItemIndex;
+	int ind = cbTypeSize->ItemIndex;
 	mainGlobalSettings.indexCurrentTypeSize = (int)cbTypeSize->Items->Objects[ind];
 	SqlDBModule->UpdIntSql("SettingsGlobal", "indexCurrentTypeSize", mainGlobalSettings.indexCurrentTypeSize, NULL);
 }
@@ -993,9 +986,9 @@ void __fastcall TMainForm::cbTypeSizeChange(TObject *Sender)
 
 void __fastcall TMainForm::menuExtSetClick(TObject *Sender)
 {
- fmExtSettings=new TfmExtSettings(this,&mainGlobalSettings);
- fmExtSettings->ShowModal();
- delete fmExtSettings;
+	fmExtSettings=new TfmExtSettings(this,&mainGlobalSettings);
+	fmExtSettings->ShowModal();
+	delete fmExtSettings;
 }
 //---------------------------------------------------------------------------
 
@@ -1038,6 +1031,7 @@ void TMainForm::EnableWigits(bool b)
 	menuTypeSize->Visible = b;
 	menuEtalons->Visible = b;
 	menuExtSet->Visible = b;
+    menuGosts->Visible = b;
 }
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::N1Click(TObject *Sender)
@@ -1069,6 +1063,13 @@ void __fastcall TMainForm::mnAbautClick(TObject *Sender)
    TAboutBox *a = new TAboutBox((TComponent *)Sender);
    a->ShowModal();
    a->Free();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::menuGostsClick(TObject *Sender)
+{
+	TFRSprGost *spr = new TFRSprGost(this);
+    spr->Show();
 }
 //---------------------------------------------------------------------------
 

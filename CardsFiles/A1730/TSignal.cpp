@@ -79,7 +79,7 @@ void CSignal::Set0(bool _value)
 	{
 		AnsiString a = "Signal::Set: попытка выставить входной сигнал: ";
 		a += name;
-		TExtFunction::FATAL(a);
+		TProtocol::ProtocolSave(a);
 	}
 	if(_value != value)
 		last_changed=GetTickCount();
@@ -99,15 +99,9 @@ void CSignal::Set(bool _value)
 {
 	if (in)
 	{
-#ifndef VIRT1730
 		AnsiString a = "Signal::Set: попытка выставить входной сигнал: ";
 		a += name;
-		TLog::SaveStrMsgLog(a);
-		TExtFunction::FATAL(a);
-#else
-		extern BYTE input[4];
-		input[0] |= 1<<index;
-#endif
+		TProtocol::ProtocolSave(a);
 	}
 	//serg
 	cs->Enter();
@@ -118,17 +112,11 @@ void CSignal::Set(bool _value)
 		value = _value;
 		OnSet();
 		AnsiString a= "Signal::Set: попытка выставить входной сигнал успешна: ";
-		TLog::SaveStrMsgLog(a);
+        a += name;
+		TProtocol::ProtocolSave(a);
 	}
 	//serg
 	cs->Leave();
-//	AnsiString a;
-//	a="*** * ";
-//	a+=name;
-//	a+=" set ";
-//	a+=value?"true ":"false ";
-//	a+=last_changed;
-//	TPr::pr(a);
 }
 
 bool CSignal::Wait(bool _value, DWORD _tm)
@@ -137,7 +125,7 @@ bool CSignal::Wait(bool _value, DWORD _tm)
 	{
 		AnsiString a = "Signal::Wait: попытка подождать выходной сигнал: ";
 		a += name;
-		TExtFunction::FATAL(a);
+		TProtocol::ProtocolSave(a);
 	}
 	if (Get() == _value)
 		return (true);

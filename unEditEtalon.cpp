@@ -32,22 +32,6 @@ void __fastcall TfmEditEtalon::gridEtalonEditButtonClick(TObject *Sender) {
 	// ShowMessage(DBGrid1.SelectedField.FieldName);
 }
 
-// ---------------------------------------------------------------------------
-int TfmEditEtalon::InsertEtalon(int _frequency, int _fenable,
-	AnsiString _address_file, int sg_id) {
-	int err = -99;
-	try {
-
-		err = 0;
-	}
-	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
-		err = -1;
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
-	}
-	return err;
-}
-
 void __fastcall TfmEditEtalon::UserWndProc(Messages::TMessage &_msg) {
 	// Проверяем на нажатие сочетания клавиш Ctrl+Alt+Enter
 	if (_msg.Msg == WM_HOTKEY) // сообщение наше
@@ -97,8 +81,8 @@ void __fastcall TfmEditEtalon::FormCreate(TObject *Sender) {
 	KeyPreview = true;
 	SqlDBModule->FillComboBox("TypeSizes", "TSName", cbTypeSize);
 	for (int i = 0; i < cbTypeSize->Items->Count; i++) {
-		if ((int)cbTypeSize->Items->Objects[i]
-			== pGlobalSettings->indexCurrentTypeSize) {
+		if ((int)cbTypeSize->Items->Objects[i] == pGlobalSettings->indexCurrentTypeSize)
+		{
 			cbTypeSize->ItemIndex = i;
 			break;
 		}
@@ -141,8 +125,6 @@ int TfmEditEtalon::FillGrids(int _indTsz, int _indGost) {
 		queryEtalon->Open();
 
 		queryEtalonVal->Close();
-		// AnsiString where = "rec_id=" + IntToStr(_indTsz);
-		// ledTipeSize->Text = SqlDBModule->GetStrFieldSQL("TypeSizes","TSName",where,"NONE!",err);
 		strSQL =
 			"SELECT rec_id as vrec_id, etalon_id,thres_val,barkgausen_val FROM EtalonValues where etalon_id = :rec_id order by thres_val";
 		queryEtalonVal->SQL->Text = strSQL;
@@ -173,14 +155,16 @@ int TfmEditEtalon::FillGrids(int _indTsz, int _indGost) {
 
 // ---------------------------------------------------------------------------
 void __fastcall TfmEditEtalon::cbTypeSizeSelect(TObject *Sender) {
-	int ind = cbTypeSize->ItemIndex;
-	FillGrids((int)cbTypeSize->Items->Objects[ind], cbSGGost->ItemIndex);
+	int indTsz = cbTypeSize->ItemIndex;
+	int indGost = cbSGGost->ItemIndex;
+	FillGrids((int)cbTypeSize->Items->Objects[indTsz], (int)cbSGGost->Items->Objects[indGost]);
 }
 
 // ---------------------------------------------------------------------------
 void __fastcall TfmEditEtalon::cbSGGostSelect(TObject *Sender) {
-	int ind = cbTypeSize->ItemIndex;
-	FillGrids((int)cbTypeSize->Items->Objects[ind], cbSGGost->ItemIndex);
+	int indTsz = cbTypeSize->ItemIndex;
+	int indGost = cbSGGost->ItemIndex;
+	FillGrids((int)cbTypeSize->Items->Objects[indTsz], (int)cbSGGost->Items->Objects[indGost]);
 }
 // ---------------------------------------------------------------------------
 

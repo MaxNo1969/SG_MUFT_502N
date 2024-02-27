@@ -70,7 +70,6 @@ private:	// User declarations
 
 public:		// User declarations
 	__fastcall TfmEditEtalon(TComponent* Owner,TGlobalSettings *_pGlobalSettings,TLCardData* lCardData);
-	int InsertEtalon( int _frequency,int _fenable, AnsiString _address_file, int sg_id);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfmEditEtalon *fmEditEtalon;

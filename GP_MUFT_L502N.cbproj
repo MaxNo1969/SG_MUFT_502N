@@ -110,12 +110,6 @@
             <DependentOn>ABOUT.h</DependentOn>
             <BuildOrder>65</BuildOrder>
         </CppCompile>
-        <CppCompile Include="ABOUT_NTC_NK_URAN.cpp">
-            <Form>fmAboutBox</Form>
-            <FormType>dfm</FormType>
-            <DependentOn>ABOUT_NTC_NK_URAN.h</DependentOn>
-            <BuildOrder>2</BuildOrder>
-        </CppCompile>
         <CppCompile Include="ADCSettings.cpp">
             <Form>ADCSettForm</Form>
             <DependentOn>ADCSettings.h</DependentOn>
@@ -219,6 +213,12 @@
             <DependentOn>Filters.h</DependentOn>
             <BuildOrder>40</BuildOrder>
         </CppCompile>
+        <CppCompile Include="FRGosts.cpp">
+            <Form>FRSprGost</Form>
+            <FormType>dfm</FormType>
+            <DependentOn>FRGosts.h</DependentOn>
+            <BuildOrder>64</BuildOrder>
+        </CppCompile>
         <CppCompile Include="GP_MUFT_L502N.cpp">
             <BuildOrder>0</BuildOrder>
         </CppCompile>
@@ -232,10 +232,6 @@
             <Form>NewSGForm</Form>
             <DependentOn>NewSG.h</DependentOn>
             <BuildOrder>51</BuildOrder>
-        </CppCompile>
-        <CppCompile Include="Queries.cpp">
-            <DependentOn>Queries.h</DependentOn>
-            <BuildOrder>64</BuildOrder>
         </CppCompile>
         <CppCompile Include="SGSettings.cpp">
             <Form>SGSettForm</Form>
@@ -400,14 +396,14 @@
         <FormResources Include="unFmTypeSizes.dfm"/>
         <FormResources Include="unExtSettings.dfm"/>
         <FormResources Include="unFmEditSettings.dfm"/>
+        <FormResources Include="NewSG.dfm"/>
         <FormResources Include="CardsFiles\A1730\uFSignalsState.dfm"/>
         <FormResources Include="CardsFiles\A1730\uFRSigPanel.dfm"/>
-        <FormResources Include="ABOUT_NTC_NK_URAN.dfm"/>
+        <FormResources Include="ABOUT.dfm"/>
         <FormResources Include="ADCSettings.dfm"/>
         <FormResources Include="ColorSettings.dfm"/>
         <FormResources Include="Main.dfm"/>
-        <FormResources Include="NewSG.dfm"/>
-        <FormResources Include="ABOUT.dfm"/>
+        <FormResources Include="FRGosts.dfm"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -439,8 +435,6 @@
                 <Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k240.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp240.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k240.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp240.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
                 <VersionInfo>
                     <VersionInfo Name="IncludeVerInfo">False</VersionInfo>
@@ -533,12 +527,27 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="ProjectiOSDeviceResourceRules">
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
                     <Platform Name="iOSDevice64">
                         <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <RemoteDir>Contents\MacOS</RemoteDir>
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
                     </Platform>
                     <Platform Name="iOSDevice32">
                         <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                    <Platform Name="iOSSimulator">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
                     </Platform>
                 </DeployClass>
                 <DeployClass Name="ProjectOSXResource">
@@ -917,27 +926,12 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
+                <DeployClass Name="ProjectiOSDeviceResourceRules">
                     <Platform Name="iOSDevice64">
                         <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <RemoteDir>Contents\MacOS</RemoteDir>
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
                     </Platform>
                     <Platform Name="iOSDevice32">
                         <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                    <Platform Name="iOSSimulator">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
                     </Platform>
                 </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>

@@ -126,6 +126,7 @@ __published: // IDE-managed Components
 	TMenuItem *N1;
 	TButton *btnExit;
 	TMenuItem *mnAbaut;
+	TMenuItem *menuGosts;
 
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
@@ -142,7 +143,6 @@ __published: // IDE-managed Components
 	void __fastcall ApplicationEventsMessage(tagMSG &Msg, bool &Handled);
 	void __fastcall menuSettingsClick(TObject *Sender);
 	void __fastcall menuTypeSizeClick(TObject *Sender);
-	void __fastcall menuAboutClick(TObject *Sender);
 	void __fastcall menuSGSettClick(TObject *Sender);
 	void __fastcall PanelSQClick(TObject *Sender);
 	void __fastcall PanelONClick(TObject *Sender);
@@ -162,6 +162,7 @@ __published: // IDE-managed Components
 	void __fastcall N1Click(TObject *Sender);
 	void __fastcall btnExitClick(TObject *Sender);
 	void __fastcall mnAbautClick(TObject *Sender);
+	void __fastcall menuGostsClick(TObject *Sender);
 
 private: // User declarations
     bool options;

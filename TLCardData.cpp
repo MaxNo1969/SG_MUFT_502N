@@ -15,9 +15,15 @@
 TLCardData* lCardData = NULL;
 
 // ---------------------------------------------------------------------------
-TLCardData::TLCardData(TLCard502* _lCard502,int _countFrequencies, int _chLogCount)
+TLCardData::TLCardData(TLCard502* _lCard502,int _countFrequencies, int _chLogCount, TGlobalSettings* _pGSettings)
 {
 	dtLcard502=_lCard502;
+	pSettings = _pGSettings;
+	if(!pSettings)
+	{
+		AnsiString err = "TLCardData::TLCardData: Не удалось получить доступ к параметрам";
+		throw Exception(err);
+	}
 	//общее количество измерений по муфте
 	countMeasures = _countFrequencies;
 //	vecMeasuresData.reserve(_countMeasures);
@@ -26,7 +32,9 @@ TLCardData::TLCardData(TLCard502* _lCard502,int _countFrequencies, int _chLogCou
 		vecMeasuresData.push_back(*mData);
 		delete mData;
 	}
-	LoadSettings();
+	IsSGStarted = false;
+	int err;
+	BufTime = SqlDBModule->GetFloatFieldSQL("SettingsGlobal","ReadBufTime",NULL, 1.0,err);
 	freqNum = 0;
 }
 
@@ -36,27 +44,6 @@ TLCardData::~TLCardData(void) {
 		//delete measuresData[i];
 	}
 	vecMeasuresData.clear();
-}
-// ---------------------------------------------------------------------------
-void TLCardData::LoadSettings(void) {
-int err=-99;
-	//Parameters.LoadSettings();
-//	GVoltPercent.resize(dtLcard502->vecLogChannels.size());
-//	int x=GVoltPercent.size();
-//	GZone.resize(dtLcard502->vecLogChannels.size());
-//  //диапазон каналов в ????
-//	double K[6] =
-//	{10, 20, 50, 100, 200, 500};
-//	//for (int i = 0; i < Parameters.GSensors; i++)
-//	for (int i = 0; i < dtLcard502->vecLogChannels.size(); i++)
-//	{
-//		GZone[i].reserve(LCard502_INIT_SIZE);
-//		//GVoltPercent[i] = K[Parameters.channels[i/* + Parameters.CSensors + Parameters.LSensors*/].range];
-//		GVoltPercent[i] = K[dtLcard502->vecLogChannels[i].adcRangeIndex];
-//	}
-	IsSGStarted = false;
-	BufTime = SqlDBModule->GetFloatFieldSQL("SettingsGlobal","ReadBufTime",NULL, 1.0,err);
-	// //lcard502.LoadSettings(&Parameters);
 }
 // ---------------------------------------------------------------------------
 void TLCardData::ClearSGM(void) {
@@ -70,15 +57,15 @@ void TLCardData::StartSGM(int _freqNum) {
 	freqNum = _freqNum;
 	if(freqNum == 0)
 		ClearSGM();
-    vecMeasure.clear();
-	dtLcard502->Start();
+	vecMeasure.clear();
+	if(dtLcard502)dtLcard502->Start();
 //	dtLcard502->StartRead();
 
 }
 // ---------------------------------------------------------------------------
 void TLCardData::StopSGM(void) {
 //	dtLcard502->StopRead();
-	dtLcard502->Stop();
+	if(dtLcard502)dtLcard502->Stop();
 	if (IsSGStarted)
 		ReCalcMeasuresToChannels();
 	IsSGStarted = false;
@@ -88,60 +75,68 @@ bool TLCardData::Read(int _freqNum) {
 	freqNum = _freqNum;
 	int size;
 	//читаем размером ??? -> size
-	double* buf = dtLcard502->Read(&size);
-	// double* raw_buf=lcard502->GetRawC();
-	if (size < 0)
+	double* buf;
+	if(dtLcard502)
 	{
-		lastError = dtLcard502->LastError;
-		return (false);
-	}
-	//int packet_size = /* CZone.size() + LZone.size()+ */ GZone.size();
-	//размер кадра - количество лог каналов
-//	int kadrSize = vecMeasuresData[_freqNum].vecSensorsData.size(); //GZone.size();
-//	int kadrs = size / kadrSize;
-
-	if (IsSGStarted) {
-		// for (int i = 0; i < size; i++) {
-		// vecMeasure.push_back(buf[i]);
-		// }
-		// serg - скорректируем как бы до 14 разрядов
-		for (int i = 0; i < size; i++) {
-			// serg
-			double dtmp = buf[i] / 730;
-			vecMeasure.push_back(buf[i] / 730);
+		buf = dtLcard502->Read(&size);
+		// double* raw_buf=lcard502->GetRawC();
+		if (size < 0)
+		{
+			lastError = dtLcard502->LastError;
+			return (false);
 		}
+		//int packet_size = /* CZone.size() + LZone.size()+ */ GZone.size();
+		//размер кадра - количество лог каналов
+		//	int kadrSize = vecMeasuresData[_freqNum].vecSensorsData.size(); //GZone.size();
+		//	int kadrs = size / kadrSize;
 
+		if (IsSGStarted)
+		{
+			// for (int i = 0; i < size; i++) {
+			// vecMeasure.push_back(buf[i]);
+			// }
+			// serg - скорректируем как бы до 14 разрядов
+			for (int i = 0; i < size; i++)
+			{
+				// serg
+				double dtmp = buf[i] / 730;
+				vecMeasure.push_back(buf[i] / 730);
+			}
 
+		}
+// Закоментированный кусок
+/*
+		unsigned int size_new = GZone[0].size() + packets;
+		if (GZone[0].capacity() < size_new)
+		{
+			 size_new *= (1 + LCard502_ADD_PERCENT / 100);
+			 for (unsigned int s = 0; s < GZone.size(); s++)
+			   GZone[s].reserve(size_new);
+		}
+		for (int p = 0; p < packets; p++)
+		{
+			double* pbuf = buf + p * packet_size;
+			for (unsigned int s = 0; s < GZone.size(); s++)
+				GZone[s].push_back(pbuf[s]*GVoltPercent[s]*10);
+		}
+*/
 
-//		unsigned int size_new = GZone[0].size() + packets;
-//		if (GZone[0].capacity() < size_new)
-//		{
-//			size_new *= (1 + LCard502_ADD_PERCENT / 100);
-//			for (unsigned int s = 0; s < GZone.size(); s++)
-//				GZone[s].reserve(size_new);
-//		}
-//		for (int p = 0; p < packets; p++)
-//		{
-//			double* pbuf = buf + p * packet_size;
-//			for (unsigned int s = 0; s < GZone.size(); s++)
-//				GZone[s].push_back(pbuf[s]*GVoltPercent[s]*10);
-//		}
-
-
-//----- Щукин: отложим разбитие по каналам до полного сбора
-//		unsigned int size_new = vecMeasuresData[_freqNum].vecSensorsData[0].size()+ kadrs;
-//		if (vecMeasuresData[_freqNum].vecSensorsData[0].capacity() < size_new)
-//		{
-//			size_new *= (1 + LCard502_ADD_PERCENT / 100);
-//			for (unsigned int s = 0; s < vecMeasuresData[_freqNum].vecSensorsData.size(); s++)
-//				vecMeasuresData[_freqNum].vecSensorsData[s].reserve(size_new);
-//		}
-//		for (int p = 0; p < kadrs; p++)
-//		{
-//			double* pbuf = buf + p * kadrSize;
-//			for (unsigned int s = 0; s < vecMeasuresData[_freqNum].vecSensorsData.size(); s++)
-//				vecMeasuresData[_freqNum].vecSensorsData[s].push_back(pbuf[s] /**GVoltPercent[s]*10*/ ); //todo
-//		}
+		//----- Щукин: отложим разбитие по каналам до полного сбора
+/*
+		unsigned int size_new = vecMeasuresData[_freqNum].vecSensorsData[0].size()+ kadrs;
+		if (vecMeasuresData[_freqNum].vecSensorsData[0].capacity() < size_new)
+		{
+			size_new *= (1 + LCard502_ADD_PERCENT / 100);
+			for (unsigned int s = 0; s < vecMeasuresData[_freqNum].vecSensorsData.size(); s++)
+				vecMeasuresData[_freqNum].vecSensorsData[s].reserve(size_new);
+		}
+		for (int p = 0; p < kadrs; p++)
+		{
+			double* pbuf = buf + p * kadrSize;
+			for (unsigned int s = 0; s < vecMeasuresData[_freqNum].vecSensorsData.size(); s++)
+				vecMeasuresData[_freqNum].vecSensorsData[s].push_back(pbuf[s] // GVoltPercent[s]*10 ); //todo
+		}
+*/
 	}
 	return (true);
 }
@@ -150,14 +145,16 @@ double TLCardData::GetValueAvg5ByChName(AnsiString _ch_name) {
 	// среднее арифметическое по 5-ти
 	int err = -100;
 	double ret = 0;
-	TLogCh502Params* Ch = dtLcard502->FindChByName(_ch_name);//, err);
-	for (int i = 0; i < 5; i++) {
-		// ret += lcard502->GetValue(lcard502->FindNumChByName(_ch_name));
-		// GetValueByChannel
+	if(dtLcard502)
+	{
+		TLogCh502Params* Ch = dtLcard502->FindChByName(_ch_name);//, err);
+		for (int i = 0; i < 5; i++)
+		{
+			// ret += lcard502->GetValue(lcard502->FindNumChByName(_ch_name));
+			// GetValueByChannel
 		ret += dtLcard502->GetValue(Ch->logicalChannel);
+		}
 	}
-	// TPr::pr(Parameters.FindByName(_ch_name)->ToString());
-	// TPr::pr(ret);
 	return (ret / 5);
 }
 // ---------------------------------------------------------------------------
@@ -275,14 +272,6 @@ bool TLCardData::CheckMufta(int _sensNum)
 			{
 				return true;
 			}
-//			AnsiString s="";
-//			s = "..\\..\\SavedResult\\";
-//			s += FormatDateTime("yyyy_mm_dd_hh_mm_ss_", Now());
-//			s += "checkMufta_";
-//			s += "FHZ.csv";
-//			TLog::SaveTxtVectDoubleFile(ExtractFilePath(Application->ExeName)+s
-//				,lCardData->vecMeasuresData[0].vecSensorsData[_sensNum]
-//				,lCardData->vecMeasuresData[0].vecSensorsData[_sensNum].size());
 		}
 	}
 	return false;
@@ -377,7 +366,7 @@ int TLCardData::ReCalcMeasuresToChannels()
 		vecZeroTransition.push_back(vecMeasure[j]);
 		j += ChanCount;
 	}
-	if (dtLcard502->globalSettings->isFilter) {
+	if (pSettings->isFilter) {
 	  SGFilter->toFilter(&(vecZeroTransition[0]),vecZeroTransition.size());
 	}else{
 	 //
@@ -415,7 +404,7 @@ int TLCardData::ReCalcMeasuresToChannels()
 			sens = 0;
 	}
 	//отфильтруем Баркгаузена
-	if(dtLcard502->globalSettings->isFilter)
+	if(pSettings->isFilter)
 	{
 		for (int i = 0;i < UncuttedData.size(); i++)
 		{

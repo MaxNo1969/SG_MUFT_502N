@@ -1,7 +1,7 @@
 #include <vcl.h>
 #pragma hdrstop
 #include "uTFProtocol.h"
-
+#include<System.IOUtils.hpp>
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 TFProtocol *FProtocol;
@@ -16,41 +16,28 @@ __fastcall TFProtocol::TFProtocol(TComponent* Owner, TCriticalSection* _cs): TFo
 void __fastcall TFProtocol::FormCreate(TObject *Sender)
 {
 	strList = new TStringList();
-	//TIniFile* ini = new TIniFile("..\\..\\Settings\\SettingsDefectoscope.ini");
-	//Timer1->Interval = ini->ReadInteger("Default", "ProtocolPeriod", 400);
 	Timer1->Interval=400;
-	//LoadFormPos(this, ini);
-	//cbProtocolToFile->Checked = ini->ReadBool("Default", "ProtocolToFile", 0);
-	int err=0;
-	cbProtocolToFile->Checked=(bool)SqlDBModule->GetIntFieldSQL("SettingsGlobal","ProtocolToFile",NULL,1,err);
-	//SqlDBModule->UpdIntSql
-	AnsiString FileName = "..\\..\\Protocols\\Protocol_" + FormatDateTime("yyyy_mm_dd", Now()) + ".txt";
+	cbProtocolToFile->Checked=SqlDBModule->GetBoolParam("ProtocolToFile");
+	AnsiString dir = SqlDBModule->GetStringParam("ProtocolDir");
+	AnsiString fn = dir + "\\" + FormatDateTime("yyyy_mm_dd", Now()) + ".txt";
 	//AnsiString FileName = pGlobalSettings->applPath+ "Protocols\\"+DateToStr(Date()) + ".txt";
-	file = fopen(FileName.c_str(), "a");
+	file = fopen(fn.c_str(), "a");
 	if (file == NULL)
 	{
-		CreateDirectoryW(L"..\\..\\Protocols", 0);
-		file = fopen(FileName.c_str(), "a");
+		TDirectory::CreateDirectory(dir.c_str());
+		file = fopen(fn.c_str(), "a");
 	}
-	// mProtocol->Perform(WM_VSCROLL,SB_BOTTOM,0);
 	strList->Add("Открыли протокол: " + TimeToStr(Time()));
-	//if (ini->ReadBool("OtherSettings", "ProtocolVisible", false))
-	if ((bool)SqlDBModule->GetIntFieldSQL("SettingsGlobal","ProtocolVisible",NULL,0,err)) {
-	  Show();
-	} else{
-		//
-    }
-
-	//delete ini;
-  //	Timer1->Enabled = true;
+	Visible = SqlDBModule->GetBoolParam("ProtocolVisible");
+	Timer1->Enabled = true;
 }
 
 // ---------------------------------------------------------------------------
 void __fastcall TFProtocol::FormDestroy(TObject *Sender)
 {
-  //	Timer1->Enabled = false;
+	Timer1->Enabled = false;
 	fclose(file);
-   	delete strList;
+	delete strList;
 }
 void TFProtocol::Save(void)
 {

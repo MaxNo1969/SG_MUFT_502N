@@ -55,6 +55,8 @@ public:		// User declarations
 	int UpdStrSql(AnsiString _tableName, AnsiString _fieldName, AnsiString _fieldValue, AnsiString _where);
 	int UpdFloatSql(AnsiString _tableName, AnsiString _fieldName, double _fieldValue, AnsiString _where);
 
+	bool GetBoolParam(AnsiString _paramName);
+    AnsiString GetStringParam(AnsiString _paramName);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TSqlDBModule *SqlDBModule;

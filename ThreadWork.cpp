@@ -359,7 +359,7 @@ bool ThreadWork::CheckMufta(bool _waitStatus, int _waitTime) {
 	Post(UPDATE_STATUS);
 
 	TLCardData * muft‡SearchData = new TLCardData(lCardData->GetLCard502(), 1,
-		lCardData->GetLCard502()->countLogCh);
+		lCardData->GetLCard502()->countLogCh, thGlobalSettings);
 	TSG* muft‡Search = new TSG(thGlobalSettings, muft‡SearchData);
 	while (true) {
 		while (true) {
