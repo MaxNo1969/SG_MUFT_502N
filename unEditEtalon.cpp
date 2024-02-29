@@ -4,6 +4,8 @@
 #pragma hdrstop
 
 #include "unEditEtalon.h"
+#include "TProtocol.h"
+#include "unTExtFunction.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -20,9 +22,9 @@ __fastcall TfmEditEtalon::TfmEditEtalon(TComponent* Owner,
 		err = 0;
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
-		err = -1;
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString errStr = "TfmEditEtalon::TfmEditEtalon:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
 	}
 }
 
@@ -144,11 +146,9 @@ int TfmEditEtalon::FillGrids(int _indTsz, int _indGost) {
 		err = 0;
 	}
 	catch (Exception *ex) {
-		// специально вставляю, чтобы ошибки в лог валились - он создается каждые сутки
-		// если будешь вставлять try { catch - получишь лог ошибок
-		TLog::ErrFullSaveLog(ex);
-		err = -1;
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString errStr = "TfmEditEtalon::FillGrids:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
 	}
 	return err;
 }
@@ -196,9 +196,9 @@ void __fastcall TfmEditEtalon::bbtShowEtClick(TObject *Sender) { //
 		fmViewMeasure->Close();
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
-		err = -1;
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString errStr = "TfmEditEtalon::bbtShowEtClick:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
 	}
 }
 // ---------------------------------------------------------------------------
@@ -249,9 +249,9 @@ void __fastcall TfmEditEtalon::bbtRecalcClick(TObject *Sender) {
 		queryEtalonVal->Open();
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
-		err = -1;
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString errStr = "TfmEditEtalon::bbtRecalcClick:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
 	}
 	// delete BarkValues;
 }

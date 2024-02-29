@@ -353,8 +353,6 @@ int TLCardData::ReCalcMeasuresToChannels()
 	{
 		AnsiString msg = "Не собрали данных!!! \n";
 		TProtocol::ProtocolSave("ReCalcMeasuresToChannels "+msg);
-		TLog::SaveStrMsgLog(msg);
-//		TExtFunction::ShowBigModalMessage(msg, clRed);
 		return -1;
 	}
 	int ChanCount = vecMeasuresData[freqNum].vecSensorsData.size();
@@ -382,9 +380,6 @@ int TLCardData::ReCalcMeasuresToChannels()
 	{
 		AnsiString msg = "Нулевой период у сигнала!!! \n";
 		TProtocol::ProtocolSave("ReCalcMeasuresToChannels "+msg);
-		TLog::SaveStrMsgLog(msg);
-//		TExtFunction::ShowBigModalMessage(msg, clRed);
-//		return -2;
 	}
 	//создадим временные вектора
 	vector< vector<double> > UncuttedData;

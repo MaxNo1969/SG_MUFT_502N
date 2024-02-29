@@ -4,11 +4,8 @@
 #pragma hdrstop
 
 #include "SGSettings.h"
-// #include "LCardData.h"
-// #include "uCDBS.h"
-// #include "uCExecSQL.h"
-// #include "uCSelect.h"
-// ---------------------------------------------------------------------------
+#include "TProtocol.h"
+#include "unTExtFunction.h"
 #pragma package(smart_init)
 
 #pragma resource "*.dfm"
@@ -73,8 +70,9 @@ void __fastcall TSGSettForm::FormCreate(TObject *Sender) {
 		BlockControls(false); // todo
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString errStr = "TSGSettForm::FormCreate:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
 	}
 }
 

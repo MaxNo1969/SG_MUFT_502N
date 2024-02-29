@@ -17,18 +17,20 @@ void __fastcall TFProtocol::FormCreate(TObject *Sender)
 {
 	strList = new TStringList();
 	Timer1->Interval=400;
-	cbProtocolToFile->Checked=SqlDBModule->GetBoolParam("ProtocolToFile");
-	AnsiString dir = SqlDBModule->GetStringParam("ProtocolDir");
-	AnsiString fn = dir + "\\" + FormatDateTime("yyyy_mm_dd", Now()) + ".txt";
-	//AnsiString FileName = pGlobalSettings->applPath+ "Protocols\\"+DateToStr(Date()) + ".txt";
+	//cbProtocolToFile->Checked=SqlDBModule->GetBoolParam("ProtocolToFile");
+	//AnsiString dir = SqlDBModule->GetStringParam("ProtocolDir");
+	//AnsiString fn = dir + "\\" + FormatDateTime("yyyy_mm_dd", Now()) + ".txt";
+	AnsiString fn = FormatDateTime("yyyy_mm_dd", Now()) + ".txt";
 	file = fopen(fn.c_str(), "a");
+	/*
 	if (file == NULL)
 	{
 		TDirectory::CreateDirectory(dir.c_str());
 		file = fopen(fn.c_str(), "a");
 	}
+    */
 	strList->Add("Открыли протокол: " + TimeToStr(Time()));
-	Visible = SqlDBModule->GetBoolParam("ProtocolVisible");
+	//Visible = SqlDBModule->GetBoolParam("ProtocolVisible");
 	Timer1->Enabled = true;
 }
 

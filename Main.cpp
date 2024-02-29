@@ -137,12 +137,6 @@ if (gen) {
 		delete TSFreqs;
 		TSFreqs = NULL;
 	}
-
-}
-
-// ---------------------------------------------------------------------------
-void __fastcall TMainForm::MenuProtocolClick(TObject * Sender) {
-	TProtocol::Show();
 }
 
 // ---------------------------------------------------------------------------
@@ -432,10 +426,13 @@ void __fastcall TMainForm::bCancelClick(TObject * Sender) {
 
 // ---------------------------------------------------------------------------
 void TMainForm::Start() {
-	int err = 0;
 	try
 	{
-		if(!lСard502->CheckCardMsg())return;
+		if(!lСard502 || !lСard502->handle)
+		{
+			 TExtFunction::ShowBigModalMessage("Платы LCard502 не найдено !", clRed);
+			 return;
+		}
 		// на всякий случай сбросим сигналы при включении
 		SLD->oSENSORON->Set(false);
 		if (SLD->iCC->Get())// проверяем цепи управления
@@ -486,6 +483,7 @@ void TMainForm::Start() {
 			int f = TSFreqs.Frequency[0];
 			double a = TSFreqs.Amplitude[0];
 			gen->FormSignal(f, a);
+            TProtocol::ProtocolSave("Запускаем работу");
 			threadWork = new ThreadWork(true, lCardData, &mainGlobalSettings, gen);
 			SLD->SetAlarm(true);
 		}
@@ -498,8 +496,9 @@ void TMainForm::Start() {
 
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString errStr = "TMainForm::Start:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
 	}
 }
 
@@ -738,7 +737,11 @@ void __fastcall TMainForm::PanelONClick(TObject * Sender) {
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::mnuCheckGenClick(TObject * Sender) {
-	if(!lСard502->CheckCardMsg())return;
+	if(!lСard502 || !lСard502->handle)
+	{
+		 TExtFunction::ShowBigModalMessage("Платы LCard502 не найдено !", clRed);
+		 return;
+	}
 	fmDiagnost = new TfmDiagnost(this, &mainGlobalSettings, lСard502, lCardData);
 	// fmDiagnost->Show();
 	fmDiagnost->ShowModal();
@@ -748,7 +751,11 @@ void __fastcall TMainForm::mnuCheckGenClick(TObject * Sender) {
 // ---------------------------------------------------------------------------
 
 void __fastcall TMainForm::mnuCheck1730Click(TObject * Sender) {
-	if(!lСard502->CheckCardMsg())return;
+	if(!lСard502 || !lСard502->handle)
+	{
+		 TExtFunction::ShowBigModalMessage("Платы LCard502 не найдено !", clRed);
+		 return;
+	}
 	FSignalsState = new TFSignalsState(this, &mainGlobalSettings, SLD);
 	FSignalsState->Show();
 }
@@ -894,7 +901,7 @@ void __fastcall TMainForm::bbtCreateEtalonClick(TObject *Sender) {
 		queryEtalon->Open();
 		queryEtalon->First();
 		int ii = 0;
-		for (int i = 0; i < Thresholds.size(); i++) {
+		for (unsigned int i = 0; i < Thresholds.size(); i++) {
 			strCmdSql = "UPDATE EtalonValues SET barkgausen_val = :pbarkgausen_val";
 			// cmdEtalonVal->Parameters->ParamByName("pbarkgausen_val")->Value = 222;
 			// double tst = BarkValues[i];
@@ -913,7 +920,7 @@ void __fastcall TMainForm::bbtCreateEtalonClick(TObject *Sender) {
 		int arrSize = lCardData->vecMeasuresData[freqNum].vecSensorsData[0].size()*3;
 		//int arrSize = lCardData->vecMeasure.size();
 		vector<double> forSave;
-		for(int i = 0; i<lCardData->vecMeasuresData[0].vecSensorsData[0].size();i++)
+		for(unsigned int i = 0; i<lCardData->vecMeasuresData[0].vecSensorsData[0].size();i++)
 		{
 		   forSave.push_back(lCardData->vecMeasuresData[freqNum].vecSensorsData[0][i]);
 		   forSave.push_back(lCardData->vecMeasuresData[freqNum].vecSensorsData[1][i]);
@@ -929,8 +936,9 @@ void __fastcall TMainForm::bbtCreateEtalonClick(TObject *Sender) {
 
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString errStr = "TMainForm::Start:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
 	}
 }
 
@@ -1072,4 +1080,11 @@ void __fastcall TMainForm::menuGostsClick(TObject *Sender)
     spr->Show();
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
+{
+    	Action = caFree;
+}
+//---------------------------------------------------------------------------
+
 

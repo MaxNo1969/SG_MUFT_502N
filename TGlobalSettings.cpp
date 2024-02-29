@@ -7,6 +7,8 @@
 // ---------------------------------------------------------------------------
 #include "unSQLDbModule.h"
 #include "unTUtils.h"
+#include "TProtocol.h"
+#include "unTExtFunction.h"
 
 // #pragma package(smart_init)
 
@@ -83,8 +85,9 @@ int TGlobalSettings::LoadPRGSettings(AnsiString _fullPathNameUDL) {
 	}
 	catch (Exception *ex) {
 		err = -2;
-		TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString errStr = "TGlobalSettings::LoadPRGSettings:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
 	}
 	return err;
 }

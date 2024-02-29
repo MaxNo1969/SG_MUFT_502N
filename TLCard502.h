@@ -120,7 +120,7 @@ public:
 	int FindPosByName(AnsiString _name);
 	// заполним вектор каналов
 	bool loadChannels();
-   	bool CheckCard();
+   	bool CheckCard(t_x502_devrec* x502_item);
 	bool CheckCardMsg();
 
 

@@ -130,7 +130,6 @@ __published: // IDE-managed Components
 
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
-	void __fastcall MenuProtocolClick(TObject *Sender);
 	void __fastcall menuSaveClick(TObject *Sender);
 	void __fastcall menuOpenClick(TObject *Sender); // открывает муфту
 	void __fastcall SignalChartClick(TObject *Sender);
@@ -163,6 +162,7 @@ __published: // IDE-managed Components
 	void __fastcall btnExitClick(TObject *Sender);
 	void __fastcall mnAbautClick(TObject *Sender);
 	void __fastcall menuGostsClick(TObject *Sender);
+	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 
 private: // User declarations
     bool options;

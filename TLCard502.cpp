@@ -19,13 +19,13 @@ TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr)
 		rawi = new unsigned int[raw_size];
 		raw = new double[raw_size];
 		rawc = new double[raw_size];
+		t_x502_devrec x502_item;
 		//Проверим есть ли плата в системе
-		if(CheckCard())
+		if(CheckCard(&x502_item))
 		{
 			//Если есть - получаем дескриптор и открываем плату
 			handle = X502_Create();
-			t_x502_devrec x502_item;
-			int32_t err = X502_OpenByDevRecord(handle, &x502_item);
+			int err = X502_OpenByDevRecord(handle, &x502_item);
 			if (X502_ERR_OK != err)
 			{
 				AnsiString mess = "Ошибка установления связи с модулем ";
@@ -51,9 +51,9 @@ TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr)
 
 	}
 	catch (Exception *ex) {
-		 TLog::ErrFullSaveLog(ex);
-		_codeErr=-55;
+		TProtocol::ProtocolSave(ex->Message);
 		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		LFATAL(ex->Message,1);
 		throw &ex;
 	}
 }
@@ -87,12 +87,12 @@ bool TLCard502::loadChannels()
 		}
 		SqlDBModule->ADOQueryDB->Close();
 		countLogCh = vecLogChannels.size();
+		return true;
 }
 
-bool TLCard502::CheckCard()
+bool TLCard502::CheckCard(t_x502_devrec* px502_item)
 {
-	t_x502_devrec x502_item;
-	int32_t res = E502_UsbGetDevRecordsList(&x502_item, 1, 0, NULL);
+	int32_t res = E502_UsbGetDevRecordsList(px502_item, 1, 0, NULL);
 	if (!res)
 	{
 		return false;
@@ -214,8 +214,12 @@ void TLCard502::LoadAndSetSettings()
 			if(handle)
 			{
 				int res = X502_SetLChannel(handle, i,logicalChannel,collectedMode,adcRangeIndex, 0);
-				AnsiString strErr = "Ошибка при установке канала "+vecLogChannels[z].chName;
-				TProtocol::ProtocolSave(strErr);
+				if(res != X502_ERR_OK)
+				{
+					AnsiString strErr = "Ошибка при установке канала "+vecLogChannels[z].chName+": ";
+					strErr = strErr+X502_GetErrorString(res);
+					TProtocol::ProtocolSave(strErr);
+				}
 			}
 			break;
 		}

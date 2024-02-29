@@ -4,58 +4,23 @@
 #include "Main.h"
 // ---------------------------------------------------------------------------
 //#pragma package(smart_init)
-
-TProtocol* TProtocol::Instance=NULL;
-TProtocol::TProtocol()
-{
-	cs = new TCriticalSection();
-	FProtocol = new TFProtocol(NULL, cs);//(MainForm,cs);
-}
-
-TProtocol::~TProtocol()
-{
-	//FProtocol->Save();
-   //	delete FProtocol;
-  //	delete cs;
-}
+FILE* TProtocol::f = NULL;
 
 void TProtocol::ProtocolSave(AnsiString _msg)
 {
-	if (Instance == NULL)
-		Instance = new TProtocol();
-	Instance->cs->Enter();
+	if(f == NULL)
 	{
-		Instance->FProtocol->Add(_msg);
-	} Instance->cs->Leave();
-}
-
-void TProtocol::Clear(void)
-{
-	if (Instance != NULL)
-		Instance->cs->Enter();
+		f = fopen("protocol.txt","a");
+	}
+	if(f)
 	{
-		Instance->FProtocol->mProtocol->Clear();
-		Instance->FProtocol->mProtocol->Lines->Clear();
-	} Instance->cs->Leave();
-}
-
-void TProtocol::Dispose(void)
-{
-	if (Instance != NULL)
-	{
-		delete Instance;
-		Instance = NULL;
+		TDateTime currentDT;
+    	AnsiString strCurrentDT = FormatDateTime("yyyy.mm.dd hh:mm:ss", currentDT.CurrentDateTime());
+		strCurrentDT = strCurrentDT + " ;" + _msg + "\n";
+		fputs(strCurrentDT.c_str(),f);
+		fflush(f);
 	}
 }
 
-void TProtocol::Show(void)
-{
-	if (Instance == NULL)
-		Instance = new TProtocol();
-	Instance->cs->Enter();
-	{
-		Instance->FProtocol->Show();
-	} Instance->cs->Leave();
-}
 
 

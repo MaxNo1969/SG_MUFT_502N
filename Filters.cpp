@@ -20,7 +20,7 @@ Filters::Filters(AnsiString _type) {
 
 		if (!dllInstance) {
 			String strError = L"Не удалось загрузить библиотеку фильтров";
-			MessageBox(NULL, strError.w_str(), L"Ошибка", MB_ICONERROR | MB_OK);
+			TExtFunction::FATAL("Не удалось загрузить библиотеку фильтров");
 		}
 		else {
 			filter_chebyshev = (_ChebyshevI) GetProcAddress(dllInstance,
@@ -33,9 +33,7 @@ Filters::Filters(AnsiString _type) {
 		}
 	}
 	catch (Exception *ex) {
-		// err = -2;
-		// TLog::ErrFullSaveLog(ex);
-		// MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		TProtocol::ProtocolSave("Filters::Filters: "+ex->Message);
 		TExtFunction::FATAL(ex->Message);
 	}
 }

@@ -6,6 +6,7 @@
 #include "unDiagnost.h"
 #include "TGSPF052.h"
 #include "unTExtFunction.h"
+#include "TProtocol.h"
 // #include "unSQLDbModule.h"
 #include "unTUtils.h"
 #include "TSG.h"
@@ -174,8 +175,9 @@ void __fastcall TfmDiagnost::btnStartGenClick(TObject *Sender) {
 		}
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString errStr = "TfmDiagnost::btnStartGenClick:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
 	}
 }
 
@@ -220,7 +222,9 @@ void __fastcall TfmDiagnost::btnStopGenClick(TObject *Sender) {
 		BlockControl(false);
 	}
 	catch (Exception *ex) {
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString errStr = "TfmDiagnost::btnStopGenClick:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
 	}
 }
 
@@ -329,14 +333,16 @@ void __fastcall TfmDiagnost::btnStartSerClick(TObject *Sender) {
 
 		}
 		else {
-			msg = "Нет сигнала цепей управления!!! \n";
-			TExtFunction::ShowBigModalMessage(msg, clRed);
+			AnsiString errStr = "Нет сигнала цепей управления!!!";
+			TProtocol::ProtocolSave(errStr);
+			TExtFunction::ShowBigModalMessage(errStr, clRed);
 			return;
 		}
 	}
 	catch (Exception *ex) {
-		// TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+			AnsiString errStr = "TfmDiagnost::btnStartSerClick:"+ex->Message;
+			TProtocol::ProtocolSave(errStr);
+			TExtFunction::ShowBigModalMessage(errStr, clRed);
 	}
 }
 
@@ -383,7 +389,7 @@ void __fastcall TfmDiagnost::FormCreate(TObject *Sender) {
 	// lbeStepCountGSPF052->Text =IntToStr(SqlDBModule->GetIntFieldSQL("GSPF052Params","count(*) as F1","isUsed=1", 0,err));
 	if (!gen) {
 		gen = new TGSPF052();//(pGlobalSettings, err);
-        if(NULL == gen->hDLL)
+		if(NULL == gen->hDLL)
 			   {
 					delete gen;
 					gen = NULL;
@@ -436,8 +442,9 @@ void __fastcall TfmDiagnost::ApplicationEventsMessage(tagMSG &Msg,
 		}
 	}
 	catch (Exception *ex) {
-		// TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+			AnsiString errStr = "TfmDiagnost::ApplicationEventsMessage:"+ex->Message;
+			TProtocol::ProtocolSave(errStr);
+			TExtFunction::ShowBigModalMessage(errStr, clRed);
 	}
 	// if (Msg.wParam == 33) { // идентификатор наш
 }
@@ -640,8 +647,9 @@ void __fastcall TfmDiagnost::bbtCreateEtalonClick(TObject *Sender) {
 		}
 	}
 	catch (Exception *ex) {
-		// TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+			AnsiString errStr = "TfmDiagnost::bbtCreateEtalonClick:"+ex->Message;
+			TProtocol::ProtocolSave(errStr);
+			TExtFunction::ShowBigModalMessage(errStr, clRed);
 	}
 }
 

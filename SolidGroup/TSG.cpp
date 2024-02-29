@@ -134,12 +134,9 @@ CSG TSG::GetSG()
 	ret.group_id = element;
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
-		//AnsiString msg
-		//programSettings.colorMSG = programSettings.colorBrak;
-		//TExtFunction::UpdateStatusBar(programSettings.gsStatusBar, strStatus, _msg, programSettings.colorMSG);
-		//TExtFunction::UpdateLabelStatus(programSettings.gsStatusLabel, strStatus, _msg, programSettings.colorMSG);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString errStr = "TSG::SetSG:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
 		}
 	return (ret);
 }

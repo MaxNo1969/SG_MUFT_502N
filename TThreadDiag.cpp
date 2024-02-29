@@ -6,6 +6,7 @@
 #include "TThreadDiag.h"
 #include "unTUtils.h"
 #include "unTExtFunction.h"
+#include "TProtocol.h"
 #pragma package(smart_init)
 // ---------------------------------------------------------------------------
 
@@ -78,11 +79,12 @@ void __fastcall TThDiag::Execute() {
 		PostMessage(Application->Handle, WM_USER + 99, 33, 0);
 	}
 	catch (Exception *ex) {
-		TLog::ErrFullSaveLog(ex);
+		AnsiString errStr = "TThDiag error:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
 		this->Terminate();
 		this->WaitFor();
 		PostMessage(Application->Handle, WM_USER + 99, 33, 0);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+        TExtFunction::ShowBigModalMessage(errStr, clRed);
 	}
 }
 // ---------------------------------------------------------------------------

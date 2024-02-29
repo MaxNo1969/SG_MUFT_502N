@@ -16,6 +16,7 @@ object MainForm: TMainForm
   Position = poDefault
   WindowState = wsMaximized
   OnActivate = FormActivate
+  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -424,7 +425,6 @@ object MainForm: TMainForm
       object menuProtocol: TMenuItem
         Caption = #1055#1088#1086#1090#1086#1082#1086#1083
         Visible = False
-        OnClick = MenuProtocolClick
       end
       object mnuCheckGen: TMenuItem
         Caption = #1055#1088#1086#1074#1077#1088#1082#1072' '#1075#1077#1085#1077#1088#1072#1090#1086#1088#1072

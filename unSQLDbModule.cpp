@@ -4,6 +4,7 @@
 
 #include "unSQLDbModule.h"
 #include "TProtocol.h"
+#include "unTExtFunction.h"
 // ---------------------------------------------------------------------------
 // #pragma package(smart_init)
 #pragma classgroup "Vcl.Controls.TControl"
@@ -41,8 +42,9 @@ bool TSqlDBModule::GetBoolParam(AnsiString _paramName)
 		return result;
 	}
 	catch (Exception *ex) {
-		//TLog::ErrFullSaveLog(ex);
-		TProtocol::ProtocolSave(ex->Message);
+		AnsiString errStr = "TSqlDBModule::GetBoolParam:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
 		result = false;
 	}
 	return result;
@@ -67,8 +69,9 @@ AnsiString TSqlDBModule::GetStringParam(AnsiString _paramName)
 		return result;
 	}
 	catch (Exception *ex) {
-		//TLog::ErrFullSaveLog(ex);
-		TProtocol::ProtocolSave(ex->Message);
+		AnsiString errStr = "TSqlDBModule::GetStringParam:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
 		result = "";
 	}
 	return result;
