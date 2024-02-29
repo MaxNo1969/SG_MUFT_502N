@@ -1,9 +1,9 @@
-object FRSprGost: TFRSprGost
+object FREtalons: TFREtalons
   Left = 0
   Top = 0
-  Caption = #1043#1054#1057#1058#1099
-  ClientHeight = 466
-  ClientWidth = 685
+  Caption = #1054#1073#1088#1072#1079#1094#1099
+  ClientHeight = 667
+  ClientWidth = 1038
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,19 +11,35 @@ object FRSprGost: TFRSprGost
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Visible = True
   OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
+  object grid: TDBGrid
+    Left = 0
+    Top = 0
+    Width = 1038
+    Height = 626
+    Align = alClient
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    ReadOnly = True
+    TabOrder = 0
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+  end
   object tb: TToolBar
     Left = 0
-    Top = 425
-    Width = 685
+    Top = 626
+    Width = 1038
     Height = 41
     Hint = 'tb'
     Align = alBottom
     ButtonHeight = 38
-    TabOrder = 0
+    TabOrder = 1
+    ExplicitTop = 425
+    ExplicitWidth = 685
     object bFirst: TSpeedButton
       Left = 0
       Top = 0
@@ -45,7 +61,7 @@ object FRSprGost: TFRSprGost
         CCC333333333333777FF33333333333333CC3333333333333773}
       Layout = blGlyphBottom
       NumGlyphs = 2
-      OnClick = tbButtonClick
+      OnClick = bButtonClick
     end
     object bPrev: TSpeedButton
       Left = 73
@@ -68,7 +84,7 @@ object FRSprGost: TFRSprGost
         3333333333333333333333333333333333333333333333333333}
       Layout = blGlyphBottom
       NumGlyphs = 2
-      OnClick = tbButtonClick
+      OnClick = bButtonClick
     end
     object bNext: TSpeedButton
       Left = 146
@@ -91,7 +107,7 @@ object FRSprGost: TFRSprGost
         3333333333333333333333333333333333333333333333333333}
       Layout = blGlyphBottom
       NumGlyphs = 2
-      OnClick = tbButtonClick
+      OnClick = bButtonClick
     end
     object bEnd: TSpeedButton
       Left = 219
@@ -114,7 +130,7 @@ object FRSprGost: TFRSprGost
         33333777333333333333CC333333333333337733333333333333}
       Layout = blGlyphBottom
       NumGlyphs = 2
-      OnClick = tbButtonClick
+      OnClick = bButtonClick
     end
     object bAdd: TSpeedButton
       Left = 292
@@ -137,7 +153,7 @@ object FRSprGost: TFRSprGost
         3000333333333333377733333333333333333333333333333333}
       Layout = blGlyphBottom
       NumGlyphs = 2
-      OnClick = tbButtonClick
+      OnClick = bButtonClick
     end
     object bDel: TSpeedButton
       Left = 365
@@ -160,7 +176,7 @@ object FRSprGost: TFRSprGost
         3000333333333333377733333333333333333333333333333333}
       Layout = blGlyphBottom
       NumGlyphs = 2
-      OnClick = tbButtonClick
+      OnClick = bButtonClick
     end
     object bPost: TSpeedButton
       Left = 438
@@ -184,34 +200,7 @@ object FRSprGost: TFRSprGost
       Layout = blGlyphBottom
       NumGlyphs = 2
       Visible = False
-      OnClick = tbButtonClick
+      OnClick = bButtonClick
     end
-  end
-  object grid: TDBGrid
-    Left = 0
-    Top = 0
-    Width = 685
-    Height = 425
-    Align = alClient
-    TabOrder = 1
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -11
-    TitleFont.Name = 'Tahoma'
-    TitleFont.Style = []
-    Columns = <
-      item
-        Color = clBtnFace
-        Expanded = False
-        FieldName = 'rec_id'
-        ReadOnly = True
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'Name'
-        Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-        Visible = True
-      end>
   end
 end

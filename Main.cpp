@@ -22,6 +22,7 @@
 #include "unPasswordForm.h"
 #include "FRGosts.h"
 #include "About.h"
+#include "FRMEtalons.h"
 // -----------------------------------
 
 #pragma resource "*.dfm"
@@ -37,7 +38,6 @@ __fastcall TMainForm::TMainForm(TComponent* Owner) : TForm(Owner) {
 	if(!FileExists(applPath,False))
 	{
 		AnsiString err = "Ќет файла соединени€ с Ѕƒ: " + applPath;
-		//TExtFunction::ShowBigModalMessage(err, clRed);
 		throw Exception(err);
 	}
 	mainGlobalSettings.LoadPRGSettings(applPath);
@@ -506,7 +506,7 @@ void TMainForm::Start() {
 void TMainForm::ReStart() {
 	// используетс€ только при задержке дл€ просмотра, которой у нас нет
 	if (threadWork == NULL) {
-		TProtocol::ProtocolSave("TMainForm::ReStart: работа не запущена");
+		//TProtocol::ProtocolSave("TMainForm::ReStart: работа не запущена");
 		return;
 	}
 	threadWork->SetCalc();
@@ -515,7 +515,7 @@ void TMainForm::ReStart() {
 // ---------------------------------------------------------------------------
 void TMainForm::Stop() {
 	if (threadWork == NULL) {
-		TProtocol::ProtocolSave("TMainForm::Stop: работа не запущена");
+		//TProtocol::ProtocolSave("TMainForm::Stop: работа не запущена");
 		return;
 	}
 	// удалим поток
@@ -762,9 +762,11 @@ void __fastcall TMainForm::mnuCheck1730Click(TObject * Sender) {
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::menuEtalonsClick(TObject *Sender) {
-	fmEditEtalon = new TfmEditEtalon(this, &mainGlobalSettings, lCardData);
-	fmEditEtalon->ShowModal();
-	fmEditEtalon = NULL;
+	//fmEditEtalon = new TfmEditEtalon(this, &mainGlobalSettings, lCardData);
+	//fmEditEtalon->ShowModal();
+	//fmEditEtalon = NULL;
+	TFREtalons* frm = new TFREtalons(this);
+	frm->Show();
 }
 // ---------------------------------------------------------------------------
 

@@ -86,13 +86,6 @@ void CSignal::Set0(bool _value)
 	value_prev = value;
 	value = _value;
 	OnSet();
-//	AnsiString a;
-//	a="*** ";
-//	a+=name;
-//	a+=" set ";
-//	a+=value?"true ":"false ";
-//	a+=last_changed;
-//	TPr::pr(a);
 }
 
 void CSignal::Set(bool _value)
@@ -104,19 +97,19 @@ void CSignal::Set(bool _value)
 		TProtocol::ProtocolSave(a);
 	}
 	//serg
-	cs->Enter();
+	else
 	{
-		if(_value != value)
-		last_changed=GetTickCount();
-		value_prev = value;
-		value = _value;
-		OnSet();
-		AnsiString a= "Signal::Set: попытка выставить входной сигнал успешна: ";
-        a += name;
-		TProtocol::ProtocolSave(a);
+		cs->Enter();
+		{
+			if(_value != value)
+			last_changed=GetTickCount();
+			value_prev = value;
+			value = _value;
+			OnSet();
+		}
+		//serg
+		cs->Leave();
 	}
-	//serg
-	cs->Leave();
 }
 
 bool CSignal::Wait(bool _value, DWORD _tm)
@@ -126,6 +119,7 @@ bool CSignal::Wait(bool _value, DWORD _tm)
 		AnsiString a = "Signal::Wait: попытка подождать выходной сигнал: ";
 		a += name;
 		TProtocol::ProtocolSave(a);
+		return false;
 	}
 	if (Get() == _value)
 		return (true);

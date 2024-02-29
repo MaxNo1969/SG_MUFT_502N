@@ -4,6 +4,8 @@
 #pragma hdrstop
 #include <Math.hpp>
 #include "unFmViewMeasure.h"
+#include "TProtocol.h"
+#include "unTExtFunction.h"
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -226,9 +228,9 @@ int __fastcall TfmViewMeasure::PrepareChartToShow(TChart *_chart, TMeasuresData*
 	}
 	catch (Exception *ex) {
 		err = -2;
-		TLog::ErrFullSaveLog(ex);
-		// MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
-
+		AnsiString tmpStr = "TfmViewMeasure::PrepareChartToShow: " + ex->Message;
+		TProtocol::ProtocolSave(tmpStr);
+		TExtFunction::ShowBigModalMessage(tmpStr, clRed);
 	}
 	return err;
 
@@ -243,9 +245,9 @@ int __fastcall TfmViewMeasure::PrepareSensor(int _selZone, int _selSensor) {
 	}
 	catch (Exception *ex) {
 		err = -2;
-		TLog::ErrFullSaveLog(ex);
-		// MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
-
+		AnsiString tmpStr = "TfmViewMeasure::PrepareSensor:" + ex->Message;
+		TProtocol::ProtocolSave(tmpStr);
+		TExtFunction::ShowBigModalMessage(tmpStr, clRed);
 	}
 	return err;
 }
@@ -257,8 +259,9 @@ void __fastcall TfmViewMeasure::FormShow(TObject * Sender) {
 	}
 	catch (Exception *ex) {
 		err = -2;
-		TLog::ErrFullSaveLog(ex);
-		// MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString tmpStr = "TfmViewMeasure::PrepareSensor:" + ex->Message;
+		TProtocol::ProtocolSave(tmpStr);
+		TExtFunction::ShowBigModalMessage(tmpStr, clRed);
 	}
 }
 

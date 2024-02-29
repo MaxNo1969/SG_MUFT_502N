@@ -1,40 +1,40 @@
 //---------------------------------------------------------------------------
 
-#ifndef FRGostsH
-#define FRGostsH
+#ifndef FRMEtalonsH
+#define FRMEtalonsH
 //---------------------------------------------------------------------------
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
-#include <Vcl.ComCtrls.hpp>
-#include <Vcl.ToolWin.hpp>
 #include <Data.DB.hpp>
-#include <Data.Win.ADODB.hpp>
+#include <Vcl.Buttons.hpp>
+#include <Vcl.ComCtrls.hpp>
 #include <Vcl.DBGrids.hpp>
 #include <Vcl.Grids.hpp>
-#include <Vcl.Buttons.hpp>
+#include <Vcl.ToolWin.hpp>
 //---------------------------------------------------------------------------
-class TFRSprGost : public TForm
+class TFREtalons : public TForm
 {
 __published:	// IDE-managed Components
-	TToolBar *tb;
 	TDBGrid *grid;
-	TSpeedButton *bPrev;
+	TToolBar *tb;
 	TSpeedButton *bFirst;
+	TSpeedButton *bPrev;
 	TSpeedButton *bNext;
 	TSpeedButton *bEnd;
 	TSpeedButton *bAdd;
-	TSpeedButton *bPost;
 	TSpeedButton *bDel;
+	TSpeedButton *bPost;
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
-	void __fastcall tbButtonClick(TObject *Sender);
-    void __fastcall beforeInsert(TDataSet* DataSet);
+	void __fastcall bButtonClick(TObject *Sender);
+	void __fastcall beforeInsert(TDataSet* DataSet);
 private:	// User declarations
 public:		// User declarations
-	__fastcall TFRSprGost(TComponent* Owner);
-	__fastcall ~TFRSprGost();
+	__fastcall TFREtalons(TComponent* Owner);
+    __fastcall ~TFREtalons();
 };
 //---------------------------------------------------------------------------
-extern PACKAGE TFRSprGost *FRSprGost;
+extern PACKAGE TFREtalons *FREtalons;
+//---------------------------------------------------------------------------
 #endif

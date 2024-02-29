@@ -6,6 +6,7 @@
 #include "unTExtFunction.h"
 
 //---------------------------------------------------------------------------
+USEFORM("NewSG.cpp", NewSGForm);
 USEFORM("SGSettings.cpp", SGSettForm);
 USEFORM("unSQLDbModule.cpp", SqlDBModule); /* TDataModule: File Type */
 USEFORM("unFmViewMeasure.cpp", fmViewMeasure);
@@ -19,7 +20,6 @@ USEFORM("unFmMessage.cpp", fmMessage);
 USEFORM("unFmTypeSizes.cpp", fmTypeSizes);
 USEFORM("unExtSettings.cpp", fmExtSettings);
 USEFORM("unFmEditSettings.cpp", fmSettings);
-USEFORM("NewSG.cpp", NewSGForm);
 USEFORM("CardsFiles\A1730\uFSignalsState.cpp", FSignalsState);
 USEFORM("CardsFiles\A1730\uFRSigPanel.cpp", FRSigPanel); /* TFrame: File Type */
 USEFORM("ABOUT.cpp", AboutBox);
@@ -27,6 +27,7 @@ USEFORM("ADCSettings.cpp", ADCSettForm);
 USEFORM("ColorSettings.cpp", FormColor);
 USEFORM("Main.cpp", MainForm);
 USEFORM("FRGosts.cpp", FRSprGost);
+USEFORM("FRMEtalons.cpp", FREtalons);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {

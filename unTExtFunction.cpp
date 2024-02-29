@@ -3,6 +3,7 @@
 #pragma hdrstop
 
 #include "unTExtFunction.h"
+#include "TProtocol.h"
 #include "unSQLDbModule.h"
 #include "unTUtils.h"
 #include "unFmMessage.h"
@@ -287,6 +288,7 @@ void TExtFunction::PrepareFastLineChart(int _countSensors, int _lengthChart,
 
 // лучше, конечно пользовать параметры
 // записываем измерения по цветам в базу
+/*
 int TExtFunction::SaveChartToDB(AnsiString _serialTubeNum, AnsiString _tubeNum,
 	int _codeTubeTypeSize, int _moduleType, int _maxZones, int _codeCustomer,
 	int _codeOperatorU, int _codeStatusTube, TChart* _chart) {
@@ -439,7 +441,7 @@ int TExtFunction::FillArrayModule(AnsiString _tubeNum, int _tubeModule,
 	}
 	return err;
 }
-
+*/
 int TExtFunction::ShowArrayModule(int _countSensors, int _maxZones,
 	int _arrDataModule[8][100], TChart* _chart) {
 	for (int s = 0; s < _countSensors; s++) { // серии
@@ -475,8 +477,9 @@ int TExtFunction::UpdateLabelStatus(TLabel *_label, AnsiString _strTitle,
 	}
 	catch (Exception *ex) {
 		err = -2;
-		TLog::ErrFullSaveLog(ex);
-		MessageDlg(ex->Message, mtError, TMsgDlgButtons() << mbOK, NULL);
+		AnsiString tmpStr = "TExtFunction::UpdateLabelStatus: " + ex->Message;
+		TProtocol::ProtocolSave(tmpStr);
+		TExtFunction::ShowBigModalMessage(tmpStr, clRed);
 	}
 	return err;
 }
