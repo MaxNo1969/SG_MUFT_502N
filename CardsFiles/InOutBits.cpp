@@ -20,6 +20,9 @@ void InOutBits::Write(DWORD val)
 		outBits = val;
 		if(hdr)hdr->Write(val);
 }
+void InOutBits::WriteIn(DWORD val)
+{
+}
 void InOutBits::WriteSignals(void)
 {
 	if(hdr)hdr->WriteSignals();

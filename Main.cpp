@@ -54,7 +54,13 @@ __fastcall TMainForm::TMainForm(TComponent* Owner) : TForm(Owner) {
 	lCardData = new TLCardData(lСard502, freqCount, 3, &mainGlobalSettings); // todo Временно 1 частота
 	lastError = 1;
 	SLD = new SignalListDef(&lastError);
-	SLD->dev = new InOutBits(lСard502);
+	if(!mainGlobalSettings.bL502Emul)
+		SLD->dev = new InOutBits(lСard502);
+	else
+	{
+		SLD->dev = new InOutBitsEmul(lСard502);
+		SLD->iCC->Set(true);
+	}
 	SGFilter = new Filters("SG");
 	SGFilter->setSettingsFromDB();
 }
@@ -428,10 +434,13 @@ void __fastcall TMainForm::bCancelClick(TObject * Sender) {
 void TMainForm::Start() {
 	try
 	{
-		if(!lСard502 || !lСard502->handle)
+		if(!mainGlobalSettings.bL502Emul)
 		{
-			 TExtFunction::ShowBigModalMessage("Платы LCard502 не найдено !", clRed);
-			 return;
+			if(!lСard502 || !lСard502->handle)
+			{
+				 TExtFunction::ShowBigModalMessage("Платы LCard502 не найдено !", clRed);
+				 return;
+			}
 		}
 		// на всякий случай сбросим сигналы при включении
 		SLD->oSENSORON->Set(false);
@@ -456,7 +465,7 @@ void TMainForm::Start() {
 				threadWork = NULL;
 				delete x;
 			}
-			if (!gen)
+			if (!gen && !mainGlobalSettings.bL502Emul)
 			{
 			   gen = new TGSPF052();
 			   if(NULL == gen->hDLL)
@@ -482,7 +491,7 @@ void TMainForm::Start() {
 			}
 			int f = TSFreqs.Frequency[0];
 			double a = TSFreqs.Amplitude[0];
-			gen->FormSignal(f, a);
+			if(gen)gen->FormSignal(f, a);
             TProtocol::ProtocolSave("Запускаем работу");
 			threadWork = new ThreadWork(true, lCardData, &mainGlobalSettings, gen);
 			SLD->SetAlarm(true);
@@ -620,7 +629,7 @@ void TMainForm::Redraw() {
 	series->ShowInLegend = false;
 	SignalChart->AddSeries(series);
 	double PeriodProc = arrSize / 300.0;
-	for (int i = 0; i < Thresholds.size(); i++) {
+	for (unsigned int i = 0; i < Thresholds.size(); i++) {
 		res = (int)(Thresholds[i] * PeriodProc);
 		SignalChart->Series[SignalChart->SeriesCount() - 1]->AddXY(res, BarkValues[i], "", clBlack);
 	}
@@ -639,7 +648,7 @@ void TMainForm::Redraw() {
 	PanelSG->Width *= 2;
 	// if(csg.group_id < 7)
 	PanelSG->Color = csg.color; // colorSer[csg.group_id]; //todo исправить!
-	PanelSG->Font->Color = 16777215 - (int)csg.color;
+	PanelSG->Font->Color = (TColor)(16777215 - (int)csg.color);
 	// else PanelSG->Color = clLime;
 	// заполним чарт характеристическими кривыми эталонов
 	EtalonDatas EDatas = EtalonDatas(mainGlobalSettings.indexCurrentTypeSize, mainGlobalSettings.indexCurrentSGGost);
@@ -751,11 +760,13 @@ void __fastcall TMainForm::mnuCheckGenClick(TObject * Sender) {
 // ---------------------------------------------------------------------------
 
 void __fastcall TMainForm::mnuCheck1730Click(TObject * Sender) {
+	/*
 	if(!lСard502 || !lСard502->handle)
 	{
 		 TExtFunction::ShowBigModalMessage("Платы LCard502 не найдено !", clRed);
 		 return;
 	}
+    */
 	FSignalsState = new TFSignalsState(this, &mainGlobalSettings, SLD);
 	FSignalsState->Show();
 }
@@ -885,7 +896,7 @@ void __fastcall TMainForm::bbtCreateEtalonClick(TObject *Sender) {
 		queryEtalon->Parameters->ParamByName("pTS_id")->Value = mainGlobalSettings.indexCurrentTypeSize;
 		queryEtalon->Open();
 		queryEtalon->First();
-		int tst = queryEtalon->RecordCount;
+		//int tst = queryEtalon->RecordCount;
 		while (!queryEtalon->Eof) {
 			res = queryEtalon->FieldByName("threshold_value")->AsInteger;
 			Thresholds.push_back(res);

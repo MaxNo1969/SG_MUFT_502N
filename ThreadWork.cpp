@@ -140,7 +140,7 @@ struct ExitLoop {
 	}
 
 	~ExitLoop() {
-		gen->Stop();
+		if(gen)gen->Stop();
 		exitLoop = false;
 	}
 };

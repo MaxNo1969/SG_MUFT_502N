@@ -96,20 +96,15 @@ void CSignal::Set(bool _value)
 		a += name;
 		TProtocol::ProtocolSave(a);
 	}
-	//serg
-	else
+	cs->Enter();
 	{
-		cs->Enter();
-		{
-			if(_value != value)
-			last_changed=GetTickCount();
-			value_prev = value;
-			value = _value;
-			OnSet();
-		}
-		//serg
-		cs->Leave();
+		if(_value != value)
+		last_changed=GetTickCount();
+		value_prev = value;
+		value = _value;
+		OnSet();
 	}
+	cs->Leave();
 }
 
 bool CSignal::Wait(bool _value, DWORD _tm)

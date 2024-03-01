@@ -122,7 +122,7 @@ DWORD TLCard502::Read(void)
 	  err = X502_AsyncInDig(handle, &t);
 	LeaveCriticalSection(&cs);
 	if (err != X502_ERR_OK) {
-		TExtFunction::ShowBigModalMessage("A1730_DAQNavi::Read: не могу прочитать плату", clRed);
+		TExtFunction::ShowBigModalMessage("L502Dig Read: не могу прочитать плату", clRed);
 	}
 	return t;
 }
@@ -139,8 +139,11 @@ void TLCard502::Write(DWORD val)
 	LeaveCriticalSection(&cs);
 	outBits = val;
 	if (err != X502_ERR_OK) {
-		TExtFunction::ShowBigModalMessage("A1730_DAQNavi::Write: не могу записать на плату", clRed);
+		TExtFunction::ShowBigModalMessage("L502Dig Write: не могу записать на плату", clRed);
 	}
+}
+void TLCard502::WriteIn(DWORD _v)
+{
 }
 void TLCard502::WriteSignals(void)
 {

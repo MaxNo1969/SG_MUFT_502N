@@ -80,6 +80,9 @@ int TGlobalSettings::LoadPRGSettings(AnsiString _fullPathNameUDL) {
 		nameCurrentTypeSize = SqlDBModule->GetStrFieldSQL("TypeSizes", "TSName", where, "нет", err);
 		SaveEtalonPath = SqlDBModule->GetStrFieldSQL("extSettingsGlobal", "paramValueStr", "UPPER(paramName)=UPPER('SavedEtalonsPath')", 0, err);
 		SaveResultPath = SqlDBModule->GetStrFieldSQL("extSettingsGlobal", "paramValueStr", "UPPER(paramName)=UPPER('SavedResultsPath')", 0, err);
+		//Флаг эмуляции L502
+		bL502Emul = SqlDBModule->GetBoolParam("lcard502Emul");
+
 		WM_MsgReadyTstData = WM_USER + 99;
 		err = 0;
 	}

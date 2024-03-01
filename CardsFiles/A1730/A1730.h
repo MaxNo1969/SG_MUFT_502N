@@ -12,5 +12,7 @@ public:
 	virtual DWORD ReadOut(void)=0;
 	//устанавливаем выходы
 	virtual void Write(DWORD _v)=0;
+	//устанавливаем выходы
+	virtual void WriteIn(DWORD _v)=0;
 };
 #endif

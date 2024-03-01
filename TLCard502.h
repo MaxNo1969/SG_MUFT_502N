@@ -67,6 +67,7 @@ public:
 	DWORD Read(void);
 	DWORD ReadOut(void);
 	void Write(DWORD _v);
+	void WriteIn(DWORD _v);
 	void WriteSignals(void);
 	void ReadSignals(void);
 	//-----------------------------------------

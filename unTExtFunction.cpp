@@ -455,6 +455,7 @@ int TExtFunction::ShowArrayModule(int _countSensors, int _maxZones,
 			}
 		};
 	};
+    return 0;
 }
 
 int TExtFunction::UpdateStatusBar(TStatusBar *_StatusBar, AnsiString _strTitle,
@@ -489,6 +490,7 @@ int TExtFunction::ShowBigModalMessage(AnsiString _strMsg, TColor _color) {
 	fmMessage = new TfmMessage(NULL, _strMsg, _color);
 	fmMessage->ShowModal();
 	delete fmMessage;
+    return 0;
 }
 
 void TExtFunction::FATAL(AnsiString _msg) {

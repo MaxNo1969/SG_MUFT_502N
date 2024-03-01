@@ -78,7 +78,10 @@ public:
 	HWND mainHandle;
 	AnsiString SaveEtalonPath;
 	AnsiString SaveResultPath;
-    bool isWork;
+	bool isWork;
+
+	//Флаг эмуляции L502
+	bool bL502Emul;
 private:
 	//
 	};

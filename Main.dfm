@@ -317,8 +317,6 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 3
       OnClick = bCancelClick
-      ExplicitLeft = 453
-      ExplicitTop = -4
     end
     object GroupBoxNGr: TGroupBox
       Left = 777

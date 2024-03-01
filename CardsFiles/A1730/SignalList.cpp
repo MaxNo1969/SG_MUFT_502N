@@ -112,7 +112,15 @@ void SignalList::WriteSignals(void) {
 	for (int i = 0; i < listSignal.Count(); i++) {
 		p = listSignal[i];
 		if (p->in)
+		{
+			buf = dev?dev->Read():0;
+			if (p->value)
+				buf |= ((DWORD)1) << p->index;
+			else
+				buf &= ~(((DWORD)1) << p->index);
+            if(dev)dev->WriteIn(buf);
 			continue;
+		}
 		if (p->value)
 			buf |= ((DWORD)1) << p->index;
 		else
