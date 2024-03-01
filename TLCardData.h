@@ -57,9 +57,9 @@ public:
 //		return (&GZone);
 //	}
 
-	inline vector<vector<double> >* GetPointSG(int _num) {
-		return (&vecMeasuresData[_num].vecSensorsData);
-	}
+//	inline vector<vector<double> >* GetPointSG(int _num) {
+//		return (&vecMeasuresData[_num].vecSensorsData);
+//	}
 
 	double GetValueAvg5ByChName(AnsiString _name);
 	inline double GetBufTime()
