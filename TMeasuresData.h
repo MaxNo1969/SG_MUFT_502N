@@ -17,13 +17,8 @@ class TMeasuresData {
 public:
 	TMeasuresData(int _chLogCount);
 	~TMeasuresData(void);
-//	// переменные
-//	int realSensorSize;
-//	int fullSensorSize;
 	// вектор данных по датчикам  [канал] - [данные] по датчику
 	vector<vector<double> >vecSensorsData;
-	//вектор наименований каналов - если понадобится
-	vector<AnsiString> namesChannels;
 	//функции
 	int ClearData(void);
 private:
