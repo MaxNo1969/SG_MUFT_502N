@@ -1,13 +1,12 @@
 BD/
+OutExe/
 __history/
 Win32/
-*.cbproj.local
-*.stat
 *.~*
 *.rar
 *.local
-*.stat
+*.stat*
 *.dsk
 **/__recovery
 **/*.lib
-OutExe/
+

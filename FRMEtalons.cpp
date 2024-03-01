@@ -67,15 +67,16 @@ void __fastcall TFREtalons::FormClose(TObject *Sender, TCloseAction &Action)
 //---------------------------------------------------------------------------
 void __fastcall TFREtalons::bButtonClick(TObject *Sender)
 {
-    	TSpeedButton* btn = (TSpeedButton*)Sender;
+		TSpeedButton* btn = (TSpeedButton*)Sender;
 	TDataSet *ds = grid->DataSource->DataSet;
 	try {
 		 if(btn->Name == "bFirst")ds->First();
 		 if(btn->Name == "bNext")ds->Next();
 		 if(btn->Name == "bPrev")ds->Prior();
 		 if(btn->Name == "bEnd")ds->Last();
-		 if(btn->Name == "bAdd")return;
-		 if(btn->Name == "bDel")ds->Delete();
+		 if(btn->Name == "bAdd")addEtalon();
+		 if(btn->Name == "bDel")deleteEtalon();
+		 if(btn->Name == "bCopy")copyEtalon();
 	}
 	catch(Exception& ex)
 	{
@@ -86,3 +87,52 @@ void __fastcall TFREtalons::bButtonClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
+bool __fastcall TFREtalons::deleteEtalon()
+{
+	bool ret = false;
+	try
+	{
+		TDataSet *ds = grid->DataSource->DataSet;
+		int rec_id = ds->FieldByName("Id")->AsInteger;
+		TADOCommand *cmd = new TADOCommand(this);
+		cmd->Connection = SqlDBModule->ADOConnectionDB;
+		char cmdText[256];
+		cmd->Connection->BeginTrans();
+		sprintf(cmdText,"delete from %s where %s=%d","EtalonValues","etalon_id",rec_id);
+		cmd->CommandText = cmdText;
+		cmd->Execute();
+		sprintf(cmdText,"delete from %s where %s=%d","Etalons","rec_id",rec_id);
+		cmd->CommandText = cmdText;
+		cmd->Execute();
+		cmd->Connection->CommitTrans();
+		delete cmd;
+		ds->Close();
+		ds->Open();
+        grid->Refresh();
+		return true;
+	}
+	catch(Exception& ex)
+	{
+			SqlDBModule->ADOConnectionDB->RollbackTrans();
+			AnsiString err = "Îøèáêà deleteEtalon:" + ex.ToString();
+			TProtocol::ProtocolSave(err);
+			TExtFunction::ShowBigModalMessage(err, clRed);
+			return false;
+	}
+}
+
+bool __fastcall TFREtalons::addEtalon()
+{
+	bool ret = false;
+	TDataSet *ds = grid->DataSource->DataSet;
+	int rec_id = ds->FieldByName("Id")->AsInteger;
+	return ret;
+}
+
+bool __fastcall TFREtalons::copyEtalon()
+{
+	bool ret = false;
+	TDataSet *ds = grid->DataSource->DataSet;
+	int rec_id = ds->FieldByName("Id")->AsInteger;
+	return ret;
+}

@@ -25,10 +25,15 @@ __published:	// IDE-managed Components
 	TSpeedButton *bEnd;
 	TSpeedButton *bAdd;
 	TSpeedButton *bDel;
-	TSpeedButton *bPost;
+	TSpeedButton *bCopy;
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall bButtonClick(TObject *Sender);
 	void __fastcall beforeInsert(TDataSet* DataSet);
+
+	bool __fastcall deleteEtalon();
+	bool __fastcall addEtalon();
+	bool __fastcall copyEtalon();
+
 private:	// User declarations
 public:		// User declarations
 	__fastcall TFREtalons(TComponent* Owner);
