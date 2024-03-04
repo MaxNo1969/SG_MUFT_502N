@@ -165,7 +165,6 @@ __published: // IDE-managed Components
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 
 private: // User declarations
-    bool options;
 	// общие настройки программы
 	TGlobalSettings mainGlobalSettings;
 	// LCard502 - указатель на карту

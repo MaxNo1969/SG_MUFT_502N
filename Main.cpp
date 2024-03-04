@@ -67,7 +67,6 @@ __fastcall TMainForm::TMainForm(TComponent* Owner) : TForm(Owner) {
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::FormCreate(TObject *Sender) {
-	options = false;
 	lastError = 0;
 	PanelSG->Width = 350;
 
