@@ -13,7 +13,7 @@ private:
 	void Drop(void);
 public:
 	//SignalListDef(TIniFile* _ini);
-	SignalListDef(int* _err);
+	SignalListDef();
 //	void SetCrossCycle(bool _v);
 //	void SetLinearCycle(bool _v);
 //	void SetInvA(bool _v);

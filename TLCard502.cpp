@@ -6,7 +6,7 @@
 #pragma package(smart_init)
 // ---------------------------------------------------------------------------
 #ifndef TLCARD502TEST
-TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr)
+TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings)
 {
 	AnsiString aStr="";
 	InitializeCriticalSection(&cs);
@@ -14,7 +14,6 @@ TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr)
 	{
 		handle=NULL;
 		globalSettings = _mainGlobalSettings;
-		_codeErr = 0;
 		raw_size = LCard502_INIT_SIZE;
 		rawi = new unsigned int[raw_size];
 		raw = new double[raw_size];
@@ -37,6 +36,7 @@ TLCard502::TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr)
 
 		IsStarted = false;
 		loadChannels();
+        int _codeErr = 0;
 		// частота кадров (частота на канал)
 		frequencyPerChannel_Hz = SqlDBModule->GetFloatFieldSQL("L502Params",
 			"frequencyPerChannel_Hz", NULL, 100, _codeErr);

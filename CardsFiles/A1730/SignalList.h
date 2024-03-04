@@ -42,8 +42,7 @@ protected:
 	virtual void Drop(void)=0;
 	bool blockDrop;
 public:
-	//SignalList(TIniFile* _ini);
-	SignalList(int &_err);
+	SignalList();
 	virtual __fastcall ~SignalList(void);
 	void SetPeriod(int _period);
 	inline int SignalCount(void)

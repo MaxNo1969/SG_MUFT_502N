@@ -48,12 +48,11 @@ __fastcall TMainForm::TMainForm(TComponent* Owner) : TForm(Owner) {
 		throw Exception("TMainForm::TMainForm не могу зарегистрировать сообщение");
 	}
 
-	lСard502 = new TLCard502(&mainGlobalSettings, lastError);
+	lСard502 = new TLCard502(&mainGlobalSettings);
 	TSFreqs = new TSFrequencies(mainGlobalSettings.indexCurrentTypeSize);
 	int freqCount = TSFreqs->Frequency.size();
 	lCardData = new TLCardData(lСard502, freqCount, 3, &mainGlobalSettings); // todo Временно 1 частота
-	lastError = 1;
-	SLD = new SignalListDef(&lastError);
+	SLD = new SignalListDef();
 	if(!mainGlobalSettings.bL502Emul)
 		SLD->dev = new InOutBits(lСard502);
 	else
@@ -67,7 +66,6 @@ __fastcall TMainForm::TMainForm(TComponent* Owner) : TForm(Owner) {
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::FormCreate(TObject *Sender) {
-	lastError = 0;
 	PanelSG->Width = 350;
 
 	// выбор ГОСТа

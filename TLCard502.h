@@ -44,7 +44,7 @@ public:
 	AnsiString LastError;
 
 	//Конструктор и открытие платы
-	TLCard502(TGlobalSettings* _mainGlobalSettings,int &_codeErr);
+	TLCard502(TGlobalSettings* _mainGlobalSettings);
 	//Деструктор и закрытие платы
 	~TLCard502(void);
 	//Старт платы

@@ -5,8 +5,9 @@ SignalListDef* SLD = NULL;
 
 //SignalListDef::SignalListDef(TIniFile* _ini) : SignalList(_ini)
 //список сигналов от 1730
-SignalListDef::SignalListDef(int* _err) : SignalList(*_err)
+SignalListDef::SignalListDef() : SignalList()
 {
+
 	iCC = Find("ЦЕПИ УПРАВЛЕНИЯ", true);
 	iPOW12 = Find("ПИТАНИЕ 12В", true);
 

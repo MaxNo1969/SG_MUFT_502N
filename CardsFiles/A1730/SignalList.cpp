@@ -5,7 +5,7 @@
 #include "unTExtFunction.h"
 #pragma package(smart_init)
 
-SignalList::SignalList(int &_err) {
+SignalList::SignalList() {
 	dev = NULL;
 	cs = new TCriticalSection();
 	int err;
@@ -34,7 +34,6 @@ SignalList::SignalList(int &_err) {
 	IsAlarm = false;
 	wasAlarm = false;
 	AlarmList = new TStringList();
-    _err = 0;
 }
 
 __fastcall SignalList::~SignalList(void) {
@@ -127,8 +126,6 @@ void SignalList::WriteSignals(void) {
 			buf &= ~(((DWORD)1) << p->index);
 	}
 	if(dev)dev->Write(buf);
-	// serg
-	int u = 0;
 }
 
 CSignal* SignalList::Find(AnsiString _name, bool _in) {
