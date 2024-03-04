@@ -27,6 +27,8 @@ object PasswordForm: TPasswordForm
     Width = 75
     Height = 25
     Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100
+    Default = True
+    ModalResult = 1
     TabOrder = 1
     OnClick = okBtnClick
   end
@@ -36,6 +38,7 @@ object PasswordForm: TPasswordForm
     Width = 75
     Height = 25
     Caption = #1054#1090#1084#1077#1085#1072
+    ModalResult = 2
     TabOrder = 2
     OnClick = cancelBtnClick
   end

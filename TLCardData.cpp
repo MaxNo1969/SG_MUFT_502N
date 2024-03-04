@@ -262,7 +262,13 @@ bool TLCardData::CheckMufta(int _sensNum)
 	//отфильтруем
 	SGFilter->toFilter(&(vecMeasuresData[freqNum].vecSensorsData[_sensNum][0])
 		,vecMeasuresData[freqNum].vecSensorsData[_sensNum].size());
-	double thresVal = dtLcard502->globalSettings->checkMuftaLevel;
+	//Пороговое значение присутствия муфты в установке берём в зависимости от типоразмера
+	//(записано в таблице TypeSizes поле checkMuftaLevel). Сейчас берём типоразмер из globalSettings
+	//параметр indexCurrentTypeSize (вроде должен быть текущий)
+	int currentTypeSize = dtLcard502->globalSettings->indexCurrentTypeSize;
+	AnsiString strWhere = "rec_id="+IntToStr(currentTypeSize);
+	int err = 0;
+	double thresVal = (double)SqlDBModule->GetIntFieldSQL("TypeSizes","checkMuftaLevel",strWhere,150,err);
 	for(int i = 0; i < kadrsQuantity; i++)
 	{
 		double val = vecMeasuresData[freqNum].vecSensorsData[_sensNum][i];

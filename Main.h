@@ -227,7 +227,6 @@ private: // User declarations
 	void SetAbleButtons(bool _enable);
 	//код последней ошибки
     void EnableWigits(bool b);
-	//int lastError;
 public: // User declarations
 
 	__fastcall TMainForm(TComponent* Owner);
