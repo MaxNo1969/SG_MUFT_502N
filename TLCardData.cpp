@@ -47,8 +47,7 @@ TLCardData::~TLCardData(void) {
 }
 // ---------------------------------------------------------------------------
 void TLCardData::ClearSGM(void) {
-	int m = vecMeasuresData.size();
-	for (int i = 0; i < vecMeasuresData.size(); i++)
+	for (unsigned int i = 0; i < vecMeasuresData.size(); i++)
 		vecMeasuresData[i].ClearData();
 }
 // ---------------------------------------------------------------------------
@@ -99,7 +98,6 @@ bool TLCardData::Read(int _freqNum) {
 			for (int i = 0; i < size; i++)
 			{
 				// serg
-				double dtmp = buf[i] / 730;
 				vecMeasure.push_back(buf[i] / 730);
 			}
 
@@ -143,7 +141,6 @@ bool TLCardData::Read(int _freqNum) {
 // ---------------------------------------------------------------------------
 double TLCardData::GetValueAvg5ByChName(AnsiString _ch_name) {
 	// среднее арифметическое по 5-ти
-	int err = -100;
 	double ret = 0;
 	if(dtLcard502)
 	{
@@ -263,12 +260,12 @@ bool TLCardData::CheckMufta(int _sensNum)
 	SGFilter->toFilter(&(vecMeasuresData[freqNum].vecSensorsData[_sensNum][0])
 		,vecMeasuresData[freqNum].vecSensorsData[_sensNum].size());
 	//Пороговое значение присутствия муфты в установке берём в зависимости от типоразмера
-	//(записано в таблице TypeSizes поле checkMuftaLevel). Сейчас берём типоразмер из globalSettings
+	//(записано в таблице checkMuftaLevel поле checkMuftaLevel). Сейчас берём типоразмер из globalSettings
 	//параметр indexCurrentTypeSize (вроде должен быть текущий)
 	int currentTypeSize = dtLcard502->globalSettings->indexCurrentTypeSize;
 	AnsiString strWhere = "rec_id="+IntToStr(currentTypeSize);
 	int err = 0;
-	double thresVal = (double)SqlDBModule->GetIntFieldSQL("TypeSizes","checkMuftaLevel",strWhere,150,err);
+	double thresVal = (double)SqlDBModule->GetIntFieldSQL("checkMuftaLevel ","checkMuftaLevel",strWhere,150,err);
 	for(int i = 0; i < kadrsQuantity; i++)
 	{
 		double val = vecMeasuresData[freqNum].vecSensorsData[_sensNum][i];
@@ -289,9 +286,9 @@ vector<double> TLCardData::GetBarkValues(vector<int> &_Thresholds)
 	vector<double> BarkValues;// = new vector<double>;
 	//в файле хранятся три периода
 	int Period = vecMeasuresData[freqNum].vecSensorsData[0].size() / 3;
-	for(int i = 0; i < _Thresholds.size(); i++)
+	for(unsigned int i = 0; i < _Thresholds.size(); i++)
 	{
-		int x = _Thresholds[i] * Period / 100;
+		unsigned int x = _Thresholds[i] * Period / 100;
 		if (x >= vecMeasuresData[freqNum].vecSensorsData[0].size())
 			x = vecMeasuresData[freqNum].vecSensorsData[0].size()-1;
 		BarkValues.push_back(vecMeasuresData[freqNum].vecSensorsData[0][x]);
@@ -397,7 +394,7 @@ int TLCardData::ReCalcMeasuresToChannels()
 	}
 	//а теперь заполним данные
 	int sens = 0;
-	for (int i = 0; i < vecMeasure.size(); i++)
+	for (unsigned int i = 0; i < vecMeasure.size(); i++)
 	{
 		UncuttedData[sens].push_back(vecMeasure[i]);
 		sens++;
@@ -407,13 +404,13 @@ int TLCardData::ReCalcMeasuresToChannels()
 	//отфильтруем Баркгаузена
 	if(pSettings->isFilter)
 	{
-		for (int i = 0;i < UncuttedData.size(); i++)
+		for (unsigned int i = 0;i < UncuttedData.size(); i++)
 		{
 			SGFilter->toFilter(&(UncuttedData[i][0]),UncuttedData[i].size());
 		}
 	}
 	//сначала очистим данные
-	for(int i = 0; i < vecMeasuresData[freqNum].vecSensorsData.size(); i++)
+	for(unsigned int i = 0; i < vecMeasuresData[freqNum].vecSensorsData.size(); i++)
 		vecMeasuresData[freqNum].vecSensorsData[i].clear();
 	//а теперь заполним данные
 	sens = 0;
