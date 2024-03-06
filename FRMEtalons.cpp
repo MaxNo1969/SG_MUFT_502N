@@ -28,13 +28,13 @@ __fastcall TFREtalons::TFREtalons(TComponent* Owner)
 		TADOQuery *qry = new TADOQuery(this);
 		qry->Connection = SqlDBModule->ADOConnectionDB;
 		qry->SQL->Add(
-		"SELECT e.rec_id as [Id], e.egroup as [Группа образцов],e.[fenable] as [Использовать],e.[frequency] as [Частота], e.[address_file] as [Имя файла], \
+		"SELECT e.rec_id as [Id], e.[fenable] as [Использовать],e.[frequency] as [Частота], e.[address_file] as [Имя файла], \
 			ts.TSName as [Типоразмер],sg.SGName as [Группа прочности] \
 		 FROM [GP_MUFT_502].[dbo].[Etalons] e \
 		 left join TypeSizes ts on e.ts_id=ts.rec_id \
 		 left join SolidGroups sg on e.sg_id=sg.rec_id \
 		 left join GOST g on g.rec_id = sg.Gost_id \
-		 order by egroup,sg.SGName"
+		 order by sg.SGName"
 		 );
 		try
 		{
