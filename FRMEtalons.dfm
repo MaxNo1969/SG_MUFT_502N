@@ -21,50 +21,12 @@ object FREtalons: TFREtalons
     Height = 626
     Align = alClient
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-    ReadOnly = True
     TabOrder = 0
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
-    Columns = <
-      item
-        Expanded = False
-        FieldName = #8470
-        Width = 27
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100
-        Width = 80
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = #1063#1072#1089#1090#1086#1090#1072
-        Width = 52
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = #1048#1084#1103' '#1092#1072#1081#1083#1072
-        Width = 458
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = #1058#1080#1087#1086#1088#1072#1079#1084#1077#1088
-        Width = 79
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = #1043#1088#1091#1087#1087#1072' '#1087#1088#1086#1095#1085#1086#1089#1090#1080
-        Width = 107
-        Visible = True
-      end>
   end
   object tb: TToolBar
     Left = 0

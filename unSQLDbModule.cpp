@@ -266,6 +266,30 @@ int TSqlDBModule::SelectStrSql(AnsiString _strSql, int &_err) {
 	return _err;
 }
 
+AnsiString TSqlDBModule::GetStrFromSql(AnsiString _strSql) {
+	AnsiString result = "";
+	try {
+		if (!ADOConnectionDB->Connected) {
+			ADOConnectionDB->Open();
+		}
+		else {
+			result = -3;
+		};
+		if (ADOQueryDB->Active) {
+			ADOQueryDB->Close();
+		}
+		ADOQueryDB->SQL->Text = _strSql;
+		ADOQueryDB->Open();
+		result = ADOQueryDB->FieldByName("F1")->AsString;
+		ADOQueryDB->Close();
+	}
+	catch (Exception *ex) {
+		result = -2;
+		TProtocol::ProtocolSave(ex->Message);
+	}
+	return result;
+}
+
 int TSqlDBModule::GetIntFromSql(AnsiString _strSql) {
 	int result = -1;
 	try {
@@ -472,3 +496,62 @@ double TSqlDBModule::GetFloatExtFieldSQL(TADOQuery *_query, AnsiString _tableNam
 	}
 	return result;
 }
+
+bool TSqlDBModule::SavePar(AnsiString _name, AnsiString _value)
+{
+	bool res = false;
+	try {
+		if (!ADOConnectionDB->Connected) {
+			ADOConnectionDB->Open();
+		}
+		else {
+			ADOQueryDB->Close();
+		}
+		ADOQueryDB->SQL->Text = "update extSettingsGlobal set paramValueStr='"+_value+"' where paramName='"+_name+"'";
+		ADOQueryDB->ExecSQL();
+		res = (ADOQueryDB->RowsAffected == 0);
+		ADOQueryDB->Close();
+		if(res)
+		{
+			ADOQueryDB->SQL->Text = "insert into extSettingsGlobal (paramName,paramValueStr) values ('"+_name+"','"+_value+"')";
+			ADOQueryDB->ExecSQL();
+			ADOQueryDB->Close();
+		}
+		res = true;
+	}
+	catch (Exception *ex) {
+		res = false;
+		TProtocol::ProtocolSave(ex->Message);
+	}
+	return res;
+}
+bool TSqlDBModule::SavePar(AnsiString _name, int _value)
+{
+	bool res = false;
+	try {
+		if (!ADOConnectionDB->Connected) {
+			ADOConnectionDB->Open();
+		}
+		else {
+			ADOQueryDB->Close();
+		}
+		ADOQueryDB->SQL->Text = "update extSettingsGlobal set paramValueStr='"+IntToStr(_value)+"' where paramName='"+_name+"'";
+		ADOQueryDB->ExecSQL();
+		res = (ADOQueryDB->RowsAffected == 0);
+		ADOQueryDB->Close();
+		if(res)
+		{
+			ADOQueryDB->SQL->Text = "insert into extSettingsGlobal (paramName,paramValueInt) values ('"+_name+"',"+IntToStr(_value)+")";
+			ADOQueryDB->ExecSQL();
+			ADOQueryDB->Close();
+		}
+        res = true;
+	}
+	catch (Exception *ex) {
+		res = false;
+		TProtocol::ProtocolSave(ex->Message);
+	}
+	return res;
+}
+
+

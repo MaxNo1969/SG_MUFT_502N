@@ -127,6 +127,9 @@ __published: // IDE-managed Components
 	TButton *btnExit;
 	TMenuItem *mnAbaut;
 	TMenuItem *menuGosts;
+	TLabel *lblEtalonGroup;
+	TComboBox *cbEtalonGroup;
+	TButton *btnAddGroupEtalons;
 
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
@@ -163,6 +166,8 @@ __published: // IDE-managed Components
 	void __fastcall mnAbautClick(TObject *Sender);
 	void __fastcall menuGostsClick(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
+	void __fastcall cbEtalonGroupChange(TObject *Sender);
+	void __fastcall btnAddGroupEtalonsClick(TObject *Sender);
 
 private: // User declarations
 	// общие настройки программы
@@ -228,7 +233,7 @@ private: // User declarations
 	//код последней ошибки
     void EnableWigits(bool b);
 public: // User declarations
-
+	TGlobalSettings *getGlobalSettings(){return &mainGlobalSettings;};
 	__fastcall TMainForm(TComponent* Owner);
 	void LoadFromFile(UnicodeString FileName);
 

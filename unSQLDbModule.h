@@ -55,6 +55,12 @@ public:		// User declarations
 	int UpdStrSql(AnsiString _tableName, AnsiString _fieldName, AnsiString _fieldValue, AnsiString _where);
 	int UpdFloatSql(AnsiString _tableName, AnsiString _fieldName, double _fieldValue, AnsiString _where);
 
+	AnsiString GetStrFromSql(AnsiString _strSql);
+
+	bool SavePar(AnsiString _name, AnsiString _value);
+	bool SavePar(AnsiString _name, int _value);
+
+
 	bool GetBoolParam(AnsiString _paramName);
     AnsiString GetStringParam(AnsiString _paramName);
 };

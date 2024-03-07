@@ -4,6 +4,8 @@
 #include <System.Win.ComObj.hpp>
 #pragma hdrstop
 
+#include <Data.DB.hpp>
+
 #include "FRMEtalons.h"
 #include "TProtocol.h"
 #include "unTExtFunction.h"
@@ -45,6 +47,11 @@ __fastcall TFREtalons::TFREtalons(TComponent* Owner)
 			ds->DataSet->BeforeInsert = (TDataSetNotifyEvent)&beforeInsert;
 			ds->Enabled = true;
 			grid->DataSource = ds;
+			grid->Columns->Items[3]->Width = 500;
+			grid->Columns->Items[4]->Width = 100;
+			grid->Columns->Items[5]->Width = 100;
+			grid->ReadOnly = true;
+
 		}
 		catch (EADOError& e)
 		{

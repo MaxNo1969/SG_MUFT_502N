@@ -16,7 +16,8 @@
 // ---------
 
 // ----------------
-class TGlobalSettings {
+class TGlobalSettings
+{
 public:
 	TGlobalSettings();
 	~TGlobalSettings(void);
@@ -80,9 +81,6 @@ public:
 	AnsiString SaveResultPath;
 	bool isWork;
 
-	//‘лаг эмул€ции L502
-	bool bL502Emul;
-private:
-	//
-	};
+	int indexCurrentEtalonGroup; //индекс текущей группы эталонов
+};
 #endif

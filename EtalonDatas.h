@@ -6,6 +6,7 @@
 #include <Classes.hpp>
 #include <Graphics.hpp>
 using namespace std;
+
 //---------------------------------------------------------------------------
 class Etalon //класс хранящий эталон
 {
@@ -44,5 +45,27 @@ public:
 	~TSThresholds();
 	//пороги
 	vector<int> Thresholds;
+
 };
+
+//Массив образцов
+class EtalonArray
+{
+private:
+public:
+	//Название массива
+	AnsiString name;
+	//Типоразмер
+	int ts_id;
+	//ГОСТ
+	int gost_id;
+	vector<Etalon> Etalons;
+
+	EtalonArray(AnsiString _name,int _TS_id, int _SGGost_id):
+		name(name),ts_id(_TS_id),gost_id(_SGGost_id){};
+	~EtalonArray(){Etalons.clear();};
+
+};
+
+
 #endif

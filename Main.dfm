@@ -243,8 +243,29 @@ object MainForm: TMainForm
     Height = 58
     Align = alTop
     TabOrder = 4
+    object lblEtalonGroup: TLabel
+      AlignWithMargins = True
+      Left = 11
+      Top = 4
+      Width = 100
+      Height = 50
+      Margins.Left = 10
+      Margins.Right = 10
+      Align = alLeft
+      AutoSize = False
+      Caption = #1043#1088#1091#1087#1087#1072
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -27
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      Layout = tlCenter
+      ExplicitLeft = 8
+      ExplicitTop = 2
+    end
     object cbTypeSize: TComboBox
-      Left = 297
+      Left = 1014
       Top = 1
       Width = 153
       Height = 37
@@ -261,11 +282,12 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 0
       Text = 'cbTypeSize'
+      Visible = False
       OnChange = cbTypeSizeChange
       OnSelect = cbTypeSizeSelect
     end
     object cbSGGost: TComboBox
-      Left = 1
+      Left = 718
       Top = 1
       Width = 296
       Height = 56
@@ -282,10 +304,11 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 1
       Text = 'cbSGGost'
+      Visible = False
       OnSelect = cbSGGostSelect
     end
     object bStart: TButton
-      Left = 555
+      Left = 1272
       Top = 1
       Width = 105
       Height = 56
@@ -301,7 +324,7 @@ object MainForm: TMainForm
       OnClick = bStartClick
     end
     object bCancel: TButton
-      Left = 450
+      Left = 1167
       Top = 1
       Width = 105
       Height = 56
@@ -352,6 +375,7 @@ object MainForm: TMainForm
         Width = 269
         Height = 27
         Align = alLeft
+        Style = csDropDownList
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -16
@@ -359,7 +383,6 @@ object MainForm: TMainForm
         Font.Style = []
         ParentFont = False
         TabOrder = 1
-        Text = #1042#1099#1073#1088#1072#1090#1100' '#1075#1088#1091#1087#1087#1091' '#1087#1088#1086#1095#1085#1086#1089#1090#1080
       end
     end
     object btnExit: TButton
@@ -377,6 +400,39 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 5
       OnClick = btnExitClick
+    end
+    object cbEtalonGroup: TComboBox
+      Left = 121
+      Top = 1
+      Width = 461
+      Height = 56
+      Align = alLeft
+      Style = csDropDownList
+      DropDownCount = 10
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -27
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 6
+      OnChange = cbEtalonGroupChange
+    end
+    object btnAddGroupEtalons: TButton
+      Left = 582
+      Top = 1
+      Width = 136
+      Height = 56
+      Align = alLeft
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -27
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 7
+      OnClick = btnAddGroupEtalonsClick
     end
   end
   object MainMenu: TMainMenu
