@@ -77,6 +77,7 @@ bool TLCardData::Read(int _freqNum) {
 	double* buf;
 	if(dtLcard502)
 	{
+#ifndef _LCARDEMUL
 		buf = dtLcard502->Read(&size);
 		// double* raw_buf=lcard502->GetRawC();
 		if (size < 0)
@@ -135,6 +136,8 @@ bool TLCardData::Read(int _freqNum) {
 				vecMeasuresData[_freqNum].vecSensorsData[s].push_back(pbuf[s] // GVoltPercent[s]*10 ); //todo
 		}
 */
+#endif
+		TLog::LoadTxtChDoubleFile("C:\\SavedEtalons.1\\E_2023_11_13_09_18_30_147000_TS_89_SG_N80_FHZ.csv", this, freqNum,3);
 	}
 	return (true);
 }

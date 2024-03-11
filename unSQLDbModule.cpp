@@ -315,6 +315,8 @@ int TSqlDBModule::GetIntFromSql(AnsiString _strSql) {
 	return result;
 }
 
+
+
 int TSqlDBModule::FillComboBox(AnsiString _tableName, AnsiString _fieldName, TComboBox* _comboBox) {
 	int result = 0;
 	int rec_id = -1;
@@ -545,7 +547,7 @@ bool TSqlDBModule::SavePar(AnsiString _name, int _value)
 			ADOQueryDB->ExecSQL();
 			ADOQueryDB->Close();
 		}
-        res = true;
+		res = true;
 	}
 	catch (Exception *ex) {
 		res = false;
@@ -554,4 +556,28 @@ bool TSqlDBModule::SavePar(AnsiString _name, int _value)
 	return res;
 }
 
-
+int TSqlDBModule::getLastId(AnsiString _tableName)
+{
+	int res = 0;
+	try {
+		if (!ADOConnectionDB->Connected) {
+			ADOConnectionDB->Open();
+		}
+		else {
+			res = 0;
+		};
+		if (ADOQueryDB->Active) {
+			ADOQueryDB->Close();
+		}
+		ADOQueryDB->SQL->Text = "select max(rec_id) as [F1] from "+_tableName;
+		ADOQueryDB->Open();
+		res = ADOQueryDB->FieldByName("F1")->AsInteger;
+		ADOQueryDB->Close();
+		return res;
+	}
+	catch (Exception *ex) {
+		res = 0;
+		TProtocol::ProtocolSave(ex->Message);
+	}
+	return res;
+}

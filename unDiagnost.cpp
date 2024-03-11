@@ -64,8 +64,11 @@ void __fastcall TfmDiagnost::btnStartGenClick(TObject *Sender) {
 			//gen->SetSampleFreq(StrToInt(lbeFrecDiscrGSPF052->Text));
 			int frec = StrToInt(lbeFrecSignalGSPF052->Text);
 			float volt = StrToFloat(lbeVoltageGSPF052->Text);
-			gen->FormSignal(frec, volt);
-			gen->Start();
+			if(gen)
+			{
+				gen->FormSignal(frec, volt);
+				gen->Start();
+			}
 			Sleep(500);
 			// чтение ЛКард
 			while (true) {
@@ -75,16 +78,17 @@ void __fastcall TfmDiagnost::btnStartGenClick(TObject *Sender) {
 			}
 			// Сбрасываем состояние ГП и останавливаем ГСПФ
 			solidGroup->ResetState();
-			gen->Stop();
+			if(gen)gen->Stop();
 
 			// выключаем питание датчика
 			SLD->oSENSORON->Set(false);
 			// SLD->oSENSLOWPOW->Set(false);
 			// Выводим на экран графики
 			// lCardData->ReCalcMeasuresToChannels();
-			int arrSize;
+			int arrSize = 0;
 			//serg
-			arrSize = lCardData->vecMeasuresData[0].vecSensorsData[0].size();
+			if(lCardData->vecMeasuresData.size())
+				arrSize = lCardData->vecMeasuresData[0].vecSensorsData[0].size();
 			if (arrSize==0) {
 			  MessageDlg("Нет данных!", mtError, TMsgDlgButtons() << mbOK, NULL);
 			  return;
@@ -139,10 +143,10 @@ void __fastcall TfmDiagnost::btnStartGenClick(TObject *Sender) {
 //				,"rec_id="+IntToStr(csg.group_id),"X",err);
 //			csg.color = (TColor)SqlDBModule->GetIntFieldSQL("SolidGroups","Color"
 //				,"rec_id="+IntToStr(csg.group_id),65535,err);    //по умолчанию желтый
-            PanelSG->Width=180;
+			PanelSG->Width=180;
 			PanelSG->Caption = csg.group;//+" "+IntToStr((int)(csg.probability*100))+"%";
 			PanelSG->Width*=2;
-            //PanelChartTop->
+			//PanelChartTop->
 			PanelSG->Color = csg.color;
 			PanelSG->Font->Color = 16777215 - (int)csg.color;
 			// ChartGPSF052->Series[chCount]->AddArray(thDiag->vecMeasure[chCount],thDiag->countMeasure-1);
@@ -200,7 +204,7 @@ void __fastcall TfmDiagnost::btnStopGenClick(TObject *Sender) {
 		else {
 			//
 		}
-		gen->Stop();
+		if(gen)gen->Stop();
 		// Закрытие платы
 		// Close(onst char* desc=0);
 		// gen->CloseCard("ok");
@@ -395,7 +399,9 @@ void __fastcall TfmDiagnost::FormCreate(TObject *Sender) {
 					gen = NULL;
 					SLD->oSENSORON->Set(false);
 					SLD->LatchesTerminate();
+					/*
 					return;
+                    */
 			   }
 	}
 	else {

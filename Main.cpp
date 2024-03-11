@@ -25,6 +25,7 @@
 #include "About.h"
 #include "FRMEtalons.h"
 #include "FREgroupEdit.h"
+#include "FRMGroups.h"
 // -----------------------------------
 
 #pragma resource "*.dfm"
@@ -92,7 +93,9 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 			cbTypeSize->ItemIndex = -1;
 		}
 	}
-    */
+	*/
+	queryEtalon->Connection = SqlDBModule->ADOConnectionDB;
+	/*
 	// Заполним список групп образцов
 	SqlDBModule->FillComboBoxFromSql(
 	"\
@@ -108,7 +111,9 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 	SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +
 		IntToStr(mainGlobalSettings.indexCurrentSGGost), cbxSG);
 	cbxSG->ItemIndex = -1;
-	queryEtalon->Connection = SqlDBModule->ADOConnectionDB;
+	*/
+
+    FillComboBoxes();
 
 	TExtFunction::PrepareChartToTst(SignalChart, 3, 600, 2000);
 	SignalChart->Series[0]->Title += " Сигнал";
@@ -118,6 +123,28 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 	ChangeColor();
 	TExtFunction::PrepareChartToTst(EtalonChart, 3, 10, 2000);
 	EnableWigits(false);
+}
+
+void __fastcall TMainForm::FillComboBoxes()
+{
+	// Заполним список групп образцов
+	int ind = cbEtalonGroup->ItemIndex;
+	SqlDBModule->FillComboBoxFromSql(
+	"\
+		select eg.rec_id, ltrim(rtrim(eg.Name)) +'-'+convert(varchar(3),ts.Diameter)+'-'+g.ShortName as [F1]\
+		from egroups eg\
+		left join TypeSizes ts on ts.rec_id=eg.ts_id\
+		left join GOST g on g.rec_id=eg.gost_id\
+		order by ts.Diameter,ts.TSName,g.ShortName\
+	", cbEtalonGroup);
+	cbEtalonGroup->ItemIndex = ind;
+	cbEtalonGroupChange(cbEtalonGroup);
+	// Заполним список ГП
+	ind = cbxSG->ItemIndex;
+	SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +
+		IntToStr(mainGlobalSettings.indexCurrentSGGost), cbxSG);
+	cbxSG->ItemIndex = ind;
+	cbxSGChange(cbxSG);
 }
 
 // ------------------------------------------------------------------------------
@@ -474,6 +501,7 @@ void TMainForm::Start() {
 				threadWork = NULL;
 				delete x;
 			}
+#ifndef _LCARDEMUL
 			if (!gen)
 			{
 			   gen = new TGSPF052();
@@ -490,7 +518,7 @@ void TMainForm::Start() {
 					return;
 				}
 			}
-
+#endif
 			TSFrequencies TSFreqs = TSFrequencies(mainGlobalSettings.indexCurrentTypeSize);
 			if (TSFreqs.Frequency.size() <= 0)
 			{
@@ -760,11 +788,13 @@ void __fastcall TMainForm::PanelONClick(TObject * Sender) {
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::mnuCheckGenClick(TObject * Sender) {
+	/*
 	if(!lСard502 || !lСard502->handle)
 	{
 		 TExtFunction::ShowBigModalMessage("Платы LCard502 не найдено !", clRed);
 		 return;
 	}
+	*/
 	fmDiagnost = new TfmDiagnost(this, &mainGlobalSettings, lСard502, lCardData);
 	// fmDiagnost->Show();
 	fmDiagnost->ShowModal();
@@ -1048,7 +1078,8 @@ void TMainForm::EnableWigits(bool b)
 	menuEtalons->Visible = b;
 	menuExtSet->Visible = b;
 	menuGosts->Visible = b;
-    btnAddGroupEtalons->Visible = b;
+	btnAddGroupEtalons->Visible = b;
+    menuEgroupsEdit->Visible = b;
 }
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::N1Click(TObject *Sender)
@@ -1100,15 +1131,20 @@ void __fastcall TMainForm::cbEtalonGroupChange(TObject *Sender)
 {
 	TComboBox *cb = (TComboBox*)Sender;
 	int ind = cb->ItemIndex;
-	mainGlobalSettings.indexCurrentEtalonGroup = (int)cbEtalonGroup->Items->Objects[ind];
-	SqlDBModule->SavePar("indexCurrentEtalonGroup", mainGlobalSettings.indexCurrentEtalonGroup);
+	if(ind>=0)
+	{
+		mainGlobalSettings.indexCurrentEtalonGroup = (int)cbEtalonGroup->Items->Objects[ind];
+		SqlDBModule->SavePar("indexCurrentEtalonGroup", mainGlobalSettings.indexCurrentEtalonGroup);
+	}
 
-	int ts_id = SqlDBModule->GetIntFromSql("select ts_id as [F1] from egroups where rec_id='"+IntToStr(ind)+"'");
+	int ts_id = SqlDBModule->GetIntFromSql("select ts_id as [F1] from egroups where rec_id='"
+			 +IntToStr(mainGlobalSettings.indexCurrentEtalonGroup)+"'");
 	mainGlobalSettings.indexCurrentTypeSize = ts_id;
 	SqlDBModule->UpdIntSql("SettingsGlobal", "indexCurrentTypeSize", mainGlobalSettings.indexCurrentTypeSize, NULL);
 	SqlDBModule->SavePar("indexCurrentTypeSize", mainGlobalSettings.indexCurrentTypeSize);
 
-	int gost_id = SqlDBModule->GetIntFromSql("select gost_id as [F1] from egroups where rec_id='"+IntToStr(ind)+"'");
+	int gost_id = SqlDBModule->GetIntFromSql("select gost_id as [F1] from egroups where rec_id='"
+			+IntToStr(mainGlobalSettings.indexCurrentEtalonGroup)+"'");
 	mainGlobalSettings.indexCurrentSGGost = gost_id;
 	SqlDBModule->UpdIntSql("SettingsGlobal", "indexCurrentSGGost", mainGlobalSettings.indexCurrentSGGost, NULL);
 	SqlDBModule->SavePar("indexCurrentSGGost", mainGlobalSettings.indexCurrentSGGost);
@@ -1116,6 +1152,10 @@ void __fastcall TMainForm::cbEtalonGroupChange(TObject *Sender)
 	SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +
 		IntToStr(mainGlobalSettings.indexCurrentSGGost), cbxSG);
 	cbxSG->ItemIndex = -1;
+
+	AnsiString grName = cb->Text;
+	UpdateStatus(grName,"");
+
 }
 //---------------------------------------------------------------------------
 
@@ -1123,8 +1163,28 @@ void __fastcall TMainForm::cbEtalonGroupChange(TObject *Sender)
 void __fastcall TMainForm::btnAddGroupEtalonsClick(TObject *Sender)
 {
 	TEgroupEditFrm *frm = new TEgroupEditFrm(this);
-    frm->ShowModal();
-    delete frm;
+	frm->ShowModal();
+	delete frm;
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TMainForm::menuEgroupsEditClick(TObject *Sender)
+{
+	TFRGroups *frm = new TFRGroups(this);
+	frm->Show();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::cbxSGChange(TObject *Sender)
+{
+	int ind = cbxSG->ItemIndex;
+	if(ind>=0)
+	{
+		int sg = (int)cbxSG->Items->Objects[cbxSG->ItemIndex];
+		mainGlobalSettings.currTypeSize = sg;
+		SqlDBModule->UpdIntSql("SettingsGlobal", "indexCurrentTypeSize", mainGlobalSettings.currTypeSize, NULL);
+    }
 }
 //---------------------------------------------------------------------------
 

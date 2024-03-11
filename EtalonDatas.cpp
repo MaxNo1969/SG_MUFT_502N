@@ -60,6 +60,7 @@ EtalonDatas::EtalonDatas(int _TS_id, int _SGGost_id)
 		SqlDBModule->ADOQueryDB->Close();
 	}
 }
+
 //---------------------------------------------------------------------------
 EtalonDatas::~EtalonDatas()
 {

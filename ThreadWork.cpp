@@ -43,7 +43,7 @@ __fastcall ThreadWork::~ThreadWork(void) {
 	// GSPF = NULL;
 	// }
 	if (gspfStart)
-		GSPF->Stop();
+		if(GSPF)GSPF->Stop();
 	if (solidGroup) {
 		delete solidGroup;
 		solidGroup = NULL;
@@ -159,6 +159,7 @@ bool ThreadWork::OnlineCycle() {
 	// Ждем муфту
 	bool timeFlag;
 	gspfStart = false;
+#ifndef _LCARDEMUL
 	timeFlag = CheckMufta(false, 60000 * 5);
 	if (!timeFlag) // если превышено время ожидания, то выходим
 	{
@@ -188,7 +189,13 @@ bool ThreadWork::OnlineCycle() {
 	 TProtocol::ProtocolSave(msg);
 	 return false;
 	 }
+#else
+	Synchronize(MainRedraw);
+	SetStext2("Поставьте муфту в датчик!");
 
+	Post(UPDATE_STATUS);
+	Sleep(200);
+#endif
 	// gen = new TGSPF052(dGlobalSettings,err);
 	if (solidGroup != NULL) {
 		delete solidGroup;
@@ -204,7 +211,7 @@ bool ThreadWork::OnlineCycle() {
 	SLD->oSENSORON->Set(true);
 	// Включаем ГСПФ
 	gspfStart = true;
-	GSPF->Start();
+	if(GSPF)GSPF->Start();
 	Sleep(500);
 	// чтение ЛКард
 	while (true) {
@@ -214,7 +221,7 @@ bool ThreadWork::OnlineCycle() {
 	}
 	// Сбрасываем состояние ГП и останавливаем ГСПФ
 	solidGroup->ResetState();
-	GSPF->Stop();
+	if(GSPF)GSPF->Stop();
 
 	// выключаем питание датчика
 	SLD->oSENSORON->Set(false);
@@ -351,7 +358,7 @@ bool ThreadWork::CheckMufta(bool _waitStatus, int _waitTime) {
 	DWORD StartTime = GetTickCount();
 	if (_waitStatus)
 	{
- 		Synchronize(MainRedraw);
+		Synchronize(MainRedraw);
 		SetStext2("Поставьте муфту в датчик!");
 	}
 	else

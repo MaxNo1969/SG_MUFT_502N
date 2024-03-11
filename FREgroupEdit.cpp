@@ -17,6 +17,7 @@ __fastcall TEgroupEditFrm::TEgroupEditFrm(TComponent* Owner)
 	: TForm(Owner)
 {
 	 gs = ((TMainForm*)Owner)->getGlobalSettings();
+	 main = (TMainForm*)Owner;
 }
 //---------------------------------------------------------------------------
 void __fastcall TEgroupEditFrm::FormCreate(TObject *Sender)
@@ -114,6 +115,48 @@ void __fastcall TEgroupEditFrm::cbKeyDown(TObject *Sender, WORD &Key, TShiftStat
 			return;
 		}
 	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TEgroupEditFrm::btnAddClick(TObject *Sender)
+{
+	//int currGroup = gs->indexCurrentEtalonGroup;
+	int ts = (int)cbTypeSizes->Items->Objects[cbTypeSizes->ItemIndex];
+	int gost = (int)cbGost->Items->Objects[cbGost->ItemIndex];
+	UnicodeString sql = "insert into egroups (ts_id,gost_id,Name,Customer,ThreadType,ChampferType,SubArray)";
+	sql += " values("+IntToStr(ts)+","+IntToStr(gost)+
+		   ",'"+edName->Text+
+		   "','"+cbCustomer->Text+
+		   "','"+cbThreadType->Text+
+		   "','"+cbChampferType->Text+"',1)";
+	OutputDebugString(sql.c_str());
+	SqlDBModule->ExecStrSql(sql);
+	//-----------------------------------------------------------------------
+	gs->indexCurrentEtalonGroup = SqlDBModule->getLastId("egroups");
+	SqlDBModule->SavePar("indexCurrentEtalonGroup",gs->indexCurrentEtalonGroup);
+	main->FillComboBoxes();
+	Close();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TEgroupEditFrm::btnSaveClick(TObject *Sender)
+{
+	//int currGroup = gs->indexCurrentEtalonGroup;
+	//int currGroup = gs->indexCurrentEtalonGroup;
+	int ts = (int)cbTypeSizes->Items->Objects[cbTypeSizes->ItemIndex];
+	int gost = (int)cbGost->Items->Objects[cbGost->ItemIndex];
+	UnicodeString sql = "update egroups set ts_id='"+IntToStr(ts);
+	sql += "',gost_id="+IntToStr(gost);
+	sql += ",Name='"+edName->Text+"'";
+	sql += ",Customer='"+cbCustomer->Text+"'";
+	sql += ",ThreadType='"+cbThreadType->Text+"'";
+	sql += ",ChampferType='"+cbChampferType->Text+"'";
+	sql += ",SubArray=1 ";
+	sql += " where rec_id = "+IntToStr(gs->indexCurrentEtalonGroup);
+	OutputDebugString(sql.c_str());
+	SqlDBModule->ExecStrSql(sql);
+	main->FillComboBoxes();
+	Close();
 }
 //---------------------------------------------------------------------------
 

@@ -63,22 +63,24 @@ object MainForm: TMainForm
       Left = 1
       Top = 1
       Width = 16
-      Height = 13
+      Height = 14
       Align = alLeft
       Alignment = taCenter
       Caption = 'Min'
       Transparent = True
       Visible = False
+      ExplicitHeight = 13
     end
     object lMaxScrollbar: TLabel
       Left = 1156
       Top = 1
       Width = 20
-      Height = 13
+      Height = 14
       Align = alRight
       Alignment = taCenter
       Caption = 'Max'
       Visible = False
+      ExplicitHeight = 13
     end
     object scbChartDragger: TScrollBar
       Left = 17
@@ -265,7 +267,7 @@ object MainForm: TMainForm
       ExplicitTop = 2
     end
     object cbTypeSize: TComboBox
-      Left = 1014
+      Left = 921
       Top = 1
       Width = 153
       Height = 37
@@ -287,10 +289,10 @@ object MainForm: TMainForm
       OnSelect = cbTypeSizeSelect
     end
     object cbSGGost: TComboBox
-      Left = 718
+      Left = 625
       Top = 1
       Width = 296
-      Height = 56
+      Height = 37
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 0
@@ -308,7 +310,7 @@ object MainForm: TMainForm
       OnSelect = cbSGGostSelect
     end
     object bStart: TButton
-      Left = 1272
+      Left = 1179
       Top = 1
       Width = 105
       Height = 56
@@ -324,7 +326,7 @@ object MainForm: TMainForm
       OnClick = bStartClick
     end
     object bCancel: TButton
-      Left = 1167
+      Left = 1074
       Top = 1
       Width = 105
       Height = 56
@@ -383,6 +385,7 @@ object MainForm: TMainForm
         Font.Style = []
         ParentFont = False
         TabOrder = 1
+        OnChange = cbxSGChange
       end
     end
     object btnExit: TButton
@@ -405,7 +408,7 @@ object MainForm: TMainForm
       Left = 121
       Top = 1
       Width = 461
-      Height = 56
+      Height = 41
       Align = alLeft
       Style = csDropDownList
       DropDownCount = 10
@@ -421,10 +424,10 @@ object MainForm: TMainForm
     object btnAddGroupEtalons: TButton
       Left = 582
       Top = 1
-      Width = 136
+      Width = 43
       Height = 56
       Align = alLeft
-      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      Caption = '...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -27
@@ -468,6 +471,10 @@ object MainForm: TMainForm
         Caption = #1043#1054#1057#1058#1099
         Visible = False
         OnClick = menuGostsClick
+      end
+      object menuEgroupsEdit: TMenuItem
+        Caption = #1043#1088#1091#1087#1087#1099' '#1086#1073#1088#1072#1079#1094#1086#1074
+        OnClick = menuEgroupsEditClick
       end
       object N1: TMenuItem
         Caption = #1056#1072#1073#1086#1090#1072' '#1089' '#1086#1073#1088#1072#1079#1094#1072#1084#1080

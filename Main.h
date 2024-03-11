@@ -130,6 +130,7 @@ __published: // IDE-managed Components
 	TLabel *lblEtalonGroup;
 	TComboBox *cbEtalonGroup;
 	TButton *btnAddGroupEtalons;
+	TMenuItem *menuEgroupsEdit;
 
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
@@ -168,6 +169,8 @@ __published: // IDE-managed Components
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall cbEtalonGroupChange(TObject *Sender);
 	void __fastcall btnAddGroupEtalonsClick(TObject *Sender);
+	void __fastcall menuEgroupsEditClick(TObject *Sender);
+	void __fastcall cbxSGChange(TObject *Sender);
 
 private: // User declarations
 	// общие настройки программы
@@ -236,6 +239,7 @@ public: // User declarations
 	TGlobalSettings *getGlobalSettings(){return &mainGlobalSettings;};
 	__fastcall TMainForm(TComponent* Owner);
 	void LoadFromFile(UnicodeString FileName);
+    void __fastcall FillComboBoxes();
 
 };
 

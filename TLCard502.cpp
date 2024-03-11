@@ -280,6 +280,7 @@ double* TLCard502::Read(int* _size)
 {
 	Sleep(1000);
 	uint32_t count = 0;
+#ifndef _LCARDEMUL
 	if(handle)
 	{
 		if (CheckError(X502_GetRecvReadyCount(handle, &count)))
@@ -288,9 +289,13 @@ double* TLCard502::Read(int* _size)
 			return (NULL);
 		}
 	}
+#else
+	count = LCard502_INIT_SIZE;
+#endif
 	count /= countLogCh;
 	count *= countLogCh;
 	SetRawSize(count);
+#ifndef _LCARDEMUL
 	if(handle)
 	{
 		int rcv_size = X502_Recv(handle, rawi, count, RECV_TOUT);
@@ -328,6 +333,17 @@ double* TLCard502::Read(int* _size)
 			return (NULL);
 		}
 	}
+#else
+	for(int i= 0; i < count-3; i+=3)
+	{
+		rawi[i] = 15000 * sin((float)i*10);
+		raw[i] = 15000 * sin((float)i*10);
+		rawi[i+1] = 15000 * sin((float)((i+1)*10));
+		raw[i+1] = 15000 * sin((float)((i+1)*10));
+		rawi[i+2] = 15000 * sin((float)((i+2)*10));
+		raw[i+2] = 15000 * sin((float)((i+2)*10));
+	}
+#endif
 	*_size = count;
 	return (raw);
 }

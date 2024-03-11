@@ -68,7 +68,7 @@
         <BCC_DisableOptimizations>true</BCC_DisableOptimizations>
         <DCC_Optimize>false</DCC_Optimize>
         <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
-        <Defines>_DEBUG;$(Defines)</Defines>
+        <Defines>_DEBUG;_LCARDEMUL;$(Defines)</Defines>
         <BCC_InlineFunctionExpansion>false</BCC_InlineFunctionExpansion>
         <BCC_UseRegisterVariables>None</BCC_UseRegisterVariables>
         <DCC_Define>DEBUG</DCC_Define>
@@ -231,6 +231,12 @@
             <DependentOn>FRMEtalons.h</DependentOn>
             <BuildOrder>64</BuildOrder>
         </CppCompile>
+        <CppCompile Include="FRMGroups.cpp">
+            <Form>FRGroups</Form>
+            <FormType>dfm</FormType>
+            <DependentOn>FRMGroups.h</DependentOn>
+            <BuildOrder>66</BuildOrder>
+        </CppCompile>
         <CppCompile Include="GP_MUFT_L502N.cpp">
             <BuildOrder>0</BuildOrder>
         </CppCompile>
@@ -391,8 +397,9 @@
             <DependentOn>uTFRSensor.h</DependentOn>
             <BuildOrder>43</BuildOrder>
         </CppCompile>
-        <FormResources Include="NewSG.dfm"/>
         <FormResources Include="SGSettings.dfm"/>
+        <FormResources Include="Main.dfm"/>
+        <FormResources Include="NewSG.dfm"/>
         <FormResources Include="unSQLDbModule.dfm"/>
         <FormResources Include="unFmViewMeasure.dfm"/>
         <FormResources Include="unPasswordForm.dfm"/>
@@ -405,15 +412,15 @@
         <FormResources Include="unFmTypeSizes.dfm"/>
         <FormResources Include="unExtSettings.dfm"/>
         <FormResources Include="unFmEditSettings.dfm"/>
-        <FormResources Include="Main.dfm"/>
         <FormResources Include="CardsFiles\A1730\uFSignalsState.dfm"/>
         <FormResources Include="CardsFiles\A1730\uFRSigPanel.dfm"/>
         <FormResources Include="ABOUT.dfm"/>
         <FormResources Include="ADCSettings.dfm"/>
         <FormResources Include="ColorSettings.dfm"/>
         <FormResources Include="FRMEtalons.dfm"/>
-        <FormResources Include="FRGosts.dfm"/>
+        <FormResources Include="FRMGroups.dfm"/>
         <FormResources Include="FREgroupEdit.dfm"/>
+        <FormResources Include="FRGosts.dfm"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

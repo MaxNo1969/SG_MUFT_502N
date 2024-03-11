@@ -109,22 +109,32 @@ object EgroupEditFrm: TEgroupEditFrm
     TextHint = #1058#1080#1087' '#1092#1072#1089#1082#1080
     OnKeyDown = cbKeyDown
   end
-  object btnSave: TButton
+  object btnAdd: TButton
     Left = 248
     Top = 11
     Width = 75
     Height = 25
-    Caption = #1047#1072#1087#1080#1089#1072#1090#1100
+    Caption = #1053#1086#1074#1072#1103
     TabOrder = 6
+    OnClick = btnAddClick
   end
   object btnCancel: TButton
-    Left = 248
-    Top = 49
+    Left = 249
+    Top = 84
     Width = 75
     Height = 25
     Cancel = True
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 7
     OnClick = btnCancelClick
+  end
+  object Button1: TButton
+    Left = 249
+    Top = 42
+    Width = 75
+    Height = 25
+    Caption = #1047#1072#1087#1080#1089#1072#1090#1100
+    TabOrder = 8
+    OnClick = btnSaveClick
   end
 end
