@@ -98,8 +98,6 @@ __published: // IDE-managed Components
 	TMenuItem *mnuCheckGen;
 	TMenuItem *mnuCheck1730;
 	TMenuItem *menuEtalons;
-	TADOQuery *queryEtalon;
-	TADOCommand *cmdEtalonVal;
 	TPanel *PanelChartTop;
 	TChart *SignalChart;
 	TFastLineSeries *Series1;
@@ -155,7 +153,6 @@ __published: // IDE-managed Components
 	void __fastcall cbTypeSizeSelect(TObject *Sender);
 	void __fastcall bbtCreateEtalonClick(TObject *Sender);
 	void __fastcall FormResize(TObject *Sender);
-	void __fastcall cbSGGostSelect(TObject *Sender);
 	void __fastcall SplitterMidMoved(TObject *Sender);
 	void __fastcall FormActivate(TObject *Sender);
 	void __fastcall SplitterResMoved(TObject *Sender);
@@ -171,6 +168,8 @@ __published: // IDE-managed Components
 	void __fastcall btnAddGroupEtalonsClick(TObject *Sender);
 	void __fastcall menuEgroupsEditClick(TObject *Sender);
 	void __fastcall cbxSGChange(TObject *Sender);
+	void __fastcall cbEtalonGroupKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+
 
 private: // User declarations
 	// общие настройки программы
@@ -239,8 +238,7 @@ public: // User declarations
 	TGlobalSettings *getGlobalSettings(){return &mainGlobalSettings;};
 	__fastcall TMainForm(TComponent* Owner);
 	void LoadFromFile(UnicodeString FileName);
-    void __fastcall FillComboBoxes();
-
+    void __fastcall TMainForm::CreateEtalon(int _tsId,int _sgId, TLCardData* _lcd);
 };
 
 // ---------------------------------------------------------------------------

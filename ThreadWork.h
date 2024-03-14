@@ -22,7 +22,7 @@ public:
 	static const WPARAM UPDATE_STATUS = 3;
 	static const WPARAM COMPLETE = 5;
 	static const WPARAM NEXT_MUFT = 6;
-    bool TestExitLoop();
+    //bool TestExitLoop();
 	AnsiString GetStext1(void);
 	AnsiString GetStext2(void);
 	// Установить указанный результат расчета //todo а нужно ли?
@@ -69,7 +69,7 @@ private:
 	// ! Поток обработки всей кучи информации
 	bool OnlineCycle(void);
 	// ! Выставляем исходное положение модулей перед работой
-	UnicodeString PrepareForWork();
+	//UnicodeString PrepareForWork();
 	// проверка наличия муфты. Возвращает true если за указанное время статус изменился на ожидаемый
 	bool CheckMufta(bool _waitStatus, int _waitTime);
 	// ! Финальные штуки (отключение сигналов и т.д.)

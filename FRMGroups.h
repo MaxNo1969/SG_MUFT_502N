@@ -25,12 +25,14 @@ __published:	// IDE-managed Components
 	TSpeedButton *bEnd;
 	TSpeedButton *bAdd;
 	TSpeedButton *bDel;
-	TSpeedButton *bPost;
+	TSpeedButton *bEdit;
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall tbButtonClick(TObject *Sender);
     void __fastcall beforeInsert(TDataSet* DataSet);
+	void __fastcall gridCellClick(TColumn *Column);
 private:	// User declarations
 	void __fastcall AddNewGroup(void);
+    void __fastcall EditGroup(void);
 public:		// User declarations
 	__fastcall TFRGroups(TComponent* Owner);
 	__fastcall ~TFRGroups();

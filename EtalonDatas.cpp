@@ -9,7 +9,7 @@
 
 #pragma package(smart_init)
 
-EtalonDatas::EtalonDatas(int _TS_id, int _SGGost_id)
+EtalonDatas::EtalonDatas(int _TS_id)
 {
 	SqlDBModule->ADOQueryDB->Close();
 	AnsiString strSQL;
@@ -17,8 +17,6 @@ EtalonDatas::EtalonDatas(int _TS_id, int _SGGost_id)
 	strSQL += " FROM Etalons T1 join SolidGroups T2 on (T1.sg_id=T2.rec_ID)";
 	strSQL += " where T1.fenable=1 and T1.ts_id=";
 	strSQL += IntToStr(_TS_id);
-	strSQL += " and T2.Gost_id=";
-	strSQL += IntToStr(_SGGost_id);
 	strSQL += " order by T1.frequency ASC, T1.rec_id ASC";
 	SqlDBModule->ADOQueryDB->SQL->Text = strSQL;
 	SqlDBModule->ADOQueryDB->Open();

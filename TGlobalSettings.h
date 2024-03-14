@@ -34,10 +34,10 @@ public:
 	double filterSampleRate;
 	// ----------
 	AnsiString applPath;
-	AnsiString currentTypeSize;
-	AnsiString nameCurrentTypeSize;
+	//AnsiString currentTypeSize;
+	//AnsiString nameCurrentTypeSize;
 	int indexCurrentTypeSize; //индекс текущего типоразмера
-	int indexCurrentSGGost; //индекс текущего ГОСТа ГП
+	//int indexCurrentSGGost; //индекс текущего ГОСТа ГП
 	int protocolInterval;
 	int protocolToFile;
 	int protocolVisible;
@@ -60,8 +60,8 @@ public:
 	// -----------
 	//частота дискретизации генератора
 	int discrFrecGSPF;
-	//текущий типоразмер
-	int currTypeSize;
+	//текущая группа прочности типоразмер
+	int currSG; //в базе поле currTypeSize
 	//номер сообщения о готовности тестовых данных
 	unsigned int WM_MsgReadyTstData;
 	//сообщения потока
@@ -80,7 +80,5 @@ public:
 	AnsiString SaveEtalonPath;
 	AnsiString SaveResultPath;
 	bool isWork;
-
-	int indexCurrentEtalonGroup; //индекс текущей группы эталонов
 };
 #endif

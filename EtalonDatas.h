@@ -32,7 +32,7 @@ public:
 class EtalonDatas //класс хранящий эталоны для типоразмера
 {
 public:
-	EtalonDatas(int _TS_id, int _SGGost_id);
+	EtalonDatas(int _TS_id);
 	~EtalonDatas();
 	//эталоны
 	vector<Etalon> Etalons;
@@ -47,25 +47,5 @@ public:
 	vector<int> Thresholds;
 
 };
-
-//Массив образцов
-class EtalonArray
-{
-private:
-public:
-	//Название массива
-	AnsiString name;
-	//Типоразмер
-	int ts_id;
-	//ГОСТ
-	int gost_id;
-	vector<Etalon> Etalons;
-
-	EtalonArray(AnsiString _name,int _TS_id, int _SGGost_id):
-		name(name),ts_id(_TS_id),gost_id(_SGGost_id){};
-	~EtalonArray(){Etalons.clear();};
-
-};
-
 
 #endif

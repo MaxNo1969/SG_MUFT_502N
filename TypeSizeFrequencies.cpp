@@ -27,6 +27,8 @@ TSFrequencies::TSFrequencies(int _TS_id)
 		SqlDBModule->ADOQueryDB->Next();
 	}
 	SqlDBModule->ADOQueryDB->Close();
+	if(Frequency.size()==0)Frequency.push_back(190000);
+    if(Amplitude.size()==0)Amplitude.push_back(3);
 }
 TSFrequencies::~TSFrequencies()
 {

@@ -31,13 +31,10 @@ bool TSqlDBModule::GetBoolParam(AnsiString _paramName)
 		else {
 			ADOQueryDB->Close();
 		}
-		ADOQueryDB->SQL->Text = "select value from params where name='" + _paramName+"'";
+		ADOQueryDB->SQL->Text = "select paramValueBool from extSettingsGlobal where paramName='" + _paramName+"'";
 		ADOQueryDB->Open();
-		val = ADOQueryDB->FieldByName("value")->AsAnsiString;
-		if(val.Trim().LowerCase()=="true" || val.Trim().LowerCase()=="да")
-		  return true;
-		if(val.Trim().LowerCase()=="false" || val.Trim().LowerCase()=="нет")
-		  return false;
+		val = ADOQueryDB->FieldByName("paramValueBool")->AsInteger;
+		result = (val==1);
 		ADOQueryDB->Close();
 		return result;
 	}
@@ -61,12 +58,11 @@ AnsiString TSqlDBModule::GetStringParam(AnsiString _paramName)
 		else {
 			ADOQueryDB->Close();
 		}
-		ADOQueryDB->SQL->Text = "select value from params where name='" + _paramName+"'";
+		ADOQueryDB->SQL->Text = "select paramValueStr from extSettingsGlobal where paramName='" + _paramName+"'";
 		ADOQueryDB->Open();
-		result = ADOQueryDB->FieldByName("value")->AsAnsiString;
+		result = ADOQueryDB->FieldByName("paramValueStr")->AsAnsiString;
 		return result;
 		ADOQueryDB->Close();
-		return result;
 	}
 	catch (Exception *ex) {
 		AnsiString errStr = "TSqlDBModule::GetStringParam:"+ex->Message;

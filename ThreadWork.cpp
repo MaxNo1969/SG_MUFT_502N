@@ -25,7 +25,6 @@ __fastcall ThreadWork::ThreadWork(bool _createSuspended, TLCardData* _lCardData,
 	TGlobalSettings* _globalSettings, TGSPF052* _gen) {
 	thGlobalSettings = _globalSettings;
 	lCardData = _lCardData;
-	int err = -101;
 	GSPF = _gen; // new TGSPF052(thGlobalSettings,err);
 	solidGroup = new TSG(thGlobalSettings, lCardData);
 	Collect = true;
@@ -62,6 +61,10 @@ void __fastcall ThreadWork::Execute() {
 	TProtocol::ProtocolSave(stext1);
 	Post(UPDATE_STATUS);
 
+	SetStext2("Установка готова");
+	Post(UPDATE_STATUS);
+	Post(NEXT_MUFT);
+/*
 	UnicodeString prepare_result = PrepareForWork();
 	if (prepare_result != "ok") {
 		SetStext1("Режим \"Работа\" не завершен!");
@@ -72,7 +75,7 @@ void __fastcall ThreadWork::Execute() {
 		Post(COMPLETE, 0);
 		return;
 	}
-
+*/
 	TProtocol::ProtocolSave("Работа: Подготовка прошла успешно");
 	bool ret = OnlineCycle();
 	if (Terminated) {
@@ -111,15 +114,18 @@ void ThreadWork::Post(WPARAM _w, LPARAM _l) {
 	if (PostMessage(Application->Handle, thGlobalSettings->threadMsg, _w,
 		_l) == 0)
 		TExtFunction::FATAL("ThreadOnLine::Post: не могу послать сообщение");
+/*
 	AnsiString a = "ThreadOnLine::Post: послали ";
 	a += _w;
 	a += " ";
 	a += _l;
 	TProtocol::ProtocolSave(a);
+*/
 }
 
 // ---------------------------------------------------------------------------
 // -----подготовка к работе
+/*
 UnicodeString ThreadWork::PrepareForWork() {
 	SetStext2("Установка готова");
 	Post(UPDATE_STATUS);
@@ -127,9 +133,10 @@ UnicodeString ThreadWork::PrepareForWork() {
 	Post(NEXT_MUFT);
 	return "ok";
 }
-
+*/
 // -------------------------------------------------------------------------------
 // ----онлайн цикл, крутящийся бесконечно и проверяющий все события---------------
+/*
 struct ExitLoop {
 	bool &exitLoop;
 	TGSPF052 *gen;
@@ -150,9 +157,9 @@ bool ThreadWork::TestExitLoop() {
 		Sleep(1000);
 	return true;
 }
-
+*/
 bool ThreadWork::OnlineCycle() {
-	ExitLoop _exitLoop(exitLoop, GSPF);
+	//ExitLoop _exitLoop(exitLoop, GSPF);
 	TProtocol::ProtocolSave("Работа: Режим работа");
 	bool result = true; // общий результат успешности цикла
 	AnsiString msg = "";
@@ -192,7 +199,14 @@ bool ThreadWork::OnlineCycle() {
 #else
 	Synchronize(MainRedraw);
 	SetStext2("Поставьте муфту в датчик!");
-
+/*
+	//В режиме эмуляции загрузим файл
+	TOpenDialog *dlg = new TOpenDialog(NULL);
+	dlg->DefaultExt = ".csv";
+	dlg->Filter = "Сигнал группы прочности (*.csv)|*.csv";
+	if (dlg->Execute())
+	   TLog::LoadTxtChDoubleFile(AnsiString(dlg->FileName).c_str(), lCardData, 0,3);
+*/
 	Post(UPDATE_STATUS);
 	Sleep(200);
 #endif
@@ -204,7 +218,7 @@ bool ThreadWork::OnlineCycle() {
 
 	solidGroup = new TSG(thGlobalSettings, lCardData);
 	Sleep(500); // задержка на поправку муфты
-	DWORD LastTime = GetTickCount();
+	//DWORD LastTime = GetTickCount();
 	SetStext2("Начинаем сбор");
 	Post(UPDATE_STATUS);
 	// включаем питание датчика
@@ -399,7 +413,7 @@ bool ThreadWork::CheckMufta(bool _waitStatus, int _waitTime) {
          }
 		///////////////////////////////////////
 		muftаSearchData->ClearSGM();
-		if (GetTickCount() - StartTime > _waitTime) {
+		if (GetTickCount() - StartTime > (unsigned)_waitTime) {
 			timeFlag = true;
 			break;
 		}

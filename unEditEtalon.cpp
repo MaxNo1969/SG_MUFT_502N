@@ -3,6 +3,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include "Main.h"
 #include "unEditEtalon.h"
 #include "TProtocol.h"
 #include "unTExtFunction.h"
@@ -81,8 +82,10 @@ void TfmEditEtalon::BlockControls(bool _isEnable) {
 void __fastcall TfmEditEtalon::FormCreate(TObject *Sender) {
 	// blockControls(false);   //todo временно
 	KeyPreview = true;
-	SqlDBModule->FillComboBox("TypeSizes", "TSName", cbTypeSize);
+	TMainForm *main = (TMainForm*)Owner;
+	SqlDBModule->FillComboBoxFromSql("select rec_id, TSName as F1 from TypeSizes",cbTypeSize);
 	for (int i = 0; i < cbTypeSize->Items->Count; i++) {
+		int typeId = (int)cbTypeSize->Items->Objects[i];
 		if ((int)cbTypeSize->Items->Objects[i] == pGlobalSettings->indexCurrentTypeSize)
 		{
 			cbTypeSize->ItemIndex = i;
@@ -92,15 +95,23 @@ void __fastcall TfmEditEtalon::FormCreate(TObject *Sender) {
 			cbTypeSize->ItemIndex = -1;
 		}
 	}
-	cbSGGost->ItemIndex = pGlobalSettings->indexCurrentSGGost;
+	int idGost = 0;
+	//Заполняем список групп прочности - он зависит от ГОСТ-а
+	if(cbTypeSize->ItemIndex>=0)
+	{
+		AnsiString gostName = cbTypeSize->Items->Strings[cbTypeSize->ItemIndex].SubString(0,5);
+		idGost = SqlDBModule->GetIntFromSql("select rec_id as F1 from GOST where ShortName='"+gostName+"'");
+		SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +IntToStr(idGost),cbSGGost);
+		cbSGGost->ItemIndex=0;
+	}
 	queryEtalonVal->Close();
 	queryEtalon->Close();
 	queryTSz->Close();
 	queryEtalon->CursorLocation = clUseServer;
 	// queryEtalonVal->CursorLocation = clUseServer;
 	// queryTSz->CursorLocation = clUseServer;
-	FillGrids(pGlobalSettings->indexCurrentTypeSize,
-		pGlobalSettings->indexCurrentSGGost);
+
+	FillGrids(pGlobalSettings->indexCurrentTypeSize,idGost);
 	bool RHKret = RegisterHotKey(this->Handle, 0x00F,
 		// УСЛОВНЫЙ идентификатор горячего ключа
 		MOD_ALT + MOD_CONTROL, // модификаторы
@@ -156,15 +167,27 @@ int TfmEditEtalon::FillGrids(int _indTsz, int _indGost) {
 // ---------------------------------------------------------------------------
 void __fastcall TfmEditEtalon::cbTypeSizeSelect(TObject *Sender) {
 	int indTsz = cbTypeSize->ItemIndex;
-	int indGost = cbSGGost->ItemIndex;
-	FillGrids((int)cbTypeSize->Items->Objects[indTsz], (int)cbSGGost->Items->Objects[indGost]);
+	if(indTsz < 0)indTsz = 0;
+	//Заполняем список групп прочности - он зависит от ГОСТ-а
+	if(cbTypeSize->ItemIndex>=0)
+	{
+		AnsiString gostName = cbTypeSize->Items->Strings[cbTypeSize->ItemIndex].SubString(0,5);
+		int idGost = SqlDBModule->GetIntFromSql("select rec_id as F1 from GOST where ShortName='"+gostName+"'");
+		SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +IntToStr(idGost),cbSGGost);
+		cbSGGost->ItemIndex=0;
+	}
+	int indSG = cbSGGost->ItemIndex;
+	if(indSG < 0)indSG = 0;
+	FillGrids((int)cbTypeSize->Items->Objects[indTsz], (int)cbSGGost->Items->Objects[indSG]);
 }
 
 // ---------------------------------------------------------------------------
 void __fastcall TfmEditEtalon::cbSGGostSelect(TObject *Sender) {
 	int indTsz = cbTypeSize->ItemIndex;
-	int indGost = cbSGGost->ItemIndex;
-	FillGrids((int)cbTypeSize->Items->Objects[indTsz], (int)cbSGGost->Items->Objects[indGost]);
+	if(indTsz < 0)indTsz = 0;
+	int indSG = cbSGGost->ItemIndex;
+	if(indSG < 0)indSG = 0;
+	FillGrids((int)cbTypeSize->Items->Objects[indTsz], (int)cbSGGost->Items->Objects[indSG]);
 }
 // ---------------------------------------------------------------------------
 

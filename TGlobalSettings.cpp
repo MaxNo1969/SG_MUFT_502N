@@ -2,6 +2,7 @@
 
 #pragma hdrstop
 
+#include <memory> //если Вы будете использовать "умный указатель"
 #include "TGlobalSettings.h"
 // Глобальный файл настроек соберем все в одном месте
 // ---------------------------------------------------------------------------
@@ -64,7 +65,7 @@ int TGlobalSettings::LoadPRGSettings(AnsiString _fullPathNameUDL) {
 		filterRolloff = SqlDBModule->ADOQueryDB->FieldByName("filterRolloff")->AsFloat;
 		filterSampleRate = SqlDBModule->ADOQueryDB->FieldByName("filterSampleRate")->AsFloat;
 		indexCurrentTypeSize = SqlDBModule->ADOQueryDB->FieldByName("indexCurrentTypeSize")->AsInteger;
-		indexCurrentSGGost = SqlDBModule->ADOQueryDB->FieldByName("indexCurrentSGGost")->AsInteger;
+		//indexCurrentSGGost = SqlDBModule->ADOQueryDB->FieldByName("indexCurrentSGGost")->AsInteger;
 		protocolInterval = SqlDBModule->ADOQueryDB->FieldByName("protocolInterval")->AsInteger;
 		protocolToFile = SqlDBModule->ADOQueryDB->FieldByName("protocolToFile")->AsInteger;
 		protocolVisible = SqlDBModule->ADOQueryDB->FieldByName("protocolVisible")->AsInteger;
@@ -74,15 +75,18 @@ int TGlobalSettings::LoadPRGSettings(AnsiString _fullPathNameUDL) {
 		calcSGMode = SqlDBModule->ADOQueryDB->FieldByName("calcSGMode")->AsInteger;
 		discrFrecGSPF = SqlDBModule->ADOQueryDB->FieldByName("discrFrecGSPF")->AsInteger;
 		// -------------
-		SqlDBModule->ADOQueryDB->Close();
-		int err = 0;
-		AnsiString where = "rec_id=" + IntToStr(indexCurrentTypeSize);
-		nameCurrentTypeSize = SqlDBModule->GetStrFieldSQL("TypeSizes", "TSName", where, "нет", err);
+		//SqlDBModule->ADOQueryDB->Close();
+		//int err = 0;
+		//AnsiString where = "rec_id=" + IntToStr(indexCurrentTypeSize);
+		//nameCurrentTypeSize = SqlDBModule->GetStrFieldSQL("TypeSizes", "TSName", where, "нет", err);
 		SaveEtalonPath = SqlDBModule->GetStrFieldSQL("extSettingsGlobal", "paramValueStr", "UPPER(paramName)=UPPER('SavedEtalonsPath')", 0, err);
 		SaveResultPath = SqlDBModule->GetStrFieldSQL("extSettingsGlobal", "paramValueStr", "UPPER(paramName)=UPPER('SavedResultsPath')", 0, err);
 
+		AnsiString str = SqlDBModule->GetStringParam("indexCurrentSolidGroup");
+		if(str != "")currSG = StrToInt(SqlDBModule->GetStringParam("indexCurrentSolidGroup"));
+
 		WM_MsgReadyTstData = WM_USER + 99;
-		err = 0;
+		//err = 0;
 	}
 	catch (Exception *ex) {
 		err = -2;
@@ -92,3 +96,4 @@ int TGlobalSettings::LoadPRGSettings(AnsiString _fullPathNameUDL) {
 	}
 	return err;
 }
+

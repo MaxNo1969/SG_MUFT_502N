@@ -93,7 +93,7 @@ private: // User declarations
 	 int err;
 	 int step;
 	 //индекс текущего типоразмера
-	 int currTypeSize;
+	 //int currTypeSize;
 	 //количество отображаемых каналов
 	 int chCount;
 	 //время генерации

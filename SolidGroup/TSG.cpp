@@ -88,7 +88,7 @@ CSG TSG::GetSG()
 	try{
 	//составим список частот текущего типоразмера и значения порогов их эталонов
 	TSFrequencies TSFreqs = TSFrequencies(sgGlobalSettings->indexCurrentTypeSize);
-	EtalonDatas EDatas = EtalonDatas(sgGlobalSettings->indexCurrentTypeSize,sgGlobalSettings->indexCurrentSGGost);
+	EtalonDatas EDatas = EtalonDatas(sgGlobalSettings->indexCurrentTypeSize);
 	TSThresholds TSThres = TSThresholds(sgGlobalSettings->indexCurrentTypeSize);
 	//для каждой собранной частоты
 	for(int i = 0; i < sgLCardData->vecMeasuresData.size(); i++)
@@ -156,7 +156,7 @@ CSG TSG::Get1FrecSG()
 	//найдем группу прочности
 	//составим список частот текущего типоразмера и значения порогов их эталонов
 	TSFrequencies TSFreqs = TSFrequencies(sgGlobalSettings->indexCurrentTypeSize);
-	EtalonDatas EDatas = EtalonDatas(sgGlobalSettings->indexCurrentTypeSize,sgGlobalSettings->indexCurrentSGGost);
+	EtalonDatas EDatas = EtalonDatas(sgGlobalSettings->indexCurrentTypeSize);
 	//serg
 	if (EDatas.Etalons.size()==0) {
 		CSG ret;
@@ -164,7 +164,7 @@ CSG TSG::Get1FrecSG()
 		ret.probability = 0;
 		ret.group = "ХХХ";
 		ret.color = clWhite;
-		 TExtFunction::ShowBigModalMessage("Не найдены значения образцов!", clRed);
+		//TExtFunction::ShowBigModalMessage("Не найдены значения образцов!", clRed);
 		return (ret);
 	}else{
 	  //

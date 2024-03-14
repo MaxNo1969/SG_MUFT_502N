@@ -30,18 +30,22 @@ __published:	// IDE-managed Components
 	TButton *btnAdd;
 	TButton *btnCancel;
 	TButton *Button1;
+	TLabel *Label7;
+	TComboBox *cbName;
+	TLabel *Label8;
+	TEdit *edCheckMuftaLevel;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall btnCancelClick(TObject *Sender);
 	void __fastcall cbKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
 	void __fastcall btnAddClick(TObject *Sender);
 	void __fastcall btnSaveClick(TObject *Sender);
+	void __fastcall onElementChange(TObject *Sender);
 
 
 private:	// User declarations
-	TGlobalSettings *gs;
-    TMainForm *main;
+	AnsiString groupName;
 public:		// User declarations
-	__fastcall TEgroupEditFrm(TComponent* Owner);
+	__fastcall TEgroupEditFrm(AnsiString _groupName);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TEgroupEditFrm *EgroupEditFrm;

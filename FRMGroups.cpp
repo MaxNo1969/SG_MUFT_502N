@@ -28,7 +28,13 @@ __fastcall TFRGroups::TFRGroups(TComponent* Owner)
 	{
 		TADOQuery *qry = new TADOQuery(this);
 		qry->Connection = SqlDBModule->ADOConnectionDB;
-		qry->SQL->Add("select * from egroups");
+		//qry->SQL->Add("select * from TypeSizes");
+		qry->SQL->Add("\
+		select ts.TSName [Группа], ts.Diameter [Диаметр],isnull(c.cnt,0) [Количество образцов]\
+		from TypeSizes ts\
+		left join (select ts_id,count(*) cnt from Etalons group by ts_id) c on c.ts_id=ts.rec_id\
+		");
+
 		try
 		{
 			qry->Open();
@@ -70,8 +76,7 @@ void __fastcall TFRGroups::tbButtonClick(TObject *Sender)
 		 if(btn->Name == "bEnd")ds->Last();
 		 if(btn->Name == "bAdd")AddNewGroup();
 		 if(btn->Name == "bDel")ds->Delete();
-		 //if(btn->Name == "bPost")
-		 //if(btn->Name == "bFirst")ds->First();
+		 if(btn->Name == "bEdit")EditGroup();
 	}
 	catch (EADOError& e) {
 			AnsiString err = "Ошибка БД:" + e.ToString();
@@ -83,7 +88,25 @@ void __fastcall TFRGroups::tbButtonClick(TObject *Sender)
 
 void __fastcall TFRGroups::AddNewGroup(void)
 {
-	TEgroupEditFrm *frm = new TEgroupEditFrm(this);
+	AnsiString tsName = grid->DataSource->DataSet->FieldByName("Группа")->AsString;
+	TEgroupEditFrm *frm = new TEgroupEditFrm(tsName);
 	frm->ShowModal();
-    delete frm;
+	delete frm;
 }
+
+void __fastcall TFRGroups::EditGroup(void)
+{
+	AnsiString tsName = grid->DataSource->DataSet->FieldByName("Группа")->AsString;
+	TEgroupEditFrm *frm = new TEgroupEditFrm(tsName);
+	frm->ShowModal();
+	delete frm;
+}
+void __fastcall TFRGroups::gridCellClick(TColumn *Column)
+{
+	AnsiString tsName = grid->DataSource->DataSet->FieldByName("Группа")->AsString;
+	TEgroupEditFrm *frm = new TEgroupEditFrm(tsName);
+	frm->ShowModal();
+	delete frm;
+}
+//---------------------------------------------------------------------------
+

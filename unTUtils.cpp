@@ -178,7 +178,7 @@ int TLog::LoadTxtChDoubleFile(AnsiString _fullFileName, TLCardData *_lCardData, 
 				int d = 0;
 				for (int i = 0; i < _countCh; i++) {
 					 _lCardData->vecMeasure.clear();
-					_lCardData->vecMeasuresData[_frec].vecSensorsData[i].clear();
+					if(_lCardData->vecMeasuresData.size()>_frec)_lCardData->vecMeasuresData[_frec].vecSensorsData[i].clear();
 				}
 				while (beginRead < countCharBuffer) {
 					strZ = charBuffer.get()[beginRead];

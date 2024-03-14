@@ -3,7 +3,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <memory>
+#include <vector>
 #include "Main.h"
 #include "TProtocol.h"
 #include "ColorSettings.h"
@@ -51,6 +51,24 @@ __fastcall TMainForm::TMainForm(TComponent* Owner) : TForm(Owner) {
 		throw Exception("TMainForm::TMainForm не могу зарегистрировать сообщение");
 	}
 
+	//queryEtalon->Connection = SqlDBModule->ADOConnectionDB;
+	// Заполним список групп образцов
+	SqlDBModule->FillComboBoxFromSql(
+	"\
+		select ts.rec_id, ts.TSName as F1\
+		from TypeSizes ts\
+		order by ts.Diameter,ts.TSName\
+	", cbEtalonGroup);
+	cbEtalonGroup->ItemIndex = 0;
+	for(int i = 0; i < cbEtalonGroup->Items->Count; i++)
+	{
+		if(mainGlobalSettings.indexCurrentTypeSize == (int)cbEtalonGroup->Items->Objects[i])
+		{
+			cbEtalonGroup->ItemIndex = i;
+            break;
+		}
+	}
+
 	lСard502 = new TLCard502(&mainGlobalSettings);
 	TSFreqs = new TSFrequencies(mainGlobalSettings.indexCurrentTypeSize);
 	int freqCount = TSFreqs->Frequency.size();
@@ -94,26 +112,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 		}
 	}
 	*/
-	queryEtalon->Connection = SqlDBModule->ADOConnectionDB;
-	/*
-	// Заполним список групп образцов
-	SqlDBModule->FillComboBoxFromSql(
-	"\
-		select eg.rec_id, ltrim(rtrim(eg.Name)) +'-'+convert(varchar(3),ts.Diameter)+'-'+g.ShortName as [F1]\
-		from egroups eg\
-		left join TypeSizes ts on ts.rec_id=eg.ts_id\
-		left join GOST g on g.rec_id=eg.gost_id\
-		order by ts.Diameter,ts.TSName,g.ShortName\
-	", cbEtalonGroup);
-	cbEtalonGroup->ItemIndex = -1;
-
-	// Заполним список ГП
-	SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +
-		IntToStr(mainGlobalSettings.indexCurrentSGGost), cbxSG);
-	cbxSG->ItemIndex = -1;
-	*/
-
-    FillComboBoxes();
+	//queryEtalon->Connection = SqlDBModule->ADOConnectionDB;
 
 	TExtFunction::PrepareChartToTst(SignalChart, 3, 600, 2000);
 	SignalChart->Series[0]->Title += " Сигнал";
@@ -125,34 +124,12 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 	EnableWigits(false);
 }
 
-void __fastcall TMainForm::FillComboBoxes()
-{
-	// Заполним список групп образцов
-	int ind = cbEtalonGroup->ItemIndex;
-	SqlDBModule->FillComboBoxFromSql(
-	"\
-		select eg.rec_id, ltrim(rtrim(eg.Name)) +'-'+convert(varchar(3),ts.Diameter)+'-'+g.ShortName as [F1]\
-		from egroups eg\
-		left join TypeSizes ts on ts.rec_id=eg.ts_id\
-		left join GOST g on g.rec_id=eg.gost_id\
-		order by ts.Diameter,ts.TSName,g.ShortName\
-	", cbEtalonGroup);
-	cbEtalonGroup->ItemIndex = ind;
-	cbEtalonGroupChange(cbEtalonGroup);
-	// Заполним список ГП
-	ind = cbxSG->ItemIndex;
-	SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +
-		IntToStr(mainGlobalSettings.indexCurrentSGGost), cbxSG);
-	cbxSG->ItemIndex = ind;
-	cbxSGChange(cbxSG);
-}
-
 // ------------------------------------------------------------------------------
 void __fastcall TMainForm::FormDestroy(TObject * Sender) {
 	if (threadWork) {
 		threadWork->Terminate();
 		threadWork->WaitFor();
-		threadWork->TestExitLoop();
+		//threadWork->TestExitLoop();
 		threadWork = NULL;
 	}
 
@@ -336,7 +313,7 @@ void __fastcall TMainForm::ApplicationEventsMessage(tagMSG & Msg, bool &Handled)
 				SLD->LatchesTerminate();
 				SLD->SetAlarm(false);
 				threadWork->WaitFor();
-				threadWork->TestExitLoop();
+				//threadWork->TestExitLoop();
 				delete threadWork;
 				threadWork = NULL;
 				SetAbleButtons(true);
@@ -463,7 +440,7 @@ void __fastcall TMainForm::bStartClick(TObject * Sender) {
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::bCancelClick(TObject * Sender) {
-    mainGlobalSettings.isWork=false;
+	mainGlobalSettings.isWork=false;
 	Stop();
 }
 
@@ -496,7 +473,7 @@ void TMainForm::Start() {
 			{
 				threadWork->Terminate();
 				threadWork->WaitFor();
-				threadWork->TestExitLoop();
+				//threadWork->TestExitLoop();
 				ThreadWork *x = threadWork;
 				threadWork = NULL;
 				delete x;
@@ -560,19 +537,17 @@ void TMainForm::ReStart() {
 
 // ---------------------------------------------------------------------------
 void TMainForm::Stop() {
-	if (threadWork == NULL) {
-		//TProtocol::ProtocolSave("TMainForm::Stop: работа не запущена");
-		return;
+	if (threadWork != NULL)
+	{
+		// удалим поток
+		threadWork->Terminate();
+		threadWork->WaitFor();
+		//threadWork->TestExitLoop();
+		ThreadWork *x = threadWork;
+		threadWork = NULL;
+		Sleep(1000);
+		delete x;
 	}
-	// удалим поток
-	threadWork->Terminate();
-   //	threadWork->SetCalc();
-	threadWork->WaitFor();
-	threadWork->TestExitLoop();
-	ThreadWork *x = threadWork;
-	threadWork = NULL;
-	Sleep(1000);
-	delete x;
 
 	// отключим генератор
   //	if (gen) {
@@ -612,7 +587,9 @@ void TMainForm::Redraw() {
 	// }
 
 	// обойдемся одной частотой
-	int chCount = lCardData->vecMeasuresData[0].vecSensorsData.size();
+	int chCount = 3;
+	if(lCardData->vecMeasuresData.size()>0)
+		chCount = lCardData->vecMeasuresData[0].vecSensorsData.size();
 	TExtFunction::PrepareChartToTst(SignalChart, chCount, 0, 0);
 	ChangeColor();
 	SignalChart->Series[0]->Title += " Сигнал";
@@ -621,42 +598,66 @@ void TMainForm::Redraw() {
 	// Выводим на экран графики
 	int arrSize;
 	for (int i = 0; i < chCount; i++) {
-		arrSize = lCardData->vecMeasuresData[0].vecSensorsData[i].size();
-		double* tmpArray = new double[arrSize];
-		for (int j = 0; j < arrSize; j++) {
-			tmpArray[j] = lCardData->vecMeasuresData[0].vecSensorsData[i][j];
+		arrSize = 0;
+		if(lCardData->vecMeasuresData.size()>0)
+			arrSize = lCardData->vecMeasuresData[0].vecSensorsData[i].size();
+		if(arrSize>0)
+		{
+			double* tmpArray = new double[arrSize];
+			for (int j = 0; j < arrSize; j++) {
+				tmpArray[j] = lCardData->vecMeasuresData[0].vecSensorsData[i][j];
+			}
+			SignalChart->Series[i]->AddArray(tmpArray, arrSize - 1);
 		}
-		// SignalChart->Series[i]->Color=colorSer[i+1];
-		SignalChart->Series[i]->AddArray(tmpArray, arrSize - 1);
 	}
 	// посчитаем значения на порогах
 	vector<int>Thresholds;
 	int res;
 	// загружаем пороги по выбранному  типоразмеру
-	queryEtalon->Close();
+	TADOQuery *queryEtalon = new TADOQuery(NULL);
+	queryEtalon->Connection = SqlDBModule->ADOConnectionDB;
 	AnsiString strSQL = "select threshold_value from TypeSizeThresholds where TS_id=:pTS_id order by threshold_value";
 	queryEtalon->SQL->Text = strSQL;
 	queryEtalon->Parameters->ParamByName("pTS_id")->Value = mainGlobalSettings.indexCurrentTypeSize;
 	queryEtalon->Open();
 	queryEtalon->First();
 	int tst = queryEtalon->RecordCount;
-	// serg
-	if (tst == 0) {
-		MessageDlg("Не найдены значения порогов! Проверьте наличие образцов.", mtWarning, TMsgDlgButtons() << mbOK, NULL);
-		return;
+	if (tst == 0)
+	{
+		if(threadWork && threadWork->Started)
+		{
+			TProtocol::ProtocolSave("Не найдены значения порогов для группы "+cbEtalonGroup->Text+"! Проверьте наличие образцов.");
+			return;
+		}
+		else
+		{
+			MessageDlg("Не найдены значения порогов! Проверьте наличие образцов.", mtWarning, TMsgDlgButtons() << mbOK, NULL);
+			TProtocol::ProtocolSave("Не найдены значения порогов для группы "+cbEtalonGroup->Text+"! Проверьте наличие образцов.");
+			return;
+		}
 	}
-	else {
-		//
-	}
-	while (!queryEtalon->Eof) {
+	while (!queryEtalon->Eof)
+	{
 		res = queryEtalon->FieldByName("threshold_value")->AsInteger;
 		Thresholds.push_back(res);
 		queryEtalon->Next();
 	}
 	queryEtalon->Close();
+    delete queryEtalon;
 	// посчитали знач порогов
-	vector<double>BarkValues;
-	BarkValues = lCardData->GetBarkValues(Thresholds);
+	vector<double> BarkValues;
+	if(lCardData->vecMeasuresData.size()>0 && lCardData->vecMeasuresData[0].vecSensorsData[0].size()>0)
+	{
+		BarkValues = lCardData->GetBarkValues(Thresholds);
+	}
+	else
+	{
+		for (unsigned int i = 0; i < Thresholds.size(); i++)
+		{
+			double x =0.0;
+			BarkValues.push_back(x);
+		}
+	}
 	// покажем контрольные точки
 	TFastLineSeries* series = new TFastLineSeries(SignalChart);
 	// series->ColorEachPoint = true;
@@ -688,7 +689,7 @@ void TMainForm::Redraw() {
 	PanelSG->Font->Color = (TColor)(16777215 - (int)csg.color);
 	// else PanelSG->Color = clLime;
 	// заполним чарт характеристическими кривыми эталонов
-	EtalonDatas EDatas = EtalonDatas(mainGlobalSettings.indexCurrentTypeSize, mainGlobalSettings.indexCurrentSGGost);
+	EtalonDatas EDatas = EtalonDatas(mainGlobalSettings.indexCurrentTypeSize);
 	TExtFunction::PrepareChartToTst(EtalonChart, EDatas.Etalons.size(), 0, 0);
 
 	// Выводим на экран графики
@@ -810,18 +811,18 @@ void __fastcall TMainForm::mnuCheck1730Click(TObject * Sender) {
 		 TExtFunction::ShowBigModalMessage("Платы LCard502 не найдено !", clRed);
 		 return;
 	}
-    */
+	*/
 	FSignalsState = new TFSignalsState(this, &mainGlobalSettings, SLD);
 	FSignalsState->Show();
 }
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::menuEtalonsClick(TObject *Sender) {
-	//fmEditEtalon = new TfmEditEtalon(this, &mainGlobalSettings, lCardData);
-	//fmEditEtalon->ShowModal();
-	//fmEditEtalon = NULL;
-	TFREtalons* frm = new TFREtalons(this);
-	frm->Show();
+	fmEditEtalon = new TfmEditEtalon(this, &mainGlobalSettings, lCardData);
+	fmEditEtalon->ShowModal();
+	fmEditEtalon = NULL;
+	//TFREtalons* frm = new TFREtalons(this);
+	//frm->Show();
 }
 // ---------------------------------------------------------------------------
 
@@ -831,67 +832,46 @@ void __fastcall TMainForm::cbTypeSizeSelect(TObject *Sender) {
 	SqlDBModule->UpdIntSql("SettingsGlobal", "indexCurrentTypeSize", mainGlobalSettings.indexCurrentTypeSize, NULL);
 }
 
-// ---------------------------------------------------------------------------
-void __fastcall TMainForm::cbSGGostSelect(TObject *Sender) {
-	int ind = cbSGGost->ItemIndex;
-	mainGlobalSettings.indexCurrentSGGost = (int)cbSGGost->Items->Objects[ind];
-	SqlDBModule->UpdIntSql("SettingsGlobal", "indexCurrentSGGost", mainGlobalSettings.indexCurrentSGGost, NULL);
-	// serg
-	// SqlDBModule->FillComboBox("SolidGroups", "SGName", cbxSG);
-	SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +
-		IntToStr(mainGlobalSettings.indexCurrentSGGost), cbxSG);
-	cbxSG->ItemIndex = -1;
-}
-// ---------------------------------------------------------------------------
+void __fastcall TMainForm::CreateEtalon(int _tsId,int _sgId, TLCardData *_lcd)
+{
+	TADOQuery *qry = NULL;
+	TADOCommand *cmd = NULL;
+	try	{
+	try	{
+		qry = new TADOQuery(NULL);
+		qry->Connection = SqlDBModule->ADOConnectionDB;
+		cmd = new TADOCommand(NULL);
+		cmd->Connection = SqlDBModule->ADOConnectionDB;
 
-void __fastcall TMainForm::bbtCreateEtalonClick(TObject *Sender) {
-	AnsiString strSQL = "";
-	AnsiString strCmdSql = "";
-	int ind = 0;
-	int err;
-	int freq = 0;
-	double res = 0;
-	try
-	{
-		if (cbEtalonGroup->ItemIndex == -1) {
-			MessageDlg("Выберите группу эталонов", mtError, TMsgDlgButtons() << mbOK, NULL);
-			return;
-		}
-		if (cbxSG->ItemIndex == -1) {
-			MessageDlg("Выберите группу прочности", mtError, TMsgDlgButtons() << mbOK, NULL);
-			return;
-		}
-		int arrS = SignalChart->Series[0]->Count();
-		int freqN = lCardData->getFreqNum();
-		if (arrS <= 0)
-		{
-				MessageDlg("Соберите данные!!!", mtError, TMsgDlgButtons() << mbOK, NULL);
-				return;
-		}
-		AnsiString whereStr = "TS_id = " + IntToStr(mainGlobalSettings.indexCurrentTypeSize) + " ORDER BY frequency_value ASC";
-		freq = SqlDBModule->GetIntFieldSQL("TypeSizeFrequencies", "frequency_value", whereStr, 50000, err);
-		// запишем в файл, как эталон под другим именем
-		AnsiString msg = "Сохраняется образец для группы образцов "+cbEtalonGroup->Text+",\n группы прочности " +cbxSG->Text;
-		msg += "\n Уверены?";
-		if (MessageDlg(msg, mtConfirmation, TMsgDlgButtons() << mbOK << mbCancel, NULL) != mrOk)
-		{
-			MessageDlg("Отмена!", mtConfirmation, TMsgDlgButtons() << mbOK, NULL);
-			return;
-		}
-		AnsiString fileName = mainGlobalSettings.SaveEtalonPath;
-		fileName += "\\";
-		fileName += cbEtalonGroup->Text;
-		fileName += "_TS_";
-		fileName += SqlDBModule->GetStrFieldSQL("TypeSizes", "TSName", "rec_id = "
-				 + IntToStr(mainGlobalSettings.indexCurrentTypeSize),0, err);
+		AnsiString tsName = SqlDBModule->GetStrFromSql("select TSName as F1 from TypeSizes where rec_id="+IntToStr(_tsId));
+		AnsiString sgName = SqlDBModule->GetStrFromSql("select SGName as F1 from SolidGroups where rec_id="+IntToStr(_sgId));
+		int freq = SqlDBModule->GetIntFromSql("select max(frequency_value) as F1 from TypeSizeFrequencies where ts_id="+IntToStr(_tsId));
+
+		AnsiString fileName = mainGlobalSettings.SaveEtalonPath+"\\";
+		fileName += tsName;
 		fileName += "_SG_";
-		fileName += cbxSG->Text;
-		fileName += FormatDateTime("_yyyy_mm_dd_hh_mm_ss", Now());
+		fileName += sgName;
+		fileName += FormatDateTime("_yyyymmddhhmmss", Now());
 		fileName += ".csv";
-		// записази значения в базу
-		ind = cbxSG->ItemIndex;
+
+		//Здесь надо бы проверить что есть значения порогов для этого типоразмера
+		//если нет то видимо заполнить
+		int treshCount = SqlDBModule->GetIntFromSql("select count(*) as F1 from TypeSizeThresholds where TS_id="+IntToStr(_tsId));
+		if(treshCount == 0) {
+			if(MessageDlg(UnicodeString("Не найдены смещения для группы ")+tsName+". Заполнить?", mtConfirmation , TMsgDlgButtons() << mbOK<<mbCancel, NULL) == mbCancel)
+				return;
+			else{
+				SGSettForm = new TSGSettForm(this, &mainGlobalSettings);
+				SGSettForm->ShowModal();
+				//SGSettForm->Close();
+				delete SGSettForm;
+			}
+		}
+
+		// записываем значения в базу
+		UnicodeString strSQL = "";
 		strSQL = "INSERT INTO Etalons(ts_id,fenable,frequency,address_file,sg_id) VALUES( ";
-		strSQL += IntToStr(mainGlobalSettings.indexCurrentTypeSize);
+		strSQL += IntToStr(_tsId);
 		strSQL += ",";
 		strSQL += IntToStr(1);
 		strSQL += ",";
@@ -899,88 +879,106 @@ void __fastcall TMainForm::bbtCreateEtalonClick(TObject *Sender) {
 		strSQL += ",'";
 		strSQL += fileName;
 		strSQL += "',";
-		strSQL += IntToStr((int)cbxSG->Items->Objects[ind]);
+		strSQL += IntToStr(_sgId);
 		strSQL += ");\n";
 		strSQL += "SELECT @@IDENTITY AS 'LAST_ID';";
-		queryEtalon->Close();
-		queryEtalon->SQL->Text = strSQL;
-		queryEtalon->Open();
-		int etId = queryEtalon->FieldByName("LAST_ID")->AsInteger;
-		queryEtalon->Close();
+
+		qry->Close();
+		qry->SQL->Text = strSQL;
+		qry->Open();
+		int etId = qry->FieldByName("LAST_ID")->AsInteger;
+		qry->Close();
 
 		strSQL = "INSERT INTO EtalonValues Select ";
 		strSQL += IntToStr(etId);
-		strSQL += ",threshold_value, 123 from TypeSizeThresholds where TS_id=";
+		strSQL +=",threshold_value, 123 from TypeSizeThresholds where TS_id=";
 		strSQL += IntToStr(mainGlobalSettings.indexCurrentTypeSize);
 		strSQL += " order by threshold_value";
-		queryEtalon->SQL->Text = strSQL;
-		queryEtalon->ExecSQL();
-		queryEtalon->Close();
+		qry->SQL->Text = strSQL;
+		qry->ExecSQL();
+		qry->Close();
 		// посчитаем значения на порогах
 		vector<int>Thresholds;
-
 		// загружаем пороги по выбранному  типоразмеру
 		strSQL = "select threshold_value from TypeSizeThresholds where TS_id=:pTS_id order by threshold_value";
-		queryEtalon->SQL->Text = strSQL;
-		queryEtalon->Parameters->ParamByName("pTS_id")->Value = mainGlobalSettings.indexCurrentTypeSize;
-		queryEtalon->Open();
-		queryEtalon->First();
-		while (!queryEtalon->Eof)
-		{
-			res = queryEtalon->FieldByName("threshold_value")->AsInteger;
-			Thresholds.push_back(res);
-			queryEtalon->Next();
+		qry->SQL->Text = strSQL;
+		qry->Parameters->ParamByName("pTS_id")->Value = _tsId;
+		qry->Open();
+		qry->First();
+		while (!qry->Eof) {
+			int res = qry->FieldByName("threshold_value")->AsInteger;
+				Thresholds.push_back(res);
+				qry->Next();
 		}
-		queryEtalon->Close();
+		qry->Close();
 
-		strSQL =
-			"SELECT rec_id as vrec_id, etalon_id,thres_val,barkgausen_val FROM EtalonValues where etalon_id = :petalon_id order by thres_val";
-		queryEtalon->SQL->Text = strSQL;
-		queryEtalon->Parameters->ParamByName("petalon_id")->Value = etId;
-		// посчитали знач порогов
+		strSQL = "SELECT rec_id as vrec_id, etalon_id,thres_val,barkgausen_val FROM EtalonValues \
+				  where etalon_id = :petalon_id order by thres_val";
+		qry->SQL->Text = strSQL;
+		qry->Parameters->ParamByName("petalon_id")->Value = etId;
+			// посчитали знач порогов
 		vector<double>BarkValues;
-		BarkValues = lCardData->GetBarkValues(Thresholds);
+		BarkValues = _lcd->GetBarkValues(Thresholds);
 		// обновим в базе
-		queryEtalon->Open();
-		queryEtalon->First();
+		qry->Open();
+		qry->First();
 		int ii = 0;
+		UnicodeString strCmdSql;
 		for (unsigned int i = 0; i < Thresholds.size(); i++) {
-			strCmdSql = "UPDATE EtalonValues SET barkgausen_val = :pbarkgausen_val";
-			// cmdEtalonVal->Parameters->ParamByName("pbarkgausen_val")->Value = 222;
-			// double tst = BarkValues[i];
-			cmdEtalonVal->Parameters->ParamByName("pbarkgausen_val")->Value = BarkValues[i];
-			// strCmdSql+= FloatToStr(BarkValues[i]);
-			strCmdSql += " WHERE rec_id=";
-			strCmdSql += IntToStr(queryEtalon->FieldByName("vrec_id")->AsInteger);
-			cmdEtalonVal->CommandText = strCmdSql;
-			// cmdEtalonVal->Parameters->ParamByName("prec_id")->Value = queryEtalonVal->FieldByName("vrec_id")->AsInteger;
-			// cmdEtalonVal->Parameters->ParamByName("pbarkgausen_val")->Value = &BarkValues[i];
-			cmdEtalonVal->Execute();
-			queryEtalon->Next();
+			strCmdSql =	"UPDATE EtalonValues SET barkgausen_val = :pbarkgausen_val";
+			strCmdSql += " WHERE rec_id=" + IntToStr(qry->FieldByName("vrec_id")->AsInteger);
+			cmd->CommandText = strCmdSql;
+			cmd->Parameters->ParamByName("pbarkgausen_val")->Value = BarkValues[i];
+			cmd->Execute();
+			qry->Next();
 		}
-		queryEtalon->Close();
-		int freqNum = lCardData->getFreqNum();
-		int arrSize = lCardData->vecMeasuresData[freqNum].vecSensorsData[0].size()*3;
-		//int arrSize = lCardData->vecMeasure.size();
-		vector<double> forSave;
-		for(unsigned int i = 0; i<lCardData->vecMeasuresData[0].vecSensorsData[0].size();i++)
-		{
-		   forSave.push_back(lCardData->vecMeasuresData[freqNum].vecSensorsData[0][i]);
-		   forSave.push_back(lCardData->vecMeasuresData[freqNum].vecSensorsData[1][i]);
-		   forSave.push_back(lCardData->vecMeasuresData[freqNum].vecSensorsData[2][i]);
+		qry->Close();
+		int freqNum = _lcd->getFreqNum();
+		int arrSize = _lcd->vecMeasuresData[freqNum].vecSensorsData[0].size() * 3;
+		vector<double>forSave;
+		for (unsigned int i = 0; i < _lcd->vecMeasuresData[0].vecSensorsData[0].size(); i++) {
+			forSave.push_back(_lcd->vecMeasuresData[freqNum].vecSensorsData[0][i]);
+			forSave.push_back(_lcd->vecMeasuresData[freqNum].vecSensorsData[1][i]);
+			forSave.push_back(_lcd->vecMeasuresData[freqNum].vecSensorsData[2][i]);
 		}
-		TLog::SaveChTxtDoubleFile(fileName, &(forSave[0]) , arrSize,3); //serg
+		TLog::SaveChTxtDoubleFile(fileName, &(forSave[0]), arrSize, 3);
 		MessageDlg("Образец сохранен", mtConfirmation, TMsgDlgButtons() << mbOK, NULL);
-		err = 0;
+		}
+		catch (Exception *ex) {
+			AnsiString errStr = "TMainForm::bbtCreateEtalonClick:" + ex->Message;
+			TProtocol::ProtocolSave(errStr);
+			TExtFunction::ShowBigModalMessage(errStr, clRed);
+		}
 	}
-	catch (Exception *ex) {
-		AnsiString errStr = "TMainForm::bbtCreateEtalonClick:"+ex->Message;
-		TProtocol::ProtocolSave(errStr);
-		TExtFunction::ShowBigModalMessage(errStr, clRed);
+	__finally {
+		delete qry;
+		delete cmd;
 	}
 }
 
-// ---------------------------------------------------------------------------
+void __fastcall TMainForm::bbtCreateEtalonClick(TObject *Sender) {
+	if (cbEtalonGroup->ItemIndex == -1) {
+		MessageDlg("Выберите группу эталонов", mtError,
+			TMsgDlgButtons() << mbOK, NULL);
+		return;
+	}
+	if (cbxSG->ItemIndex == -1) {
+		MessageDlg("Выберите группу прочности", mtError,
+			TMsgDlgButtons() << mbOK, NULL);
+		return;
+	}
+	int arrS = SignalChart->Series[0]->Count();
+	int freqN = lCardData->getFreqNum();
+	if (arrS <= 0) {
+		MessageDlg("Соберите данные!!!", mtError,
+		TMsgDlgButtons() << mbOK, NULL);
+		return;
+	}
+	int tsId = (int)cbEtalonGroup->Items->Objects[cbEtalonGroup->ItemIndex];
+	int sgId = (int)cbxSG->Items->Objects[cbxSG->ItemIndex];
+	CreateEtalon(tsId, sgId, lCardData);
+}
+
 
 void __fastcall TMainForm::FormResize(TObject *Sender) {
 	// Panel1->Height=Panel2->Top-Panel1->Top;
@@ -997,7 +995,10 @@ void TMainForm::SetAbleButtons(bool _enable) {
  //	GroupBoxNGr->Visible = _enable;
 	bStart->Enabled = _enable;
 	cbTypeSize->Enabled = _enable;
-	cbSGGost->Enabled = _enable;
+	cbEtalonGroup->Enabled = _enable;
+	cbxSG->Enabled = _enable;
+    bbtCreateEtalon->Enabled = _enable;
+	//cbSGGost->Enabled = _enable;
 }
 
 void __fastcall TMainForm::SplitterMidMoved(TObject *Sender) {
@@ -1051,7 +1052,7 @@ void __fastcall TMainForm::FormCloseQuery(TObject *Sender, bool &CanClose)
 		if (threadWork != NULL) {
 				threadWork->Terminate();
 				threadWork->WaitFor();
-				threadWork->TestExitLoop();
+				//threadWork->TestExitLoop();
 				ThreadWork *x = threadWork;
 				threadWork = NULL;
 				delete x;
@@ -1131,38 +1132,47 @@ void __fastcall TMainForm::cbEtalonGroupChange(TObject *Sender)
 {
 	TComboBox *cb = (TComboBox*)Sender;
 	int ind = cb->ItemIndex;
-	if(ind>=0)
+	if(ind < 0)return;
+	mainGlobalSettings.indexCurrentTypeSize = (int)cbEtalonGroup->Items->Objects[ind];
+	SqlDBModule->UpdIntSql("SettingsGlobal","indexCurrentTypeSize",mainGlobalSettings.indexCurrentTypeSize,NULL);
+	//«53366-73-N80Q-NU-UNG-F0-3» (ГОСТ,  диаметр, группа N80Q, тип резьбы, заказчик, тип фаски F0, подмассив образцов 3)
+	AnsiString groupName = cb->Text;
+	TStringList *lst = new TStringList();
+	lst->Delimiter = '-';
+	lst->DelimitedText = groupName;
+	//Заполняем список ГОСТ-ов - он не виден и быстрее всего не пригодится
+	/*
+	AnsiString gostShortName = lst->Strings[0];
+	cbSGGost->ItemIndex = -1;
+	for(int i = 0; i < cbSGGost->Items->Count; i++)
 	{
-		mainGlobalSettings.indexCurrentEtalonGroup = (int)cbEtalonGroup->Items->Objects[ind];
-		SqlDBModule->SavePar("indexCurrentEtalonGroup", mainGlobalSettings.indexCurrentEtalonGroup);
+		AnsiString curGost = cbSGGost->Items->Strings[i];
+		if(cbSGGost->Items->Strings[i] == gostShortName)
+		{
+			cbSGGost->ItemIndex = i;
+			break;
+		}
 	}
+	if(cbSGGost->ItemIndex == -1)//Не найден гост для группы
+	{
 
-	int ts_id = SqlDBModule->GetIntFromSql("select ts_id as [F1] from egroups where rec_id='"
-			 +IntToStr(mainGlobalSettings.indexCurrentEtalonGroup)+"'");
-	mainGlobalSettings.indexCurrentTypeSize = ts_id;
-	SqlDBModule->UpdIntSql("SettingsGlobal", "indexCurrentTypeSize", mainGlobalSettings.indexCurrentTypeSize, NULL);
-	SqlDBModule->SavePar("indexCurrentTypeSize", mainGlobalSettings.indexCurrentTypeSize);
-
-	int gost_id = SqlDBModule->GetIntFromSql("select gost_id as [F1] from egroups where rec_id='"
-			+IntToStr(mainGlobalSettings.indexCurrentEtalonGroup)+"'");
-	mainGlobalSettings.indexCurrentSGGost = gost_id;
-	SqlDBModule->UpdIntSql("SettingsGlobal", "indexCurrentSGGost", mainGlobalSettings.indexCurrentSGGost, NULL);
-	SqlDBModule->SavePar("indexCurrentSGGost", mainGlobalSettings.indexCurrentSGGost);
-
-	SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +
-		IntToStr(mainGlobalSettings.indexCurrentSGGost), cbxSG);
+	}
+	*/
+	int gostId = SqlDBModule->GetIntFromSql(
+		   "select rec_id as F1 from GOST where ShortName='"+cbEtalonGroup->Text.SubString(0,5)+"'");
+	//Заполняем список групп прочности - он зависит от ГОСТ-а
+	SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" + IntToStr(gostId), cbxSG);
+	//Группа не выбрана
 	cbxSG->ItemIndex = -1;
-
-	AnsiString grName = cb->Text;
-	UpdateStatus(grName,"");
-
+	//По идее пока остальное нам не нужно
+    Redraw();
 }
 //---------------------------------------------------------------------------
 
 
 void __fastcall TMainForm::btnAddGroupEtalonsClick(TObject *Sender)
 {
-	TEgroupEditFrm *frm = new TEgroupEditFrm(this);
+	TEgroupEditFrm *frm = new TEgroupEditFrm(cbEtalonGroup->Text);
 	frm->ShowModal();
 	delete frm;
 }
@@ -1182,9 +1192,40 @@ void __fastcall TMainForm::cbxSGChange(TObject *Sender)
 	if(ind>=0)
 	{
 		int sg = (int)cbxSG->Items->Objects[cbxSG->ItemIndex];
-		mainGlobalSettings.currTypeSize = sg;
-		SqlDBModule->UpdIntSql("SettingsGlobal", "indexCurrentTypeSize", mainGlobalSettings.currTypeSize, NULL);
+		mainGlobalSettings.currSG = sg;
+		//SqlDBModule->UpdIntSql("SettingsGlobal", "indexCurrentSolidGroup", mainGlobalSettings.currSG, NULL);
+		SqlDBModule->SavePar("indexCurrentSolidGroup",IntToStr(mainGlobalSettings.currSG));
     }
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TMainForm::cbEtalonGroupKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	TComboBox *cb = (TComboBox*)Sender;
+	if(Key == VK_RETURN)
+	{
+		for(int i=0; i < cb->Items->Count; i++)
+		if(cb->Text==cb->Items->Strings[i])
+		{
+			Key = 0;
+			return;
+		}
+		//cb->Items->Add(cb->Text);
+		MessageDlg("Такой группы не найдено!!!", mtError, TMsgDlgButtons() << mbOK, NULL);
+        Key = 0;
+		return;
+	}
+/*
+	if(Key == VK_DELETE)
+	{
+		for(int i=0; i < cb->Items->Count; i++)
+		if(cb->Text==cb->Items->Strings[i])
+		{
+			cb->Items->Delete(i);
+			return;
+		}
+	}
+ */
+}
+//---------------------------------------------------------------------------

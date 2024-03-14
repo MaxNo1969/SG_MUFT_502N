@@ -136,8 +136,18 @@ bool TLCardData::Read(int _freqNum) {
 				vecMeasuresData[_freqNum].vecSensorsData[s].push_back(pbuf[s] // GVoltPercent[s]*10 ); //todo
 		}
 */
+#else
+	// В режиме эмуляции загрузим файл
+	// Если вызывать диалог, то при нажатии отмены умирает :(
+	/*
+	TOpenDialog *dlg = new TOpenDialog(NULL);
+	dlg->DefaultExt = ".csv";
+	dlg->Filter = "Сигнал группы прочности (*.csv)|*.csv";
+	if (dlg->Execute())
+	   TLog::LoadTxtChDoubleFile(AnsiString(dlg->FileName).c_str(), this, 0,3);
+	*/
+	TLog::LoadTxtChDoubleFile("C:\\SavedEtalons.1\\E_2023_11_13_09_18_30_147000_TS_89_SG_N80_FHZ.csv", this, freqNum,3);
 #endif
-		TLog::LoadTxtChDoubleFile("C:\\SavedEtalons.1\\E_2023_11_13_09_18_30_147000_TS_89_SG_N80_FHZ.csv", this, freqNum,3);
 	}
 	return (true);
 }
@@ -285,7 +295,7 @@ bool TLCardData::CheckMufta(int _sensNum)
 // ---------------------------------------------------------------------------
 vector<double> TLCardData::GetBarkValues(vector<int> &_Thresholds)
 {   //очень хреново, что вектор создается здесь, а удалять его необходимо выше
-//лучше передать BarkValues как параметр, как _Thresholds
+	//лучше передать BarkValues как параметр, как _Thresholds
 	vector<double> BarkValues;// = new vector<double>;
 	//в файле хранятся три периода
 	int Period = vecMeasuresData[freqNum].vecSensorsData[0].size() / 3;

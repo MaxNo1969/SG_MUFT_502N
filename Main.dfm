@@ -63,24 +63,22 @@ object MainForm: TMainForm
       Left = 1
       Top = 1
       Width = 16
-      Height = 14
+      Height = 13
       Align = alLeft
       Alignment = taCenter
       Caption = 'Min'
       Transparent = True
       Visible = False
-      ExplicitHeight = 13
     end
     object lMaxScrollbar: TLabel
       Left = 1156
       Top = 1
       Width = 20
-      Height = 14
+      Height = 13
       Align = alRight
       Alignment = taCenter
       Caption = 'Max'
       Visible = False
-      ExplicitHeight = 13
     end
     object scbChartDragger: TScrollBar
       Left = 17
@@ -292,7 +290,7 @@ object MainForm: TMainForm
       Left = 625
       Top = 1
       Width = 296
-      Height = 37
+      Height = 56
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 0
@@ -307,23 +305,6 @@ object MainForm: TMainForm
       TabOrder = 1
       Text = 'cbSGGost'
       Visible = False
-      OnSelect = cbSGGostSelect
-    end
-    object bStart: TButton
-      Left = 1179
-      Top = 1
-      Width = 105
-      Height = 56
-      Align = alLeft
-      Caption = #1055#1091#1089#1082
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 2
-      OnClick = bStartClick
     end
     object bCancel: TButton
       Left = 1074
@@ -408,9 +389,8 @@ object MainForm: TMainForm
       Left = 121
       Top = 1
       Width = 461
-      Height = 41
+      Height = 56
       Align = alLeft
-      Style = csDropDownList
       DropDownCount = 10
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -420,6 +400,7 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 6
       OnChange = cbEtalonGroupChange
+      OnKeyDown = cbEtalonGroupKeyDown
     end
     object btnAddGroupEtalons: TButton
       Left = 582
@@ -436,6 +417,22 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 7
       OnClick = btnAddGroupEtalonsClick
+    end
+    object bStart: TButton
+      Left = 1179
+      Top = 1
+      Width = 105
+      Height = 56
+      Align = alLeft
+      Caption = #1055#1091#1089#1082
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 2
+      OnClick = bStartClick
     end
   end
   object MainMenu: TMainMenu
@@ -537,24 +534,6 @@ object MainForm: TMainForm
     OnMessage = ApplicationEventsMessage
     Left = 792
     Top = 232
-  end
-  object queryEtalon: TADOQuery
-    Parameters = <>
-    Left = 840
-    Top = 148
-  end
-  object cmdEtalonVal: TADOCommand
-    Connection = SqlDBModule.ADOConnectionDB
-    Parameters = <
-      item
-        Name = 'pbarkgausen_val'
-        DataType = ftFloat
-        NumericScale = 8
-        Precision = 8
-        Value = Null
-      end>
-    Left = 824
-    Top = 104
   end
   object timerCheck1730: TTimer
     Enabled = False

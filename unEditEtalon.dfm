@@ -154,11 +154,11 @@ object fmEditEtalon: TfmEditEtalon
     object Label2: TLabel
       Left = 139
       Top = 1
-      Width = 23
+      Width = 107
       Height = 23
       Align = alLeft
       Alignment = taCenter
-      Caption = #1043#1086#1089#1090
+      Caption = '   '#1043#1088#1091#1087#1087#1072' '#1087#1088#1086#1095#1085#1086#1089#1090#1080'  '
       Layout = tlCenter
       ExplicitHeight = 13
     end
@@ -169,11 +169,11 @@ object fmEditEtalon: TfmEditEtalon
       Height = 21
       Align = alLeft
       TabOrder = 0
-      Text = 'cbTypeSize'
+      Text = '...'
       OnSelect = cbTypeSizeSelect
     end
     object bbtShowEt: TBitBtn
-      Left = 241
+      Left = 325
       Top = 1
       Width = 110
       Height = 23
@@ -181,9 +181,11 @@ object fmEditEtalon: TfmEditEtalon
       Caption = #1055#1086#1089#1084#1086#1090#1088#1077#1090#1100
       TabOrder = 1
       OnClick = bbtShowEtClick
+      ExplicitLeft = 319
+      ExplicitTop = -4
     end
     object bbtRecalc: TBitBtn
-      Left = 351
+      Left = 435
       Top = 1
       Width = 112
       Height = 23
@@ -191,9 +193,10 @@ object fmEditEtalon: TfmEditEtalon
       Caption = #1055#1077#1088#1077#1089#1095#1077#1090' '#1086#1073#1088#1072#1079#1094#1072
       TabOrder = 2
       OnClick = bbtRecalcClick
+      ExplicitLeft = 351
     end
     object bbtRecalcAll: TBitBtn
-      Left = 463
+      Left = 547
       Top = 1
       Width = 112
       Height = 23
@@ -201,19 +204,21 @@ object fmEditEtalon: TfmEditEtalon
       Caption = #1055#1077#1088#1077#1089#1095#1077#1090' '#1074#1089#1077#1093
       TabOrder = 3
       OnClick = bbtRecalcAllClick
+      ExplicitLeft = 463
     end
     object cbSGGost: TComboBox
-      Left = 162
+      Left = 246
       Top = 1
       Width = 79
       Height = 21
       Align = alLeft
       TabOrder = 4
-      Text = 'cbSGGost'
+      Text = '...'
       OnSelect = cbSGGostSelect
       Items.Strings = (
         #1043#1054#1057#1058' '#1056'53366-2009'
         #1043#1054#1057#1058' 633-80')
+      ExplicitLeft = 162
     end
   end
   object gbSGThreshold: TGroupBox

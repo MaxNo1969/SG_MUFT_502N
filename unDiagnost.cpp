@@ -3,6 +3,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include "Main.h"
 #include "unDiagnost.h"
 #include "TGSPF052.h"
 #include "unTExtFunction.h"
@@ -317,8 +318,8 @@ void __fastcall TfmDiagnost::btnStartSerClick(TObject *Sender) {
 				ChartGPSF052->Series[i]->AddArray(tmpArray, arrSize - 1);
 			}
 			// Сохранение в файл
-			for (int freqNum = 0; freqNum < TSFreqs->Frequency.size();
-			freqNum++) {
+			for (int freqNum = 0; freqNum < TSFreqs->Frequency.size();freqNum++)
+			{
 				AnsiString s = "";
 				s=pGlobalSettings->SaveResultPath;
 				s += "\\SavedResult\\";
@@ -376,6 +377,7 @@ void __fastcall TfmDiagnost::FormCreate(TObject *Sender) {
 //	pGlobalSettings->indexCurrentTypeSize = 1;
 	// TypeSizeFrequencies
 	TSFreqs = new TSFrequencies(pGlobalSettings->indexCurrentTypeSize);
+/*
 	// первая запись частот по типоразмеру
 	firstFrec = SqlDBModule->GetIntFromSql
 		("select min(frequency_value) as F1 from TypeSizeFrequencies where TS_id=" +
@@ -391,6 +393,10 @@ void __fastcall TfmDiagnost::FormCreate(TObject *Sender) {
 		+ " and frequency_value=" + IntToStr(firstFrec), 5, err));
 	lbeFrecDiscrGSPF052->Text = IntToStr(pGlobalSettings->discrFrecGSPF);
 	// lbeStepCountGSPF052->Text =IntToStr(SqlDBModule->GetIntFieldSQL("GSPF052Params","count(*) as F1","isUsed=1", 0,err));
+*/
+	lbeFrecSignalGSPF052->Text = IntToStr(TSFreqs->Frequency[0]);
+	lbeVoltageGSPF052->Text = FloatToStr((float)TSFreqs->Amplitude[0]);
+	lbeFrecDiscrGSPF052->Text = IntToStr(pGlobalSettings->discrFrecGSPF);
 	if (!gen) {
 		gen = new TGSPF052();//(pGlobalSettings, err);
 		if(NULL == gen->hDLL)
@@ -401,14 +407,16 @@ void __fastcall TfmDiagnost::FormCreate(TObject *Sender) {
 					SLD->LatchesTerminate();
 					/*
 					return;
-                    */
+					*/
 			   }
 	}
-	else {
-		//
-	}
-	//SqlDBModule->FillComboBox("SolidGroups", "SGName", cbxSG);
-	SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" + IntToStr(pGlobalSettings->indexCurrentSGGost), cbxSGD);
+
+	TMainForm *main = (TMainForm*)Owner;
+	int gostId = SqlDBModule->GetIntFromSql(
+		   "select rec_id as F1 from GOST where ShortName='"+main->cbEtalonGroup->Text.SubString(0,5)+"'");
+	//Заполняем список групп прочности - он зависит от ГОСТ-а
+	SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" + IntToStr(gostId), cbxSGD);
+	//Группа не выбрана
 	cbxSGD->ItemIndex = -1;
 	queryEtalon->Connection = SqlDBModule->ADOConnectionDB;
 }
@@ -537,7 +545,14 @@ void __fastcall TfmDiagnost::bbtCreateEtalonClick(TObject *Sender) {
 				TMsgDlgButtons() << mbOK, NULL);
 
 		}
-		else {
+		else
+		{
+			TMainForm *main = (TMainForm*)Owner;
+			int tsId = (int)main->cbEtalonGroup->Items->Objects[main->cbEtalonGroup->ItemIndex];
+			int sgId = (int)cbxSGD->Items->Objects[cbxSGD->ItemIndex];
+			main->CreateEtalon(tsId,sgId,lCardData);
+
+/*
 		// запишем в файл, как эталон под другим именем
 			fileName = "";
 			//fileName =  "..\\..\\SavedEtalons\\E_";
@@ -649,7 +664,7 @@ void __fastcall TfmDiagnost::bbtCreateEtalonClick(TObject *Sender) {
 			// queryTSz->Close();
 			// queryTSz->Parameters->ParamByName("pTypeSize")->Value = (int)cbTypeSize->Items->Objects[ind];
 			// queryTSz->Open();
-
+		 */
 		}
 	}
 	catch (Exception *ex) {

@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "FREgroupEdit.h"
+#include "FRMGroups.h"
 #include "Main.h"
 #include "TProtocol.h"
 #include "unSQLDbModule.h"
@@ -13,52 +14,66 @@
 #pragma resource "*.dfm"
 TEgroupEditFrm *EgroupEditFrm;
 //---------------------------------------------------------------------------
-__fastcall TEgroupEditFrm::TEgroupEditFrm(TComponent* Owner)
-	: TForm(Owner)
+__fastcall TEgroupEditFrm::TEgroupEditFrm(AnsiString _groupName)
+	: TForm(Owner),groupName(_groupName)
 {
-	 gs = ((TMainForm*)Owner)->getGlobalSettings();
-	 main = (TMainForm*)Owner;
 }
 //---------------------------------------------------------------------------
 void __fastcall TEgroupEditFrm::FormCreate(TObject *Sender)
 {
 	//Заполняем значения полей
 	//Текущая группа если выбрана
-	int currGroup = gs->indexCurrentEtalonGroup;
-	edName->Text = SqlDBModule->GetStrFromSql("select name as [F1] from egroups where rec_id='"+IntToStr(currGroup)+"'");
-	SqlDBModule->FillComboBoxFromSql("select rec_id,ShortName as [F1] from GOST",cbGost);
+	//int currGroup = gs->indexCurrentTypeSize;
+	//AnsiString groupName = main->cbEtalonGroup->Text;
+	//«53366-73-N80Q-NU-UNG-F0-3» (ГОСТ,  диаметр, группа N80Q, тип резьбы, заказчик, тип фаски F0, подмассив образцов 3)
+    int tsId = SqlDBModule->GetIntFromSql("select rec_id as F1 from TypeSizes where TSName='"+groupName+"'");
+	edName->Text = groupName;
+	TStringList *parseList = new TStringList();
+	parseList->Delimiter = '-';
+	parseList->DelimitedText = groupName;
+	SqlDBModule->FillComboBoxFromSql("select rec_id,ltrim(rtrim(ShortName)) as [F1] from GOST",cbGost);
 	cbGost->ItemIndex = -1;
 	for (int i = 0; i < cbGost->Items->Count; i++)
 	{
-		if ((int)cbGost->Items->Objects[i] == gs->indexCurrentSGGost)
+		if (cbGost->Items->Strings[i] == parseList->Strings[0])
 		{
 			cbGost->ItemIndex = i;
 			break;
 		}
 	}
-	SqlDBModule->FillComboBoxFromSql("select rec_id,TSName as [F1] from TypeSizes",cbTypeSizes);
+	SqlDBModule->FillComboBoxFromSql("select distinct 1 as rec_id, Diameter as [F1] from TypeSizes",cbTypeSizes);
 	cbTypeSizes->ItemIndex = -1;
 	for (int i = 0; i < cbTypeSizes->Items->Count; i++)
 	{
-		if ((int)cbTypeSizes->Items->Objects[i] == gs->indexCurrentTypeSize)
+		if (cbTypeSizes->Items->Strings[i] == parseList->Strings[1])
 		{
 			cbTypeSizes->ItemIndex = i;
 			break;
 		}
 	}
 
-	SqlDBModule->FillComboBoxFromSql("select distinct 1 as rec_id,Customer as [F1] from egroups",cbCustomer);
-	cbCustomer->ItemIndex = -1;
-	AnsiString curCustomer = SqlDBModule->GetStrFromSql("select customer as [F1] from egroups where rec_id='"+IntToStr(currGroup)+"'");
-	for (int i = 0; i < cbCustomer->Items->Count; i++)
+	SqlDBModule->FillComboBoxFromSql(
+		"select distinct 1 as rec_id,case when Diameter>100 then substring(TSName,11,10) else substring(TSName,10,9) end as F1 from TypeSizes",
+		cbName);
+	cbName->ItemIndex = -1;
+	AnsiString curName = parseList->Strings[2];
+	for (int i = 0; i < cbName->Items->Count; i++)
 	{
-		if (cbCustomer->Items->Strings[i] == curCustomer)
+		AnsiString strCb = cbName->Items->Strings[i];
+		if (cbName->Items->Strings[i] == curName)
 		{
-			cbCustomer->ItemIndex = i;
+			cbName->ItemIndex = i;
 			break;
 		}
 	}
 
+	cbThreadType->Text = parseList->Strings[3];
+	cbCustomer->Text = parseList->Strings[4];
+	cbChampferType->Text = parseList->Strings[5];
+
+	int checkMuftaLevel = SqlDBModule->GetIntFromSql("select checkMuftaLevel as F1 from checkMuftaLevel where rec_id="+IntToStr(tsId));
+    edCheckMuftaLevel->Text = IntToStr(checkMuftaLevel);
+/*
 	SqlDBModule->FillComboBoxFromSql("select distinct 1 as rec_id,ThreadType as [F1] from egroups",cbThreadType);
 	cbThreadType->ItemIndex = -1;
 	AnsiString curThreadType = SqlDBModule->GetStrFromSql("select ThreadType as [F1] from egroups where rec_id='"+IntToStr(currGroup)+"'");
@@ -82,7 +97,7 @@ void __fastcall TEgroupEditFrm::FormCreate(TObject *Sender)
 			break;
 		}
 	}
-
+*/
 
 }
 //---------------------------------------------------------------------------
@@ -120,43 +135,44 @@ void __fastcall TEgroupEditFrm::cbKeyDown(TObject *Sender, WORD &Key, TShiftStat
 
 void __fastcall TEgroupEditFrm::btnAddClick(TObject *Sender)
 {
-	//int currGroup = gs->indexCurrentEtalonGroup;
-	int ts = (int)cbTypeSizes->Items->Objects[cbTypeSizes->ItemIndex];
-	int gost = (int)cbGost->Items->Objects[cbGost->ItemIndex];
-	UnicodeString sql = "insert into egroups (ts_id,gost_id,Name,Customer,ThreadType,ChampferType,SubArray)";
-	sql += " values("+IntToStr(ts)+","+IntToStr(gost)+
-		   ",'"+edName->Text+
-		   "','"+cbCustomer->Text+
-		   "','"+cbThreadType->Text+
-		   "','"+cbChampferType->Text+"',1)";
+	//int ts = (int)cbTypeSizes->Items->Objects[cbTypeSizes->ItemIndex];
+	//int gost = (int)cbGost->Items->Objects[cbGost->ItemIndex];
+	UnicodeString sql = "insert into TypeSizes (TSName,Diameter)";
+	sql += " values('"+edName->Text+"',"+cbTypeSizes->Text+")";
 	OutputDebugString(sql.c_str());
 	SqlDBModule->ExecStrSql(sql);
-	//-----------------------------------------------------------------------
-	gs->indexCurrentEtalonGroup = SqlDBModule->getLastId("egroups");
-	SqlDBModule->SavePar("indexCurrentEtalonGroup",gs->indexCurrentEtalonGroup);
-	main->FillComboBoxes();
+	int newRecId = SqlDBModule->GetIntFromSql("select @@identity as F1");
+	//Записываем порог определения муфты
+	//TODO: проверить корректность
+	sql = "insert into checkMuftaLevel (rec_id,checkMuftaLevel)";
+	sql += " values("+IntToStr(newRecId)+","+edCheckMuftaLevel->Text+")";
+	OutputDebugString(sql.c_str());
+	SqlDBModule->ExecStrSql(sql);
 	Close();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TEgroupEditFrm::btnSaveClick(TObject *Sender)
 {
-	//int currGroup = gs->indexCurrentEtalonGroup;
-	//int currGroup = gs->indexCurrentEtalonGroup;
 	int ts = (int)cbTypeSizes->Items->Objects[cbTypeSizes->ItemIndex];
-	int gost = (int)cbGost->Items->Objects[cbGost->ItemIndex];
-	UnicodeString sql = "update egroups set ts_id='"+IntToStr(ts);
-	sql += "',gost_id="+IntToStr(gost);
-	sql += ",Name='"+edName->Text+"'";
-	sql += ",Customer='"+cbCustomer->Text+"'";
-	sql += ",ThreadType='"+cbThreadType->Text+"'";
-	sql += ",ChampferType='"+cbChampferType->Text+"'";
-	sql += ",SubArray=1 ";
-	sql += " where rec_id = "+IntToStr(gs->indexCurrentEtalonGroup);
+	UnicodeString groupName = edName->Text;
+	UnicodeString sql = "update TypeSizes set TSName='"+groupName;
+	sql += "',Diameter="+cbTypeSizes->Text;
+	sql += " where rec_id = "+IntToStr(ts);
 	OutputDebugString(sql.c_str());
 	SqlDBModule->ExecStrSql(sql);
-	main->FillComboBoxes();
+	sql = "update checkMuftaLevel set checkMuftaLevel="+edCheckMuftaLevel->Text;
+	sql += " where rec_id = "+IntToStr(ts);
+	OutputDebugString(sql.c_str());
+	SqlDBModule->ExecStrSql(sql);
 	Close();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TEgroupEditFrm::onElementChange(TObject *Sender)
+{
+	AnsiString newName = cbGost->Text+"-"+cbTypeSizes->Text+"-"+cbName->Text+"-"+cbThreadType->Text+"-"+cbCustomer->Text+"-"+cbChampferType->Text;
+	edName->Text = newName;
 }
 //---------------------------------------------------------------------------
 
