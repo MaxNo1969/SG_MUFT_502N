@@ -146,7 +146,7 @@ bool TLCardData::Read(int _freqNum) {
 	if (dlg->Execute())
 	   TLog::LoadTxtChDoubleFile(AnsiString(dlg->FileName).c_str(), this, 0,3);
 	*/
-	TLog::LoadTxtChDoubleFile("C:\\SavedEtalons.1\\E_2023_11_13_09_18_30_147000_TS_89_SG_N80_FHZ.csv", this, freqNum,3);
+	TLog::LoadTxtChDoubleFile("C:\\SavedEtalons\\53366-60-N80-NU-TTU-F0-1.csv", this, freqNum,3);
 #endif
 	}
 	return (true);
