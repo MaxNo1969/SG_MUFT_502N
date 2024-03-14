@@ -62,7 +62,9 @@ public:		// User declarations
 
 
 	bool GetBoolParam(AnsiString _paramName);
+	int GetIntParam(AnsiString _paramName);
 	AnsiString GetStringParam(AnsiString _paramName);
+    float GetFloatParam(AnsiString _paramName);
 
 	int getLastId(AnsiString _tableName);
 };

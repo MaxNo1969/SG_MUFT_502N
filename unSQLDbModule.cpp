@@ -31,7 +31,7 @@ bool TSqlDBModule::GetBoolParam(AnsiString _paramName)
 		else {
 			ADOQueryDB->Close();
 		}
-		ADOQueryDB->SQL->Text = "select paramValueBool from extSettingsGlobal where paramName='" + _paramName+"'";
+		ADOQueryDB->SQL->Text = "select paramValueInt from extSettingsGlobal where paramName='" + _paramName+"'";
 		ADOQueryDB->Open();
 		val = ADOQueryDB->FieldByName("paramValueBool")->AsInteger;
 		result = (val==1);
@@ -73,6 +73,57 @@ AnsiString TSqlDBModule::GetStringParam(AnsiString _paramName)
 	return result;
 }
 
+int TSqlDBModule::GetIntParam(AnsiString _paramName)
+{
+	int result;
+	try
+	{
+		if (!ADOConnectionDB->Connected) {
+			ADOConnectionDB->Open();
+		}
+		else {
+			ADOQueryDB->Close();
+		}
+		ADOQueryDB->SQL->Text = "select paramValueStr from extSettingsGlobal where paramName='" + _paramName+"'";
+		ADOQueryDB->Open();
+		result = ADOQueryDB->FieldByName("paramValueStr")->AsInteger;
+		return result;
+		ADOQueryDB->Close();
+	}
+	catch (Exception *ex) {
+		AnsiString errStr = "TSqlDBModule::GetStringParam:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
+		result = 0;
+	}
+	return result;
+}
+
+float TSqlDBModule::GetFloatParam(AnsiString _paramName)
+{
+	float result;
+	try
+	{
+		if (!ADOConnectionDB->Connected) {
+			ADOConnectionDB->Open();
+		}
+		else {
+			ADOQueryDB->Close();
+		}
+		ADOQueryDB->SQL->Text = "select paramValueFloat from extSettingsGlobal where paramName='" + _paramName+"'";
+		ADOQueryDB->Open();
+		result = ADOQueryDB->FieldByName("paramValueFloat")->AsFloat;
+		return result;
+		ADOQueryDB->Close();
+	}
+	catch (Exception *ex) {
+		AnsiString errStr = "TSqlDBModule::GetStringParam:"+ex->Message;
+		TProtocol::ProtocolSave(errStr);
+		TExtFunction::ShowBigModalMessage(errStr, clRed);
+		result = 0;
+	}
+	return result;
+}
 
 
 // ---------------------------------------------------------------------------
