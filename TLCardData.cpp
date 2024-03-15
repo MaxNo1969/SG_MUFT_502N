@@ -138,15 +138,11 @@ bool TLCardData::Read(int _freqNum) {
 */
 #else
 	// В режиме эмуляции загрузим файл
-	// Если вызывать диалог, то при нажатии отмены умирает :(
-	/*
-	TOpenDialog *dlg = new TOpenDialog(NULL);
-	dlg->DefaultExt = ".csv";
-	dlg->Filter = "Сигнал группы прочности (*.csv)|*.csv";
-	if (dlg->Execute())
-	   TLog::LoadTxtChDoubleFile(AnsiString(dlg->FileName).c_str(), this, 0,3);
-	*/
-	TLog::LoadTxtChDoubleFile("C:\\SavedEtalons.1\\E_2023_11_13_09_07_41_155000_TS_73В_SG_N80_FHZ.csv", this, freqNum,3);
+	AnsiString fileName = SqlDBModule->GetStringParam("FileForL502Emulation");
+	if(fileName != NULL)
+	{
+		TLog::LoadTxtChDoubleFile(fileName, this, freqNum,3);
+	}
 #endif
 	}
 	return (true);

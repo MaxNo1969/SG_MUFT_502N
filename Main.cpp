@@ -1140,24 +1140,6 @@ void __fastcall TMainForm::cbEtalonGroupChange(TObject *Sender)
 	TStringList *lst = new TStringList();
 	lst->Delimiter = '-';
 	lst->DelimitedText = groupName;
-	//Заполняем список ГОСТ-ов - он не виден и быстрее всего не пригодится
-	/*
-	AnsiString gostShortName = lst->Strings[0];
-	cbSGGost->ItemIndex = -1;
-	for(int i = 0; i < cbSGGost->Items->Count; i++)
-	{
-		AnsiString curGost = cbSGGost->Items->Strings[i];
-		if(cbSGGost->Items->Strings[i] == gostShortName)
-		{
-			cbSGGost->ItemIndex = i;
-			break;
-		}
-	}
-	if(cbSGGost->ItemIndex == -1)//Не найден гост для группы
-	{
-
-	}
-	*/
 	int gostId = SqlDBModule->GetIntFromSql(
 		   "select rec_id as F1 from GOST where ShortName='"+cbEtalonGroup->Text.SubString(0,5)+"'");
 	//Заполняем список групп прочности - он зависит от ГОСТ-а
