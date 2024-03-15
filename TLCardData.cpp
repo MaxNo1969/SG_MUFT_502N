@@ -272,11 +272,9 @@ bool TLCardData::CheckMufta(int _sensNum)
 	//(записано в таблице checkMuftaLevel поле checkMuftaLevel). —ейчас берЄм типоразмер из globalSettings
 	//параметр indexCurrentTypeSize (вроде должен быть текущий)
 	int currentTypeSize = dtLcard502->globalSettings->indexCurrentTypeSize;
-	AnsiString strWhere = "rec_id="+IntToStr(currentTypeSize);
-	int err = 0;
-	double thresVal = (double)SqlDBModule->GetIntFieldSQL("checkMuftaLevel ","checkMuftaLevel",strWhere,150,err);
+	double thresVal = (double)SqlDBModule->GetIntFromSql( "select checkMuftaLevel as F1 from checkMuftaLevel where rec_id="+IntToStr(currentTypeSize));
 	wchar_t str[256];
-	wsprintf(str,L"CheckMufta: checkMuftaLevel=%f",thresVal);
+	wsprintf(str,L"CheckMufta: checkMuftaLevel=%f(TypeSize=)",thresVal,currentTypeSize);
 	OutputDebugString(str);
 	TProtocol::ProtocolSave(str);
 	for(int i = 0; i < kadrsQuantity; i++)

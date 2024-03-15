@@ -305,9 +305,6 @@ double* TLCard502::Read(int* _size)
 		 некратное количество кадров */
 		unsigned int firstLch;
 		X502_GetNextExpectedLchNum(handle, &firstLch);
-		AnsiString a="firstLch=";
-		a+=firstLch;
-		TProtocol::ProtocolSave(a);
 		if (CheckError(X502_GetNextExpectedLchNum(handle, &firstLch)))
 		{
 			*_size = -2;
@@ -332,16 +329,6 @@ double* TLCard502::Read(int* _size)
 			LastError =	"Размер преобразование полученный не равен размеру запрошенному";
 			return (NULL);
 		}
-	}
-#else
-	for(int i= 0; i < count-3; i+=3)
-	{
-		rawi[i] = 15000 * sin((float)i*10);
-		raw[i] = 15000 * sin((float)i*10);
-		rawi[i+1] = 15000 * sin((float)((i+1)*10));
-		raw[i+1] = 15000 * sin((float)((i+1)*10));
-		rawi[i+2] = 15000 * sin((float)((i+2)*10));
-		raw[i+2] = 15000 * sin((float)((i+2)*10));
 	}
 #endif
 	*_size = count;

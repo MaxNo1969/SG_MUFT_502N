@@ -43,6 +43,7 @@ __published:	// IDE-managed Components
 
 
 private:	// User declarations
+    int tsId; //Запомним rec_id для типоразмера на случай если поменяется имя и т.п.
 	AnsiString groupName;
 public:		// User declarations
 	__fastcall TEgroupEditFrm(AnsiString _groupName);

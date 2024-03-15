@@ -26,7 +26,7 @@ void __fastcall TEgroupEditFrm::FormCreate(TObject *Sender)
 	//int currGroup = gs->indexCurrentTypeSize;
 	//AnsiString groupName = main->cbEtalonGroup->Text;
 	//«53366-73-N80Q-NU-UNG-F0-3» (ГОСТ,  диаметр, группа N80Q, тип резьбы, заказчик, тип фаски F0, подмассив образцов 3)
-    int tsId = SqlDBModule->GetIntFromSql("select rec_id as F1 from TypeSizes where TSName='"+groupName+"'");
+	tsId = SqlDBModule->GetIntFromSql("select rec_id as F1 from TypeSizes where TSName='"+groupName+"'");
 	edName->Text = groupName;
 	TStringList *parseList = new TStringList();
 	parseList->Delimiter = '-';
@@ -53,7 +53,7 @@ void __fastcall TEgroupEditFrm::FormCreate(TObject *Sender)
 	}
 
 	SqlDBModule->FillComboBoxFromSql(
-		"select distinct 1 as rec_id,case when Diameter>100 then substring(TSName,11,10) else substring(TSName,10,9) end as F1 from TypeSizes",
+		"select distinct 1 as rec_id,case when Diameter>100 then substring(TSName,11,3) else substring(TSName,10,3) end as F1 from TypeSizes",
 		cbName);
 	cbName->ItemIndex = -1;
 	AnsiString curName = parseList->Strings[2];
@@ -154,15 +154,14 @@ void __fastcall TEgroupEditFrm::btnAddClick(TObject *Sender)
 
 void __fastcall TEgroupEditFrm::btnSaveClick(TObject *Sender)
 {
-	int ts = (int)cbTypeSizes->Items->Objects[cbTypeSizes->ItemIndex];
 	UnicodeString groupName = edName->Text;
 	UnicodeString sql = "update TypeSizes set TSName='"+groupName;
 	sql += "',Diameter="+cbTypeSizes->Text;
-	sql += " where rec_id = "+IntToStr(ts);
+	sql += " where rec_id = "+IntToStr(tsId);
 	OutputDebugString(sql.c_str());
 	SqlDBModule->ExecStrSql(sql);
 	sql = "update checkMuftaLevel set checkMuftaLevel="+edCheckMuftaLevel->Text;
-	sql += " where rec_id = "+IntToStr(ts);
+	sql += " where rec_id = "+IntToStr(tsId);
 	OutputDebugString(sql.c_str());
 	SqlDBModule->ExecStrSql(sql);
 	Close();
