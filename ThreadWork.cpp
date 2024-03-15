@@ -167,6 +167,10 @@ bool ThreadWork::OnlineCycle() {
 	bool timeFlag;
 	gspfStart = false;
 #ifndef _LCARDEMUL
+	wchar_t str[256];
+	wsprintf(str,L "CheckMufta(false, 60000 * 5)");
+	OutputDebugString(str);
+	TProtocol::ProtocolSave("CheckMufta(false, 60000 * 5)");
 	timeFlag = CheckMufta(false, 60000 * 5);
 	if (!timeFlag) // если превышено время ожидания, то выходим
 	{

@@ -275,6 +275,10 @@ bool TLCardData::CheckMufta(int _sensNum)
 	AnsiString strWhere = "rec_id="+IntToStr(currentTypeSize);
 	int err = 0;
 	double thresVal = (double)SqlDBModule->GetIntFieldSQL("checkMuftaLevel ","checkMuftaLevel",strWhere,150,err);
+	wchar_t str[256];
+	wsprintf(str,L"CheckMufta: checkMuftaLevel=%f",thresVal);
+	OutputDebugString(str);
+	TProtocol::ProtocolSave(str);
 	for(int i = 0; i < kadrsQuantity; i++)
 	{
 		double val = vecMeasuresData[freqNum].vecSensorsData[_sensNum][i];
