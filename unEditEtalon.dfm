@@ -18,7 +18,7 @@ object fmEditEtalon: TfmEditEtalon
   object GroupBox1: TGroupBox
     Left = 0
     Top = 25
-    Width = 593
+    Width = 657
     Height = 485
     Align = alLeft
     Caption = #1054#1073#1088#1072#1079#1077#1094
@@ -26,7 +26,7 @@ object fmEditEtalon: TfmEditEtalon
     object navEtalon: TDBNavigator
       Left = 2
       Top = 458
-      Width = 589
+      Width = 653
       Height = 25
       DataSource = dsEtalon
       VisibleButtons = [nbPrior, nbNext, nbInsert, nbDelete, nbPost, nbCancel]
@@ -36,7 +36,7 @@ object fmEditEtalon: TfmEditEtalon
     object gridEtalon: TDBGrid
       Left = 2
       Top = 15
-      Width = 589
+      Width = 653
       Height = 443
       Align = alClient
       DataSource = dsEtalon
@@ -46,7 +46,6 @@ object fmEditEtalon: TfmEditEtalon
       TitleFont.Height = -11
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
-      OnEditButtonClick = gridEtalonEditButtonClick
       Columns = <
         item
           Expanded = False
@@ -67,27 +66,43 @@ object fmEditEtalon: TfmEditEtalon
           Visible = True
         end
         item
-          Alignment = taCenter
           Expanded = False
-          FieldName = 'address_file'
-          Title.Alignment = taCenter
-          Title.Caption = #1055#1086#1083#1085#1086#1077' '#1080#1084#1103' '#1092#1072#1081#1083#1072
-          Width = 105
+          FieldName = 'TSName'
+          PopupMenu = tsPopup
+          ReadOnly = True
+          Title.Caption = #1043#1088#1091#1087#1087#1072' '#1086#1073#1088#1072#1079#1094#1086#1074
+          Width = 140
           Visible = True
         end
         item
           Expanded = False
+          FieldName = 'address_file'
+          PopupMenu = fnamePopup
+          ReadOnly = True
+          Title.Alignment = taCenter
+          Title.Caption = #1055#1086#1083#1085#1086#1077' '#1080#1084#1103' '#1092#1072#1081#1083#1072
+          Width = 270
+          Visible = True
+        end
+        item
+          ButtonStyle = cbsNone
+          DropDownRows = 5
+          Expanded = False
           FieldName = 'SGName'
+          PickList.Strings = (
+            '')
+          PopupMenu = sgPopup
+          ReadOnly = True
           Title.Caption = #1043#1088#1091#1087#1087#1072' '#1087#1088#1086#1095#1085#1086#1089#1090#1080
-          Width = 57
+          Width = 100
           Visible = True
         end>
     end
   end
   object GroupBox2: TGroupBox
-    Left = 593
+    Left = 657
     Top = 25
-    Width = 332
+    Width = 268
     Height = 485
     Align = alClient
     Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1086#1073#1088#1072#1079#1094#1072
@@ -95,7 +110,7 @@ object fmEditEtalon: TfmEditEtalon
     object navEtalonVal: TDBNavigator
       Left = 2
       Top = 458
-      Width = 328
+      Width = 264
       Height = 25
       DataSource = dsEtalonVal
       VisibleButtons = [nbPrior, nbNext, nbInsert, nbDelete, nbPost, nbCancel]
@@ -105,7 +120,7 @@ object fmEditEtalon: TfmEditEtalon
     object gridEtalonVal: TDBGrid
       Left = 2
       Top = 15
-      Width = 328
+      Width = 264
       Height = 443
       Align = alClient
       DataSource = dsEtalonVal
@@ -152,7 +167,7 @@ object fmEditEtalon: TfmEditEtalon
       ExplicitHeight = 13
     end
     object Label2: TLabel
-      Left = 139
+      Left = 273
       Top = 1
       Width = 107
       Height = 23
@@ -165,15 +180,16 @@ object fmEditEtalon: TfmEditEtalon
     object cbTypeSize: TComboBox
       Left = 60
       Top = 1
-      Width = 79
+      Width = 213
       Height = 21
       Align = alLeft
       TabOrder = 0
       Text = '...'
+      OnChange = cbTypeSizeSelect
       OnSelect = cbTypeSizeSelect
     end
     object bbtShowEt: TBitBtn
-      Left = 325
+      Left = 459
       Top = 1
       Width = 110
       Height = 23
@@ -181,11 +197,9 @@ object fmEditEtalon: TfmEditEtalon
       Caption = #1055#1086#1089#1084#1086#1090#1088#1077#1090#1100
       TabOrder = 1
       OnClick = bbtShowEtClick
-      ExplicitLeft = 319
-      ExplicitTop = -4
     end
     object bbtRecalc: TBitBtn
-      Left = 435
+      Left = 569
       Top = 1
       Width = 112
       Height = 23
@@ -193,10 +207,9 @@ object fmEditEtalon: TfmEditEtalon
       Caption = #1055#1077#1088#1077#1089#1095#1077#1090' '#1086#1073#1088#1072#1079#1094#1072
       TabOrder = 2
       OnClick = bbtRecalcClick
-      ExplicitLeft = 351
     end
     object bbtRecalcAll: TBitBtn
-      Left = 547
+      Left = 681
       Top = 1
       Width = 112
       Height = 23
@@ -204,21 +217,20 @@ object fmEditEtalon: TfmEditEtalon
       Caption = #1055#1077#1088#1077#1089#1095#1077#1090' '#1074#1089#1077#1093
       TabOrder = 3
       OnClick = bbtRecalcAllClick
-      ExplicitLeft = 463
     end
     object cbSGGost: TComboBox
-      Left = 246
+      Left = 380
       Top = 1
       Width = 79
       Height = 21
       Align = alLeft
       TabOrder = 4
       Text = '...'
+      OnKeyDown = cbSGGostKeyDown
       OnSelect = cbSGGostSelect
       Items.Strings = (
         #1043#1054#1057#1058' '#1056'53366-2009'
         #1043#1054#1057#1058' 633-80')
-      ExplicitLeft = 162
     end
   end
   object gbSGThreshold: TGroupBox
@@ -316,5 +328,28 @@ object fmEditEtalon: TfmEditEtalon
     OnMessage = ApplicationEventsMessage
     Left = 64
     Top = 168
+  end
+  object sgPopup: TPopupMenu
+    Left = 232
+    Top = 289
+  end
+  object fnamePopup: TPopupMenu
+    Left = 120
+    Top = 321
+    object miFName: TMenuItem
+      Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+      OnClick = miFNameClick
+    end
+  end
+  object ofdEtalonFile: TOpenDialog
+    DefaultExt = 'csv'
+    Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
+    Title = #1042#1099#1073#1077#1088#1080#1090#1077' '#1092#1072#1081#1083' '#1086#1073#1088#1072#1079#1094#1072
+    Left = 416
+    Top = 345
+  end
+  object tsPopup: TPopupMenu
+    Left = 192
+    Top = 353
   end
 end

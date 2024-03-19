@@ -274,9 +274,6 @@ bool TLCardData::CheckMufta(int _sensNum)
 	int currentTypeSize = dtLcard502->globalSettings->indexCurrentTypeSize;
 	double thresVal = (double)SqlDBModule->GetIntFromSql( "select checkMuftaLevel as F1 from checkMuftaLevel where rec_id="+IntToStr(currentTypeSize));
 	wchar_t str[256];
-	wsprintf(str,L"CheckMufta: checkMuftaLevel=%f(TypeSize=)",thresVal,currentTypeSize);
-	OutputDebugString(str);
-	TProtocol::ProtocolSave(str);
 	for(int i = 0; i < kadrsQuantity; i++)
 	{
 		double val = vecMeasuresData[freqNum].vecSensorsData[_sensNum][i];

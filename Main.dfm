@@ -104,7 +104,6 @@ object MainForm: TMainForm
     Height = 251
     Align = alClient
     BorderStyle = bsSingle
-    Caption = 'PanelChartTop'
     TabOrder = 2
     object SplitterRes: TSplitter
       Left = 860
@@ -136,6 +135,8 @@ object MainForm: TMainForm
       View3D = False
       Align = alClient
       TabOrder = 0
+      ExplicitLeft = 0
+      ExplicitTop = 3
       DefaultCanvas = 'TGDIPlusCanvas'
       PrintMargins = (
         15
@@ -266,50 +267,8 @@ object MainForm: TMainForm
       ExplicitLeft = 8
       ExplicitTop = 2
     end
-    object cbTypeSize: TComboBox
-      Left = 921
-      Top = 1
-      Width = 153
-      Height = 37
-      Margins.Left = 0
-      Margins.Top = 0
-      Margins.Right = 0
-      Margins.Bottom = 0
-      Align = alLeft
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -24
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 0
-      Text = 'cbTypeSize'
-      Visible = False
-      OnChange = cbTypeSizeChange
-      OnSelect = cbTypeSizeSelect
-    end
-    object cbSGGost: TComboBox
-      Left = 625
-      Top = 1
-      Width = 296
-      Height = 37
-      Margins.Left = 0
-      Margins.Top = 0
-      Margins.Right = 0
-      Margins.Bottom = 0
-      Align = alLeft
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -24
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 1
-      Text = 'cbSGGost'
-      Visible = False
-    end
     object bCancel: TButton
-      Left = 1074
+      Left = 625
       Top = 1
       Width = 105
       Height = 56
@@ -321,13 +280,78 @@ object MainForm: TMainForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 3
+      TabOrder = 1
       OnClick = bCancelClick
     end
-    object GroupBoxNGr: TGroupBox
-      Left = 777
+    object btnExit: TButton
+      Left = 829
       Top = 1
-      Width = 399
+      Width = 105
+      Height = 56
+      Align = alRight
+      Caption = #1042#1099#1093#1086#1076
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 3
+      OnClick = btnExitClick
+    end
+    object cbEtalonGroup: TComboBox
+      Left = 121
+      Top = 1
+      Width = 461
+      Height = 41
+      Align = alLeft
+      DropDownCount = 10
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -27
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 4
+      OnChange = cbEtalonGroupChange
+      OnKeyDown = cbEtalonGroupKeyDown
+    end
+    object btnAddGroupEtalons: TButton
+      Left = 582
+      Top = 1
+      Width = 43
+      Height = 56
+      Align = alLeft
+      Caption = '...'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -27
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 5
+      OnClick = btnAddGroupEtalonsClick
+    end
+    object bStart: TButton
+      Left = 730
+      Top = 1
+      Width = 105
+      Height = 56
+      Align = alLeft
+      Caption = #1055#1091#1089#1082
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 0
+      OnClick = bStartClick
+    end
+    object GroupBoxNGr: TGroupBox
+      Left = 934
+      Top = 1
+      Width = 242
       Height = 56
       Align = alRight
       Caption = #1053#1086#1074#1099#1081' '#1086#1073#1088#1072#1079#1077#1094
@@ -337,9 +361,9 @@ object MainForm: TMainForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 4
+      TabOrder = 2
       object bbtCreateEtalon: TBitBtn
-        Left = 277
+        Left = 120
         Top = 21
         Width = 120
         Height = 33
@@ -357,7 +381,7 @@ object MainForm: TMainForm
       object cbxSG: TComboBox
         Left = 2
         Top = 21
-        Width = 269
+        Width = 119
         Height = 27
         Align = alLeft
         Style = csDropDownList
@@ -370,71 +394,6 @@ object MainForm: TMainForm
         TabOrder = 1
         OnChange = cbxSGChange
       end
-    end
-    object btnExit: TButton
-      Left = 672
-      Top = 1
-      Width = 105
-      Height = 56
-      Align = alRight
-      Caption = #1042#1099#1093#1086#1076
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 5
-      OnClick = btnExitClick
-    end
-    object cbEtalonGroup: TComboBox
-      Left = 121
-      Top = 1
-      Width = 461
-      Height = 41
-      Align = alLeft
-      DropDownCount = 10
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -27
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 6
-      OnChange = cbEtalonGroupChange
-      OnKeyDown = cbEtalonGroupKeyDown
-    end
-    object btnAddGroupEtalons: TButton
-      Left = 582
-      Top = 1
-      Width = 43
-      Height = 56
-      Align = alLeft
-      Caption = '...'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -27
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 7
-      OnClick = btnAddGroupEtalonsClick
-    end
-    object bStart: TButton
-      Left = 1179
-      Top = 1
-      Width = 105
-      Height = 56
-      Align = alLeft
-      Caption = #1055#1091#1089#1082
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 2
-      OnClick = bStartClick
     end
   end
   object MainMenu: TMainMenu
@@ -493,6 +452,10 @@ object MainForm: TMainForm
       object mnuCheck1730: TMenuItem
         Caption = #1055#1088#1086#1074#1077#1088#1082#1072' '#1076#1080#1089#1082#1088#1077#1090#1085#1099#1093' '#1074#1093#1086#1076#1086#1074'-'#1074#1099#1093#1086#1076#1086#1074
         OnClick = mnuCheck1730Click
+      end
+      object miCheckMufta: TMenuItem
+        Caption = #1053#1072#1083#1080#1095#1080#1077' '#1084#1091#1092#1090#1099
+        OnClick = miCheckMuftaClick
       end
     end
     object N9: TMenuItem

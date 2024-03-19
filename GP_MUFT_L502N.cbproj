@@ -14,6 +14,11 @@
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
         <Base>true</Base>
     </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
+        <Base_Win32>true</Base_Win32>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
         <Cfg_1>true</Cfg_1>
         <CfgParent>Base</CfgParent>
@@ -61,6 +66,9 @@
         <BCC_ExtendedErrorInfo>true</BCC_ExtendedErrorInfo>
         <ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\release\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <Manifest_File>(None)</Manifest_File>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <FinalOutputDir>D:\Max\GP_MuftN502\OutExe\</FinalOutputDir>
         <BCC_IncludePath>DSPFilters\include;$(BCC_IncludePath)</BCC_IncludePath>
@@ -68,7 +76,7 @@
         <BCC_DisableOptimizations>true</BCC_DisableOptimizations>
         <DCC_Optimize>false</DCC_Optimize>
         <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
-        <Defines>_DEBUG;_LCARDEMUL;$(Defines)</Defines>
+        <Defines>_DEBUG;$(Defines)</Defines>
         <BCC_InlineFunctionExpansion>false</BCC_InlineFunctionExpansion>
         <BCC_UseRegisterVariables>None</BCC_UseRegisterVariables>
         <DCC_Define>DEBUG</DCC_Define>
@@ -88,7 +96,6 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <BRCC_IncludePath>..\Forms\;$(BRCC_IncludePath)</BRCC_IncludePath>
         <FinalOutputDir>.\OutExe\</FinalOutputDir>
-        <Manifest_File>(None)</Manifest_File>
         <BT_BuildType>Debug</BT_BuildType>
         <DynamicRTL>false</DynamicRTL>
         <IncludePath>DSPFilters\include;$(IncludePath)</IncludePath>
@@ -212,6 +219,12 @@
         <CppCompile Include="Filters.cpp">
             <DependentOn>Filters.h</DependentOn>
             <BuildOrder>40</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="FRCheckMufta.cpp">
+            <Form>FRMMuftaLevel</Form>
+            <FormType>dfm</FormType>
+            <DependentOn>FRCheckMufta.h</DependentOn>
+            <BuildOrder>67</BuildOrder>
         </CppCompile>
         <CppCompile Include="FREgroupEdit.cpp">
             <Form>EgroupEditFrm</Form>
@@ -421,6 +434,7 @@
         <FormResources Include="FRMGroups.dfm"/>
         <FormResources Include="FREgroupEdit.dfm"/>
         <FormResources Include="FRGosts.dfm"/>
+        <FormResources Include="FRCheckMufta.dfm"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

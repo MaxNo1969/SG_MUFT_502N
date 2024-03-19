@@ -27,9 +27,10 @@ USEFORM("ABOUT.cpp", AboutBox);
 USEFORM("ADCSettings.cpp", ADCSettForm);
 USEFORM("ColorSettings.cpp", FormColor);
 USEFORM("FRMEtalons.cpp", FREtalons);
+USEFORM("FRMGroups.cpp", FRGroups);
 USEFORM("FREgroupEdit.cpp", EgroupEditFrm);
 USEFORM("FRGosts.cpp", FRSprGost);
-USEFORM("FRMGroups.cpp", FRGroups);
+USEFORM("FRCheckMufta.cpp", FRMMuftaLevel);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {

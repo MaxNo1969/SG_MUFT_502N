@@ -6,7 +6,7 @@
 //#pragma package(smart_init)
 FILE* TProtocol::f = NULL;
 
-void TProtocol::ProtocolSave(AnsiString _msg)
+void TProtocol::ProtocolSave(UnicodeString _msg)
 {
 	if(f == NULL)
 	{
@@ -19,6 +19,9 @@ void TProtocol::ProtocolSave(AnsiString _msg)
 		strCurrentDT = strCurrentDT + " ;" + _msg + "\n";
 		fputs(strCurrentDT.c_str(),f);
 		fflush(f);
+	}
+	{
+       OutputDebugString(_msg.c_str());
 	}
 }
 

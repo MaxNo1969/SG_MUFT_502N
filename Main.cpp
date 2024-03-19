@@ -26,6 +26,7 @@
 #include "FRMEtalons.h"
 #include "FREgroupEdit.h"
 #include "FRMGroups.h"
+#include "FRCheckMufta.h"
 // -----------------------------------
 
 #pragma resource "*.dfm"
@@ -122,6 +123,8 @@ void __fastcall TMainForm::FormCreate(TObject *Sender) {
 	ChangeColor();
 	TExtFunction::PrepareChartToTst(EtalonChart, 3, 10, 2000);
 	EnableWigits(false);
+	SignalChart->Visible = false;
+    PanelChartBottom->Visible = true;
 }
 
 // ------------------------------------------------------------------------------
@@ -825,13 +828,6 @@ void __fastcall TMainForm::menuEtalonsClick(TObject *Sender) {
 	//frm->Show();
 }
 // ---------------------------------------------------------------------------
-
-void __fastcall TMainForm::cbTypeSizeSelect(TObject *Sender) {
-	int ind = cbTypeSize->ItemIndex;
-	mainGlobalSettings.indexCurrentTypeSize = (int)cbTypeSize->Items->Objects[ind];
-	SqlDBModule->UpdIntSql("SettingsGlobal", "indexCurrentTypeSize", mainGlobalSettings.indexCurrentTypeSize, NULL);
-}
-
 void __fastcall TMainForm::CreateEtalon(int _tsId,int _sgId, TLCardData *_lcd)
 {
 	TADOQuery *qry = NULL;
@@ -853,6 +849,13 @@ void __fastcall TMainForm::CreateEtalon(int _tsId,int _sgId, TLCardData *_lcd)
 		fileName += sgName;
 		fileName += FormatDateTime("_yyyymmddhhmmss", Now());
 		fileName += ".csv";
+
+		SaveDialog->InitialDir = mainGlobalSettings.SaveEtalonPath;
+		SaveDialog->FileName = fileName;
+		if(!SaveDialog->Execute(this->Handle))
+			return;
+		else
+			fileName = SaveDialog->FileName;
 
 		//«десь надо бы проверить что есть значени€ порогов дл€ этого типоразмера
 		//если нет то видимо заполнить
@@ -994,7 +997,6 @@ void TMainForm::SetAbleButtons(bool _enable) {
 	MainMenu->Items->Find("ѕомощь")->Enabled = _enable;
  //	GroupBoxNGr->Visible = _enable;
 	bStart->Enabled = _enable;
-	cbTypeSize->Enabled = _enable;
 	cbEtalonGroup->Enabled = _enable;
 	cbxSG->Enabled = _enable;
     bbtCreateEtalon->Enabled = _enable;
@@ -1023,13 +1025,6 @@ void __fastcall TMainForm::SplitterResMoved(TObject *Sender) {
 	PanelSG->Left = SplitterRes->Left + SplitterRes->Width;
 }
 // ---------------------------------------------------------------------------
-void __fastcall TMainForm::cbTypeSizeChange(TObject *Sender)
-{
-	int ind = cbTypeSize->ItemIndex;
-	mainGlobalSettings.indexCurrentTypeSize = (int)cbTypeSize->Items->Objects[ind];
-	SqlDBModule->UpdIntSql("SettingsGlobal", "indexCurrentTypeSize", mainGlobalSettings.indexCurrentTypeSize, NULL);
-}
-//---------------------------------------------------------------------------
 
 void __fastcall TMainForm::menuExtSetClick(TObject *Sender)
 {
@@ -1071,7 +1066,8 @@ void __fastcall TMainForm::FormCloseQuery(TObject *Sender, bool &CanClose)
 void TMainForm::EnableWigits(bool b)
 {
 	GroupBoxNGr->Visible = b;
-	PanelChartBottom->Visible = b;
+	//PanelChartBottom->Visible = b;
+	SignalChart->Visible = b;
 	menuSettings->Visible = b;
 	menuSGSett->Visible = b;
 	menuColorSett->Visible = b;
@@ -1092,11 +1088,15 @@ void __fastcall TMainForm::N1Click(TObject *Sender)
 		if(f->result)
 		{
 		   EnableWigits(true);
+		   SignalChart->Visible = true;
+		   PanelChartBottom->Visible = true;
 		}
 	  }
 	  else
 	  {
 		   EnableWigits(false);
+		   SignalChart->Visible = false;
+		   PanelChartBottom->Visible = true;
 	  }
 }
 //---------------------------------------------------------------------------
@@ -1211,3 +1211,11 @@ void __fastcall TMainForm::cbEtalonGroupKeyDown(TObject *Sender, WORD &Key, TShi
  */
 }
 //---------------------------------------------------------------------------
+void __fastcall TMainForm::miCheckMuftaClick(TObject *Sender)
+{
+	TFRMMuftaLevel *frm = new TFRMMuftaLevel(this);
+	frm->ShowModal();
+    delete frm;
+}
+//---------------------------------------------------------------------------
+

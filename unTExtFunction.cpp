@@ -565,7 +565,8 @@ void TExtFunction::PrepareChartToTst(TChart *chart, int _countChLog,
 	if (_lengthChart != 0)
 		chart->BottomAxis->Maximum = _lengthChart; // viewOffset;
 	chart->Title->Text->Clear();
-	chart->Title->Text->Add("Сигналы датчиков");
+	//chart->Title->Text->Add("Сигналы датчиков");
+    chart->Title->Text->Add("График");
 	// поведение мыши
 	chart->Zoom->MouseButton = mbLeft;
 	// chart->Zoom->MouseWheel = pmwNormal;

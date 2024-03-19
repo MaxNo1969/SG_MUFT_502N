@@ -167,10 +167,6 @@ bool ThreadWork::OnlineCycle() {
 	bool timeFlag;
 	gspfStart = false;
 #ifndef _LCARDEMUL
-	wchar_t str[256];
-	wsprintf(str,L "CheckMufta(false, 60000 * 5)");
-	OutputDebugString(str);
-	TProtocol::ProtocolSave("CheckMufta(false, 60000 * 5)");
 	timeFlag = CheckMufta(false, 60000 * 5);
 	if (!timeFlag) // если превышено время ожидания, то выходим
 	{
@@ -203,14 +199,6 @@ bool ThreadWork::OnlineCycle() {
 #else
 	Synchronize(MainRedraw);
 	SetStext2("Поставьте муфту в датчик!");
-/*
-	//В режиме эмуляции загрузим файл
-	TOpenDialog *dlg = new TOpenDialog(NULL);
-	dlg->DefaultExt = ".csv";
-	dlg->Filter = "Сигнал группы прочности (*.csv)|*.csv";
-	if (dlg->Execute())
-	   TLog::LoadTxtChDoubleFile(AnsiString(dlg->FileName).c_str(), lCardData, 0,3);
-*/
 	Post(UPDATE_STATUS);
 	Sleep(200);
 #endif
@@ -370,7 +358,8 @@ void __fastcall ThreadWork::MainRedraw()
 // проверка наличия муфты. Возвращает true если за указанное время статус изменился на ожидаемый
 bool ThreadWork::CheckMufta(bool _waitStatus, int _waitTime) {
 	// Ждем муфту
-	int const maxCount = 9;
+	//int const maxCount = 9;
+    const int maxCount = 3;
     int counter = 0;
 	bool timeFlag = false;
 	DWORD StartTime = GetTickCount();

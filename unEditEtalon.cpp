@@ -30,11 +30,6 @@ __fastcall TfmEditEtalon::TfmEditEtalon(TComponent* Owner,
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TfmEditEtalon::gridEtalonEditButtonClick(TObject *Sender) {
-	//MessageDlg("gridEtalonEditButtonClick", mtError,TMsgDlgButtons() << mbOK, NULL);
-	// ShowMessage(DBGrid1.SelectedField.FieldName);
-}
-
 void __fastcall TfmEditEtalon::UserWndProc(Messages::TMessage &_msg) {
 	// Проверяем на нажатие сочетания клавиш Ctrl+Alt+Enter
 	if (_msg.Msg == WM_HOTKEY) // сообщение наше
@@ -102,7 +97,7 @@ void __fastcall TfmEditEtalon::FormCreate(TObject *Sender) {
 		AnsiString gostName = cbTypeSize->Items->Strings[cbTypeSize->ItemIndex].SubString(0,5);
 		idGost = SqlDBModule->GetIntFromSql("select rec_id as F1 from GOST where ShortName='"+gostName+"'");
 		SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +IntToStr(idGost),cbSGGost);
-		cbSGGost->ItemIndex=0;
+		cbSGGost->ItemIndex=-1;
 	}
 	queryEtalonVal->Close();
 	queryEtalon->Close();
@@ -110,8 +105,37 @@ void __fastcall TfmEditEtalon::FormCreate(TObject *Sender) {
 	queryEtalon->CursorLocation = clUseServer;
 	// queryEtalonVal->CursorLocation = clUseServer;
 	// queryTSz->CursorLocation = clUseServer;
-
-	FillGrids(pGlobalSettings->indexCurrentTypeSize,idGost);
+/*
+		TADOQuery *qry = new TADOQuery(this);
+		qry->Connection = SqlDBModule->ADOConnectionDB;
+		qry->SQL->Add("select rec_id,SGName from SolidGroups where gost_id="+IntToStr(idGost));
+		qry->Open();
+		sgPopup->Items->Clear();
+		while(!qry->Eof)
+		{
+			TMenuItem *item = new TMenuItem(this);
+			item->Caption = qry->FieldByName("SGName")->AsAnsiString;
+			item->Tag = qry->FieldByName("rec_id")->AsInteger;
+			sgPopup->Items->Add(item);
+			qry->Next();
+		}
+		qry->Close();
+		qry->SQL->Clear();
+		qry->SQL->Add("select rec_id,TSName from TypeSizes");
+		qry->Open();
+		tsPopup->Items->Clear();
+		while(!qry->Eof)
+		{
+			TMenuItem *item = new TMenuItem(this);
+			item->Caption = qry->FieldByName("TSName")->AsAnsiString;
+			item->Tag = qry->FieldByName("rec_id")->AsInteger;
+			tsPopup->Items->Add(item);
+			qry->Next();
+		}
+		qry->Close();
+		delete qry;
+  */
+	FillGrids((int)cbTypeSize->Items->Objects[cbTypeSize->ItemIndex],cbSGGost->ItemIndex);
 	bool RHKret = RegisterHotKey(this->Handle, 0x00F,
 		// УСЛОВНЫЙ идентификатор горячего ключа
 		MOD_ALT + MOD_CONTROL, // модификаторы
@@ -126,16 +150,68 @@ int TfmEditEtalon::FillGrids(int _indTsz, int _indGost) {
 	AnsiString strSQL = "";
 	try {
 		queryEtalon->Close();
+		if(_indGost >=0)
+		{
 		strSQL =
-			"SELECT T1.rec_id,T1.frequency,T1.address_file,T2.SGName,T1.fenable FROM Etalons T1";
-		strSQL += " join SolidGroups T2 on (T1.sg_id=T2.rec_ID)";
-		strSQL +=
-			// T1.fenable=1 and
-			" where T1.ts_id=:pts_id and T2.Gost_id=:pgost_id order by T1.frequency ASC, T1.rec_id ASC";
+			"SELECT e.rec_id,e.frequency,ts.TSName,e.address_file,sg.SGName,e.fenable FROM Etalons e";
+		strSQL += " join SolidGroups sg on (e.sg_id=sg.rec_ID)";
+		strSQL += " join TypeSizes ts on ts.rec_id=e.ts_id";
+		strSQL += " where e.ts_id=:pts_id and sg.rec_id=:pgost_id order by e.frequency ASC, e.rec_id ASC";
 		queryEtalon->SQL->Text = strSQL;
 		queryEtalon->Parameters->ParamByName("pts_id")->Value = _indTsz;
 		queryEtalon->Parameters->ParamByName("pgost_id")->Value = _indGost;
+		}
+		else
+		{
+		strSQL =
+			"SELECT e.rec_id,e.frequency,ts.TSName,e.address_file,sg.SGName,e.fenable FROM Etalons e";
+		strSQL += " join SolidGroups sg on (e.sg_id=sg.rec_ID)";
+		strSQL += " join TypeSizes ts on ts.rec_id=e.ts_id";
+		strSQL += " where e.ts_id=:pts_id order by e.frequency ASC, e.rec_id ASC";
+		queryEtalon->SQL->Text = strSQL;
+		queryEtalon->Parameters->ParamByName("pts_id")->Value = _indTsz;
+		}
+
 		queryEtalon->Open();
+		if(cbTypeSize->ItemIndex>=0)
+		{
+			AnsiString gostName = cbTypeSize->Items->Strings[cbTypeSize->ItemIndex].SubString(0,5);
+			int idGost = SqlDBModule->GetIntFromSql("select rec_id as F1 from GOST where ShortName='"+gostName+"'");
+			SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +IntToStr(idGost),cbSGGost);
+			cbSGGost->ItemIndex=0;
+
+			TADOQuery *qry = new TADOQuery(this);
+			qry->Connection = SqlDBModule->ADOConnectionDB;
+			qry->SQL->Add("select rec_id,SGName from SolidGroups where gost_id="+IntToStr(idGost));
+			qry->Open();
+			sgPopup->Items->Clear();
+			while(!qry->Eof)
+			{
+				TMenuItem *item = new TMenuItem(this);
+				item->Caption = qry->FieldByName("SGName")->AsAnsiString;
+				item->Tag = qry->FieldByName("rec_id")->AsInteger;
+				item->OnClick = sgPopupClick;
+				sgPopup->Items->Add(item);
+				qry->Next();
+			}
+			qry->Close();
+			qry->SQL->Clear();
+			qry->SQL->Add("select rec_id,TSName from TypeSizes");
+			qry->Open();
+			tsPopup->Items->Clear();
+			while(!qry->Eof)
+			{
+				TMenuItem *item = new TMenuItem(this);
+				item->Caption = qry->FieldByName("TSName")->AsAnsiString;
+				item->Tag = qry->FieldByName("rec_id")->AsInteger;
+				item->OnClick = tsPopupClockClick;
+				tsPopup->Items->Add(item);
+				qry->Next();
+			}
+			qry->Close();
+			delete qry;
+		}
+
 
 		queryEtalonVal->Close();
 		strSQL =
@@ -174,11 +250,46 @@ void __fastcall TfmEditEtalon::cbTypeSizeSelect(TObject *Sender) {
 		AnsiString gostName = cbTypeSize->Items->Strings[cbTypeSize->ItemIndex].SubString(0,5);
 		int idGost = SqlDBModule->GetIntFromSql("select rec_id as F1 from GOST where ShortName='"+gostName+"'");
 		SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +IntToStr(idGost),cbSGGost);
-		cbSGGost->ItemIndex=0;
+		cbSGGost->ItemIndex=-1;
+		/*
+		TADOQuery *qry = new TADOQuery(this);
+		qry->Connection = SqlDBModule->ADOConnectionDB;
+		qry->SQL->Add("select rec_id,SGName from SolidGroups where gost_id="+IntToStr(idGost));
+		qry->Open();
+		sgPopup->Items->Clear();
+		while(!qry->Eof)
+		{
+			TMenuItem *item = new TMenuItem(this);
+			item->Caption = qry->FieldByName("SGName")->AsAnsiString;
+			item->Tag = qry->FieldByName("rec_id")->AsInteger;
+			item->OnClick = sgPopupClick;
+			sgPopup->Items->Add(item);
+			qry->Next();
+		}
+		qry->Close();
+		qry->SQL->Clear();
+		qry->SQL->Add("select rec_id,TSName from TypeSizes");
+		qry->Open();
+		tsPopup->Items->Clear();
+		while(!qry->Eof)
+		{
+			TMenuItem *item = new TMenuItem(this);
+			item->Caption = qry->FieldByName("TSName")->AsAnsiString;
+			item->Tag = qry->FieldByName("rec_id")->AsInteger;
+			item->OnClick = tsPopupClockClick;
+			tsPopup->Items->Add(item);
+			qry->Next();
+		}
+		qry->Close();
+		delete qry;
+        */
 	}
+
 	int indSG = cbSGGost->ItemIndex;
-	if(indSG < 0)indSG = 0;
-	FillGrids((int)cbTypeSize->Items->Objects[indTsz], (int)cbSGGost->Items->Objects[indSG]);
+	if(indSG < 0)
+		FillGrids((int)cbTypeSize->Items->Objects[indTsz], -1);
+	else
+		FillGrids((int)cbTypeSize->Items->Objects[indTsz], (int)cbSGGost->Items->Objects[indSG]);
 }
 
 // ---------------------------------------------------------------------------
@@ -186,8 +297,10 @@ void __fastcall TfmEditEtalon::cbSGGostSelect(TObject *Sender) {
 	int indTsz = cbTypeSize->ItemIndex;
 	if(indTsz < 0)indTsz = 0;
 	int indSG = cbSGGost->ItemIndex;
-	if(indSG < 0)indSG = 0;
-	FillGrids((int)cbTypeSize->Items->Objects[indTsz], (int)cbSGGost->Items->Objects[indSG]);
+	if(indSG < 0)
+		FillGrids((int)cbTypeSize->Items->Objects[indTsz], -1);
+	else
+		FillGrids((int)cbTypeSize->Items->Objects[indTsz], (int)cbSGGost->Items->Objects[indSG]);
 }
 // ---------------------------------------------------------------------------
 
@@ -371,3 +484,88 @@ void __fastcall TfmEditEtalon::ApplicationEventsMessage(tagMSG &Msg,
 		}
 	}
 }
+
+
+
+
+void __fastcall TfmEditEtalon::sgPopupClick(TObject *Sender)
+{
+	TMenuItem *item = (TMenuItem*)Sender;
+	int sgId = item->Tag;
+	UnicodeString Msg = "Будет заменена группа прочности образца.\n";
+	Msg += queryEtalon->FieldByName("SGName")->AsString + " => " + item->Caption + "\n";
+	Msg += "Заменить?";
+	if(MessageDlg(Msg,TMsgDlgType::mtConfirmation,TMsgDlgButtons() << mbYes << mbNo,NULL) == mrYes)
+	{
+	   int rec_id = queryEtalon->FieldByName("rec_id")->AsInteger;
+	   TADOCommand *cmd = new TADOCommand(this);
+	   cmd->Connection = SqlDBModule->ADOConnectionDB;
+	   cmd->CommandText = "update Etalons set sg_id="+IntToStr(sgId)+" where rec_id="+IntToStr(rec_id);
+	   cmd->Execute();
+	   FillGrids((int)cbTypeSize->Items->Objects[cbTypeSize->ItemIndex],cbSGGost->ItemIndex);
+	   cbSGGost->ItemIndex = -1;
+  	   cbSGGost->Text = "";
+	   FillGrids((int)cbTypeSize->Items->Objects[cbTypeSize->ItemIndex],cbSGGost->ItemIndex);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfmEditEtalon::miFNameClick(TObject *Sender)
+{
+	  ofdEtalonFile->FileName = queryEtalon->FieldByName("address_file")->AsString;
+	  if(ofdEtalonFile->Execute())
+	  {
+		UnicodeString Msg = "Будет заменен файл образца для группы.\n";
+		Msg += queryEtalon->FieldByName("address_file")->AsString + " => " + ofdEtalonFile->FileName + "\n";
+		Msg += "Не забудте пересчитать пороги.\nЗаменить?";
+		if(MessageDlg(Msg,TMsgDlgType::mtConfirmation,TMsgDlgButtons() << mbYes << mbNo,NULL) == mrYes)
+		{
+			int rec_id = queryEtalon->FieldByName("rec_id")->AsInteger;
+			String fName = ofdEtalonFile->FileName;
+			TADOCommand *cmd = new TADOCommand(this);
+			cmd->Connection = SqlDBModule->ADOConnectionDB;
+			cmd->CommandText = "update Etalons set address_file='"+fName+"' where rec_id="+IntToStr(rec_id);
+			cmd->Execute();
+			cbSGGost->ItemIndex = -1;
+			cbSGGost->Text = "";
+			FillGrids((int)cbTypeSize->Items->Objects[cbTypeSize->ItemIndex],cbSGGost->ItemIndex);
+		}
+	  }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfmEditEtalon::tsPopupClockClick(TObject *Sender)
+{
+	TMenuItem* item = (TMenuItem*)Sender;
+	int tsId = item->Tag;
+	UnicodeString Msg = "Будет изменена группа образца.\n";
+	Msg += queryEtalon->FieldByName("TSName")->AsString + " => " + item->Caption + "\n";
+	Msg += "Не забудте пересчитать пороги.\nЗаменить?";
+	if(MessageDlg(Msg, TMsgDlgType::mtConfirmation,TMsgDlgButtons() << mbYes << mbNo,NULL) == mrYes)
+	{
+			int rec_id = queryEtalon->FieldByName("rec_id")->AsInteger;
+			TADOCommand *cmd = new TADOCommand(this);
+			cmd->Connection = SqlDBModule->ADOConnectionDB;
+			cmd->CommandText = "update Etalons set ts_id="+IntToStr(tsId)+" where rec_id="+IntToStr(rec_id);
+			cmd->Execute();
+			cbSGGost->ItemIndex = -1;
+			cbSGGost->Text = "";
+			FillGrids((int)cbTypeSize->Items->Objects[cbTypeSize->ItemIndex],cbSGGost->ItemIndex);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfmEditEtalon::cbSGGostKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	TComboBox *cb = (TComboBox*)Sender;
+	if(Key == VK_DELETE)
+	{
+		cb->Text = "";
+		cb->ItemIndex = -1;
+		FillGrids((int)cbTypeSize->Items->Objects[cbTypeSize->ItemIndex], -1);
+	}
+
+}
+//---------------------------------------------------------------------------
+

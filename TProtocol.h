@@ -5,6 +5,6 @@ class TProtocol
 {
 public:
 	static FILE *f;
-	void static ProtocolSave(AnsiString _msg);
+	void static ProtocolSave(UnicodeString _msg);
 };
 #endif

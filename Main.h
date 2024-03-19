@@ -110,8 +110,6 @@ __published: // IDE-managed Components
 	TFastLineSeries *FastLineSeries3;
 	TSplitter *SplitterMid;
 	TPanel *PanelTop;
-	TComboBox *cbTypeSize;
-	TComboBox *cbSGGost;
 	TButton *bStart;
 	TButton *bCancel;
 	TGroupBox *GroupBoxNGr;
@@ -129,6 +127,7 @@ __published: // IDE-managed Components
 	TComboBox *cbEtalonGroup;
 	TButton *btnAddGroupEtalons;
 	TMenuItem *menuEgroupsEdit;
+	TMenuItem *miCheckMufta;
 
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
@@ -150,13 +149,11 @@ __published: // IDE-managed Components
 	void __fastcall mnuCheckGenClick(TObject *Sender);
 	void __fastcall mnuCheck1730Click(TObject *Sender);
 	void __fastcall menuEtalonsClick(TObject *Sender);
-	void __fastcall cbTypeSizeSelect(TObject *Sender);
 	void __fastcall bbtCreateEtalonClick(TObject *Sender);
 	void __fastcall FormResize(TObject *Sender);
 	void __fastcall SplitterMidMoved(TObject *Sender);
 	void __fastcall FormActivate(TObject *Sender);
 	void __fastcall SplitterResMoved(TObject *Sender);
-	void __fastcall cbTypeSizeChange(TObject *Sender);
 	void __fastcall menuExtSetClick(TObject *Sender);
 	void __fastcall FormCloseQuery(TObject *Sender, bool &CanClose);
 	void __fastcall N1Click(TObject *Sender);
@@ -169,6 +166,7 @@ __published: // IDE-managed Components
 	void __fastcall menuEgroupsEditClick(TObject *Sender);
 	void __fastcall cbxSGChange(TObject *Sender);
 	void __fastcall cbEtalonGroupKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall miCheckMuftaClick(TObject *Sender);
 
 
 private: // User declarations
@@ -236,6 +234,7 @@ private: // User declarations
     void EnableWigits(bool b);
 public: // User declarations
 	TGlobalSettings *getGlobalSettings(){return &mainGlobalSettings;};
+	TLCard502 *getLCard(){return l—ard502;};
 	__fastcall TMainForm(TComponent* Owner);
 	void LoadFromFile(UnicodeString FileName);
     void __fastcall TMainForm::CreateEtalon(int _tsId,int _sgId, TLCardData* _lcd);

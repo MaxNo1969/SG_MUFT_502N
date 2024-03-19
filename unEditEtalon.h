@@ -21,6 +21,8 @@
 #include <Buttons.hpp>
 #include "unFmViewMeasure.h"
 #include <AppEvnts.hpp>
+#include <Vcl.Menus.hpp>
+#include <Vcl.Dialogs.hpp>
 //---------------------------------------------------------------------------
 class TfmEditEtalon : public TForm
 {
@@ -50,7 +52,11 @@ __published:	// IDE-managed Components
 	TLabel *Label2;
 	TComboBox *cbSGGost;
 	TApplicationEvents *ApplicationEvents;
-	void __fastcall gridEtalonEditButtonClick(TObject *Sender);
+	TPopupMenu *sgPopup;
+	TPopupMenu *fnamePopup;
+	TMenuItem *miFName;
+	TOpenDialog *ofdEtalonFile;
+	TPopupMenu *tsPopup;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall cbTypeSizeSelect(TObject *Sender);
 	void __fastcall bbtShowEtClick(TObject *Sender);
@@ -60,6 +66,12 @@ __published:	// IDE-managed Components
 	void __fastcall queryTSzBeforePost(TDataSet *DataSet);
 	void __fastcall cbSGGostSelect(TObject *Sender);
 	void __fastcall ApplicationEventsMessage(tagMSG &Msg, bool &Handled);
+	void __fastcall sgPopupClick(TObject *Sender);
+	void __fastcall miFNameClick(TObject *Sender);
+	void __fastcall cbSGGostKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall tsPopupClockClick(TObject *Sender);
+
+
 private:	// User declarations
 	TGlobalSettings *pGlobalSettings;
 	TLCardData* plCardData;
