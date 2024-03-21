@@ -3,8 +3,8 @@ object EgroupEditFrm: TEgroupEditFrm
   Top = 0
   BorderStyle = bsDialog
   Caption = #1043#1088#1091#1087#1087#1072' '#1086#1073#1088#1072#1079#1094#1086#1074
-  ClientHeight = 319
-  ClientWidth = 331
+  ClientHeight = 363
+  ClientWidth = 338
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -77,7 +77,6 @@ object EgroupEditFrm: TEgroupEditFrm
     Top = 44
     Width = 145
     Height = 21
-    Style = csDropDownList
     TabOrder = 0
     OnChange = onElementChange
   end
@@ -86,7 +85,6 @@ object EgroupEditFrm: TEgroupEditFrm
     Top = 86
     Width = 145
     Height = 21
-    Style = csDropDownList
     TabOrder = 1
     OnChange = onElementChange
   end
@@ -167,11 +165,42 @@ object EgroupEditFrm: TEgroupEditFrm
     OnChange = onElementChange
     OnKeyDown = cbKeyDown
   end
-  object edCheckMuftaLevel: TEdit
+  object edCheckMuftaLevelMax: TEdit
     Left = 104
     Top = 277
-    Width = 121
+    Width = 49
     Height = 21
     TabOrder = 10
+  end
+  object edCheckMuftaLevelMin: TEdit
+    Left = 168
+    Top = 277
+    Width = 49
+    Height = 21
+    TabOrder = 11
+  end
+  object lbeFreqSignal: TLabeledEdit
+    Left = 8
+    Top = 326
+    Width = 120
+    Height = 21
+    Alignment = taCenter
+    EditLabel.Width = 104
+    EditLabel.Height = 13
+    EditLabel.Caption = #1063#1072#1089#1090#1086#1090#1072' '#1089#1080#1075#1085#1072#1083#1072', '#1043#1094
+    TabOrder = 12
+    Text = '195000 '
+  end
+  object lbeVoltage: TLabeledEdit
+    Left = 154
+    Top = 326
+    Width = 120
+    Height = 21
+    Alignment = taCenter
+    EditLabel.Width = 129
+    EditLabel.Height = 13
+    EditLabel.Caption = #1042#1099#1093#1086#1076#1085#1086#1077' '#1085#1072#1087#1088#1103#1078#1077#1085#1080#1077', '#1042
+    TabOrder = 13
+    Text = '3'
   end
 end

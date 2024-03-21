@@ -52,9 +52,39 @@ void __fastcall TEgroupEditFrm::FormCreate(TObject *Sender)
 		}
 	}
 
-	SqlDBModule->FillComboBoxFromSql(
-		"select distinct 1 as rec_id,case when Diameter>100 then substring(TSName,11,3) else substring(TSName,10,3) end as F1 from TypeSizes",
-		cbName);
+	TADOQuery* qry = new TADOQuery(NULL);
+	TStringList* tsNames = new TStringList();
+	qry->Connection = SqlDBModule->ADOConnectionDB;
+	qry->SQL->Add("select rec_id, TSName from Typesizes");
+	qry->Open();
+	while(!qry->Eof)
+	{
+		String tsName = qry->FieldByName("TSName")->AsString;
+		int tsId = qry->FieldByName("rec_id")->AsInteger;
+		tsNames->AddObject(tsName,(TObject*)tsId);
+		qry->Next();
+	}
+	qry->Close();
+	delete qry;
+
+	for(int i = 0; i < tsNames->Count; i++)
+	{
+		TStringList *parseList = new TStringList();
+		parseList->Delimiter = '-';
+		parseList->DelimitedText = tsNames->Strings[i];
+		if(parseList->Count > 2 && cbName->Items->IndexOf(parseList->Strings[2]) < 0)
+			cbName->Items->Add(parseList->Strings[2]);
+		if(parseList->Count > 3 && cbThreadType->Items->IndexOf(parseList->Strings[3]) < 0)
+			cbThreadType->Items->Add(parseList->Strings[3]);
+		if(parseList->Count > 4 && cbCustomer->Items->IndexOf(parseList->Strings[4]) < 0)
+			cbCustomer->Items->Add(parseList->Strings[4]);
+		if(parseList->Count > 5 && cbChampferType->Items->IndexOf(parseList->Strings[5]) < 0)
+			cbChampferType->Items->Add(parseList->Strings[5]);
+	}
+
+	//SqlDBModule->FillComboBoxFromSql(
+	//	"select distinct 1 as rec_id,case when Diameter>100 then substring(TSName,11,3) else substring(TSName,10,3) end as F1 from TypeSizes",
+	//	cbName);
 	cbName->ItemIndex = -1;
 	AnsiString curName = parseList->Strings[2];
 	for (int i = 0; i < cbName->Items->Count; i++)
@@ -67,38 +97,31 @@ void __fastcall TEgroupEditFrm::FormCreate(TObject *Sender)
 		}
 	}
 
+    cbName->Text = parseList->Strings[2];
 	cbThreadType->Text = parseList->Strings[3];
 	cbCustomer->Text = parseList->Strings[4];
 	cbChampferType->Text = parseList->Strings[5];
 
-	int checkMuftaLevel = SqlDBModule->GetIntFromSql("select checkMuftaLevel as F1 from checkMuftaLevel where rec_id="+IntToStr(tsId));
-    edCheckMuftaLevel->Text = IntToStr(checkMuftaLevel);
-/*
-	SqlDBModule->FillComboBoxFromSql("select distinct 1 as rec_id,ThreadType as [F1] from egroups",cbThreadType);
-	cbThreadType->ItemIndex = -1;
-	AnsiString curThreadType = SqlDBModule->GetStrFromSql("select ThreadType as [F1] from egroups where rec_id='"+IntToStr(currGroup)+"'");
-	for (int i = 0; i < cbThreadType->Items->Count; i++)
+	int checkMuftaLevelMax = SqlDBModule->GetIntFromSql("select checkMuftaLevel as F1 from checkMuftaLevel where rec_id="+IntToStr(tsId));
+	edCheckMuftaLevelMax->Text = IntToStr(checkMuftaLevelMax);
+	int checkMuftaLevelMin = SqlDBModule->GetIntFromSql("select minMuftaLevel as F1 from checkMuftaLevel where rec_id="+IntToStr(tsId));
+	edCheckMuftaLevelMin->Text = IntToStr(checkMuftaLevelMin);
+	int freqSignal = SqlDBModule->GetIntFromSql("select frequency_value as F1 from TypeSizeFrequencies where TS_id="+IntToStr(tsId));
+	int freqDefault = 195000;
+	double voltageDefault = 3.0;
+	if(freqSignal == 0)
 	{
-		if (cbThreadType->Items->Strings[i] == curThreadType)
-		{
-			cbThreadType->ItemIndex = i;
-			break;
-		}
+		//Записываем частоту и напряжение
+        String sql;
+		sql = "insert into TypeSizeFrequencies (TS_id, frequency_value, amplValue)";
+		sql += " values("+IntToStr(tsId)+","+IntToStr(freqDefault)+","+FloatToStr(voltageDefault)+")";
+		OutputDebugString(sql.c_str());
+		SqlDBModule->ExecStrSql(sql);
 	}
-
-	SqlDBModule->FillComboBoxFromSql("select distinct 1 as rec_id,ChampferType as [F1] from egroups",cbChampferType);
-	cbChampferType->ItemIndex = -1;
-	AnsiString curChampferType = SqlDBModule->GetStrFromSql("select ChampferType as [F1] from egroups where rec_id='"+IntToStr(currGroup)+"'");
-	for (int i = 0; i < cbChampferType->Items->Count; i++)
-	{
-		if (cbChampferType->Items->Strings[i] == curChampferType)
-		{
-			cbChampferType->ItemIndex = i;
-			break;
-		}
-	}
-*/
-
+	lbeFreqSignal->Text = IntToStr(freqDefault);
+	double voltage = SqlDBModule->GetFloatFromSql("select amplValue as F1 from TypeSizeFrequencies where TS_id="+IntToStr(tsId));
+	if(voltage == 0)voltage = voltageDefault;
+	lbeVoltage->Text = FloatToStr(voltage);
 }
 //---------------------------------------------------------------------------
 void __fastcall TEgroupEditFrm::btnCancelClick(TObject *Sender)
@@ -144,10 +167,17 @@ void __fastcall TEgroupEditFrm::btnAddClick(TObject *Sender)
 	int newRecId = SqlDBModule->GetIntFromSql("select @@identity as F1");
 	//Записываем порог определения муфты
 	//TODO: проверить корректность
-	sql = "insert into checkMuftaLevel (rec_id,checkMuftaLevel)";
-	sql += " values("+IntToStr(newRecId)+","+edCheckMuftaLevel->Text+")";
+	sql = "insert into checkMuftaLevel (rec_id,checkMuftaLevel,minMuftaLevel)";
+	sql += " values("+IntToStr(newRecId)+","+edCheckMuftaLevelMax->Text+","+edCheckMuftaLevelMin->Text+")";
 	OutputDebugString(sql.c_str());
 	SqlDBModule->ExecStrSql(sql);
+	//Записываем частоту и напряжение
+	sql = "insert into TypeSizeFrequencies (TS_id, frequency_value, amplValue)";
+	sql += " values("+IntToStr(newRecId)+","+lbeFreqSignal->Text+","+lbeVoltage->Text+")";
+	OutputDebugString(sql.c_str());
+	SqlDBModule->ExecStrSql(sql);
+
+	MainForm->FillGroupsCb();
 	Close();
 }
 //---------------------------------------------------------------------------
@@ -160,10 +190,19 @@ void __fastcall TEgroupEditFrm::btnSaveClick(TObject *Sender)
 	sql += " where rec_id = "+IntToStr(tsId);
 	OutputDebugString(sql.c_str());
 	SqlDBModule->ExecStrSql(sql);
-	sql = "update checkMuftaLevel set checkMuftaLevel="+edCheckMuftaLevel->Text;
+	sql = "update checkMuftaLevel set checkMuftaLevel="+edCheckMuftaLevelMax->Text;
+	sql += ", minMuftaLevel=" + edCheckMuftaLevelMin->Text;
 	sql += " where rec_id = "+IntToStr(tsId);
 	OutputDebugString(sql.c_str());
 	SqlDBModule->ExecStrSql(sql);
+
+	sql = "update TypeSizeFrequencies set frequency_value="+lbeFreqSignal->Text;
+	sql += ", amplValue=" + lbeVoltage->Text;
+	sql += " where TS_id = "+IntToStr(tsId);
+	OutputDebugString(sql.c_str());
+	SqlDBModule->ExecStrSql(sql);
+
+	MainForm->FillGroupsCb();
 	Close();
 }
 //---------------------------------------------------------------------------

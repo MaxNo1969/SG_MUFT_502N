@@ -33,7 +33,10 @@ __published:	// IDE-managed Components
 	TLabel *Label7;
 	TComboBox *cbName;
 	TLabel *Label8;
-	TEdit *edCheckMuftaLevel;
+	TEdit *edCheckMuftaLevelMax;
+	TEdit *edCheckMuftaLevelMin;
+	TLabeledEdit *lbeFreqSignal;
+	TLabeledEdit *lbeVoltage;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall btnCancelClick(TObject *Sender);
 	void __fastcall cbKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
