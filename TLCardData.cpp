@@ -258,10 +258,10 @@ int TLCardData::SearchOfZeroTransitionPeriod(int _sensNum)
 	return step2;
 }
 // ---------------------------------------------------------------------------
-bool TLCardData::CheckMufta(int _sensNum)
+int TLCardData::CheckMufta(int _sensNum)
 {
 	//мы нашли превышение уровня
-	int count = 0;
+	int countMax = 0;
 	int const maxCounts = 3;
 	//количество кадров
 	int kadrsQuantity = vecMeasuresData[freqNum].vecSensorsData[0].size();
@@ -272,20 +272,24 @@ bool TLCardData::CheckMufta(int _sensNum)
 	//(записано в таблице checkMuftaLevel поле checkMuftaLevel). Сейчас берём типоразмер из globalSettings
 	//параметр indexCurrentTypeSize (вроде должен быть текущий)
 	int currentTypeSize = dtLcard502->globalSettings->indexCurrentTypeSize;
-	double thresVal = (double)SqlDBModule->GetIntFromSql( "select checkMuftaLevel as F1 from checkMuftaLevel where rec_id="+IntToStr(currentTypeSize));
+	double upperBound = (double)SqlDBModule->GetIntFromSql( "select checkMuftaLevel as F1 from checkMuftaLevel where rec_id="+IntToStr(currentTypeSize));
+	double lowerBound = (double)SqlDBModule->GetIntFromSql( "select minMuftaLevel as F1 from checkMuftaLevel where rec_id="+IntToStr(currentTypeSize));
+	double maxVal=0;
 	wchar_t str[256];
 	for(int i = 0; i < kadrsQuantity; i++)
 	{
 		double val = vecMeasuresData[freqNum].vecSensorsData[_sensNum][i];
-		if(val > thresVal)
+		if(val > maxVal)maxVal = val;
+		if(val > upperBound)
 		{
-			if(++count > maxCounts)
+			if(++countMax > maxCounts)
 			{
-				return true;
+				return 1;
 			}
 		}
 	}
-	return false;
+	if(maxVal < lowerBound)return -1;
+	return 0;
 }
 // ---------------------------------------------------------------------------
 vector<double> TLCardData::GetBarkValues(vector<int> &_Thresholds)

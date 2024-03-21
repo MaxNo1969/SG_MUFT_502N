@@ -220,7 +220,7 @@ bool ThreadWork::OnlineCycle() {
 	if(GSPF)GSPF->Start();
 	Sleep(500);
 	// чтение ЛКард
-	while (true) {
+	while (true && !Terminated) {
 		if (solidGroup->Exec(0) == 2) {
 			break;
 		}
@@ -359,7 +359,8 @@ void __fastcall ThreadWork::MainRedraw()
 bool ThreadWork::CheckMufta(bool _waitStatus, int _waitTime) {
 	// Ждем муфту
 	//int const maxCount = 9;
-    const int maxCount = 3;
+	bool ret = false;
+	const int maxCount = 3;
     int counter = 0;
 	bool timeFlag = false;
 	DWORD StartTime = GetTickCount();
@@ -381,31 +382,45 @@ bool ThreadWork::CheckMufta(bool _waitStatus, int _waitTime) {
 				break;
 		}
 		muftаSearch->ResetState();
-		bool result = muftаSearchData->CheckMufta
-			(thGlobalSettings->checkMuftaChannel);
-			///////////////////////////////////////
-		//if (result == _waitStatus) {
-		//	break;
-		//}
+		int result = muftаSearchData->CheckMufta(thGlobalSettings->checkMuftaChannel);
+		muftаSearchData->ClearSGM();
 
-		if(!result && !_waitStatus)
+	   //Не определились
+		if(result == 0)
 		{
 			++counter;
 			if(counter >=maxCount)
 			{
+				//SetStext2("Счетчик!");
+				//Post(UPDATE_STATUS);
+				ret = false;
+				//break;
+			}
+		}
+		//Муфты нет
+		if(result == -1)
+		{
+
+			//SetStext2("Муфты нет!");
+			//Post(UPDATE_STATUS);
+			if(_waitStatus == false)
+			{
+				ret = true;
 				break;
 			}
 		}
-		 if(result && !_waitStatus)
-		 {
-			 counter = 0;
-		 }
-		 if(result && _waitStatus)
-		 {
-             break;
-         }
-		///////////////////////////////////////
-		muftаSearchData->ClearSGM();
+		//Муфта есть
+		if(result == 1)
+		{
+			//SetStext2("Муфта есть!");
+			//Post(UPDATE_STATUS);
+			if(_waitStatus == true)
+			{
+				ret = true;
+				break;
+			}
+		}
+		// Время ожидания вышло
 		if (GetTickCount() - StartTime > (unsigned)_waitTime) {
 			timeFlag = true;
 			break;
@@ -430,7 +445,6 @@ bool ThreadWork::CheckMufta(bool _waitStatus, int _waitTime) {
 	delete muftаSearchData;
 	if (timeFlag) // если превышено время ожидание, то false
 			return false;
-	else // если обнаружен искомый статус, то true
-			return true;
+	return ret;
 }
 // ---------------------------------------------------------------------------

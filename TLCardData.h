@@ -70,7 +70,7 @@ public:
 	//перессчитываем измерения и разделяем на датчики
 	int ReCalcMeasuresToChannels();
 	//проверяем наличие муфты
-	bool CheckMufta(int _sensNum);
+	int CheckMufta(int _sensNum);
 	//получаем значения Баркгаузена на порогах
 	vector<double> GetBarkValues(vector<int> &_Thresholds);
 	//Расчет коррелляции
