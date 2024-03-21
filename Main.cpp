@@ -52,23 +52,8 @@ __fastcall TMainForm::TMainForm(TComponent* Owner) : TForm(Owner) {
 		throw Exception("TMainForm::TMainForm не могу зарегистрировать сообщение");
 	}
 
-	//queryEtalon->Connection = SqlDBModule->ADOConnectionDB;
-	// Заполним список групп образцов
-	SqlDBModule->FillComboBoxFromSql(
-	"\
-		select ts.rec_id, ts.TSName as F1\
-		from TypeSizes ts\
-		order by ts.Diameter,ts.TSName\
-	", cbEtalonGroup);
-	cbEtalonGroup->ItemIndex = 0;
-	for(int i = 0; i < cbEtalonGroup->Items->Count; i++)
-	{
-		if(mainGlobalSettings.indexCurrentTypeSize == (int)cbEtalonGroup->Items->Objects[i])
-		{
-			cbEtalonGroup->ItemIndex = i;
-            break;
-		}
-	}
+    FillGroupsCb();
+
 
 	lСard502 = new TLCard502(&mainGlobalSettings);
 	TSFreqs = new TSFrequencies(mainGlobalSettings.indexCurrentTypeSize);
@@ -84,6 +69,27 @@ __fastcall TMainForm::TMainForm(TComponent* Owner) : TForm(Owner) {
 	SGFilter = new Filters("SG");
 	SGFilter->setSettingsFromDB();
 }
+
+void __fastcall TMainForm::FillGroupsCb()
+{
+	// Заполним список групп образцов
+	SqlDBModule->FillComboBoxFromSql(
+	"\
+		select ts.rec_id, ts.TSName as F1\
+		from TypeSizes ts\
+		order by ts.Diameter,ts.TSName\
+	", cbEtalonGroup);
+	cbEtalonGroup->ItemIndex = 0;
+	for(int i = 0; i < cbEtalonGroup->Items->Count; i++)
+	{
+		if(mainGlobalSettings.indexCurrentTypeSize == (int)cbEtalonGroup->Items->Objects[i])
+		{
+			cbEtalonGroup->ItemIndex = i;
+			break;
+		}
+	}
+}
+
 
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::FormCreate(TObject *Sender) {
@@ -363,75 +369,6 @@ void TMainForm::ClearCharts(void) {
 	 PanelSG->Caption = "ИТОГ";
 	 PanelSG->Color = clBtnFace;
 }
-
-// ---------------------------------------------------------------------------
-void TMainForm::DrawOnChart() {
-	// ClearCharts();
-	// if (lSGSignal.size() < 100)
-	// return;
-	// SignalChart->BottomAxis->Automatic = true;
-	// SignalChart->BottomAxis->SetMinMax(0, 1000);
-	// SignalChart->LeftAxis->Automatic = true;
-	// SignalChart->Refresh();
-	// bool DrawNetU = ini->ReadBool("SignalView","NetU",true);
-	// bool DrawSignalSG = ini->ReadBool("SignalView","SignalSG",true);
-	// bool DrawSynchroDetector = ini->ReadBool("SignalView","SynchroDetector",true);
-	// bool DrawInductionSignal = ini->ReadBool("SignalView","InductionSignal",true);
-	// bool DrawSynchroSignal = ini->ReadBool("SignalView","SynchroSignal",true);
-	// for (unsigned int i = 0; i < lSGSignal.size(); i++)
-	// {
-	////		Series->AddXY(i, lSGSignal[i].I, "", clBlue);
-	////		Series1->AddXY(i, lSGSignal[i].U, "", clRed);
-	// if(DrawNetU)SeriesNetU->AddXY(i, lSGSignal[i].NetU, "", SeriesNetU->SeriesColor);
-	// if(DrawSignalSG)SeriesSignalSG->AddXY(i, lSGSignal[i].SignalSG, "", SeriesSignalSG->SeriesColor);
-	// if(DrawSynchroDetector)SeriesSynchroDetector->AddXY(i, lSGSignal[i].SynchroDetector, "", SeriesSynchroDetector->SeriesColor);
-	// if(DrawInductionSignal)SeriesInductionSignal->AddXY(i, lSGSignal[i].InductionSignal, "", SeriesInductionSignal->SeriesColor);
-	// if(DrawSynchroSignal)SeriesSynchroSignal->AddXY(i, lSGSignal[i].SynchroSignal, "", SeriesSynchroSignal->SeriesColor);
-	// }
-	// vector<vector<SGPoint> >sgPoints = sgc->GetPoints(lSGSignal);
-	// for (unsigned int t = 0; t < sgPoints.size(); t++)
-	// {
-	// for (unsigned int i = 0; i < sgPoints[t].size(); i++)
-	// {
-	////			Series2->AddXY(sgPoints[t][i].index, sgPoints[t][i].I, "", clBlue);
-	////			Series3->AddXY(sgPoints[t][i].index, sgPoints[t][i].U, "", clRed);
-	// SeriesDotsSignalSG->AddXY(sgPoints[t][i].index, sgPoints[t][i].SignalSG, "", SeriesDotsSignalSG->SeriesColor);
-	// SeriesDotsNetU->AddXY(sgPoints[t][i].index, sgPoints[t][i].NetU, "", SeriesDotsNetU->SeriesColor);
-	// }
-	// }
-	// vector<double>Coords = sgc->GetCoords(sgPoints);
-	// String str = "";
-	// for (unsigned i = 0; i < Coords.size(); i++)
-	// str += FloatToStrF(Coords[i], ffFixed, 3, 3) + "   ";
-	// StatusBar->Panels->Items[1]->Text = str;
-	// StatusBar->Refresh();
-}
-
-// ---------------------------------------------------------------------------
-void TMainForm::DrawThresholds() {
-	// for (int i = 0; i < (int)local_th.size(); i++)
-	// {
-	// lsThresholds[i]->AddXY(0, local_th[i], "", clBlack);
-	// lsThresholds[i]->AddXY(SignalChart->Series[0]->MaxXValue(), local_th[i], "", clBlack);
-	// SignalChart->AddSeries(lsThresholds[i]);
-	// }
-}
-
-// ---------------------------------------------------------------------------
-void __fastcall TMainForm::Edit1Exit(TObject * Sender) {
-	// TEdit* p = (TEdit*)Sender;
-	// double val;
-	// try
-	// {
-	// val = p->Text.ToDouble();
-	// local_th[p->Tag] = val;
-	// }
-	// catch (...)
-	// {
-	// p->SetFocus();
-	// }
-}
-
 // ---------------------------------------------------------------------------
 void __fastcall TMainForm::bStartClick(TObject * Sender) {
 	mainGlobalSettings.isWork=true;
@@ -594,6 +531,9 @@ void TMainForm::Redraw() {
 	if(lCardData->vecMeasuresData.size()>0)
 		chCount = lCardData->vecMeasuresData[0].vecSensorsData.size();
 	TExtFunction::PrepareChartToTst(SignalChart, chCount, 0, 0);
+	SignalChart->Title->Text->Clear();
+	SignalChart->Title->Text->Add("Сигналы датчиков");
+
 	ChangeColor();
 	SignalChart->Series[0]->Title += " Сигнал";
 	SignalChart->Series[1]->Title += " Напряжение";
@@ -646,7 +586,7 @@ void TMainForm::Redraw() {
 		queryEtalon->Next();
 	}
 	queryEtalon->Close();
-    delete queryEtalon;
+	delete queryEtalon;
 	// посчитали знач порогов
 	vector<double> BarkValues;
 	if(lCardData->vecMeasuresData.size()>0 && lCardData->vecMeasuresData[0].vecSensorsData[0].size()>0)
@@ -691,17 +631,19 @@ void TMainForm::Redraw() {
 	PanelSG->Color = csg.color; // colorSer[csg.group_id]; //todo исправить!
 	PanelSG->Font->Color = (TColor)(16777215 - (int)csg.color);
 	// else PanelSG->Color = clLime;
+	// Выводим на экран графики
+	if(SignalChart->Visible)
+	{
 	// заполним чарт характеристическими кривыми эталонов
 	EtalonDatas EDatas = EtalonDatas(mainGlobalSettings.indexCurrentTypeSize);
 	TExtFunction::PrepareChartToTst(EtalonChart, EDatas.Etalons.size(), 0, 0);
-
 	// Выводим на экран графики
 	if(EDatas.Etalons.size()>0)
 	{
 		arrSize = EDatas.Etalons[0].BarkValues.size();
 		for (int i = 0; i < EDatas.Etalons.size(); i++)
 		{
-			// arrSize = lCardData->vecMeasuresData[0].vecSensorsData[i].size();
+		// arrSize = lCardData->vecMeasuresData[0].vecSensorsData[i].size();
 			double* tmpArray = new double[arrSize];
 			for (int j = 0; j < arrSize; j++)
 			{
@@ -725,6 +667,9 @@ void TMainForm::Redraw() {
 	// series->Color = clBlack;
 	// series->ShowInLegend = true;
 	// EtalonChart->AddSeries(series);
+	}
+	else
+		TExtFunction::PrepareChartToTst(EtalonChart, 1, 0, 0);
 	EtalonChart->Series[EtalonChart->SeriesCount() - 1]->ShowInLegend = true;
 	EtalonChart->Series[EtalonChart->SeriesCount() - 1]->Title = "Новый сигнал";
 	// EtalonChart->Series[SignalChart->SeriesCount()-1]->LinePen->Width = 3;
@@ -732,7 +677,6 @@ void TMainForm::Redraw() {
 	{
 		EtalonChart->Series[EtalonChart->SeriesCount() - 1]->AddY(BarkValues[i], "", clBlack);
 	}
-
 }
 
 // ---------------------------------------------------------------------------
@@ -1098,6 +1042,7 @@ void __fastcall TMainForm::N1Click(TObject *Sender)
 		   SignalChart->Visible = false;
 		   PanelChartBottom->Visible = true;
 	  }
+	  Redraw();
 }
 //---------------------------------------------------------------------------
 

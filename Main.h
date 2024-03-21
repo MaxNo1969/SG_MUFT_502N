@@ -135,7 +135,6 @@ __published: // IDE-managed Components
 	void __fastcall menuOpenClick(TObject *Sender); // открывает муфту
 	void __fastcall SignalChartClick(TObject *Sender);
 	void __fastcall SignalChartScroll(TObject *Sender);
-	void __fastcall Edit1Exit(TObject *Sender);
 	void __fastcall bStartClick(TObject *Sender);
 	void __fastcall bCancelClick(TObject *Sender);
 	void __fastcall menuColorSettClick(TObject *Sender);
@@ -181,8 +180,8 @@ private: // User declarations
 	public:
 	void ClearCharts(void); // очищает график
     private:
-	void DrawOnChart(); // рисует на чарте
-	void DrawThresholds(); // рисует пороги на чарте
+	//void DrawOnChart(); // рисует на чарте
+	//void DrawThresholds(); // рисует пороги на чарте
 	void UpdateStatus(AnsiString _text1, AnsiString _text2);
 
 	// vector<TLineSeries*> lsThresholds; // массив серий с порогами
@@ -237,7 +236,10 @@ public: // User declarations
 	TLCard502 *getLCard(){return lСard502;};
 	__fastcall TMainForm(TComponent* Owner);
 	void LoadFromFile(UnicodeString FileName);
-    void __fastcall TMainForm::CreateEtalon(int _tsId,int _sgId, TLCardData* _lcd);
+	void __fastcall TMainForm::CreateEtalon(int _tsId,int _sgId, TLCardData* _lcd);
+
+    void __fastcall FillGroupsCb();
+
 };
 
 // ---------------------------------------------------------------------------

@@ -63,24 +63,22 @@ object MainForm: TMainForm
       Left = 1
       Top = 1
       Width = 16
-      Height = 14
+      Height = 13
       Align = alLeft
       Alignment = taCenter
       Caption = 'Min'
       Transparent = True
       Visible = False
-      ExplicitHeight = 13
     end
     object lMaxScrollbar: TLabel
       Left = 1156
       Top = 1
       Width = 20
-      Height = 14
+      Height = 13
       Align = alRight
       Alignment = taCenter
       Caption = 'Max'
       Visible = False
-      ExplicitHeight = 13
     end
     object scbChartDragger: TScrollBar
       Left = 17
