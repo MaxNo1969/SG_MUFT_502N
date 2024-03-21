@@ -22,6 +22,7 @@ __published:	// IDE-managed Components
 	TButton *btnCheck;
 	TLabel *Label2;
 	TEdit *edMaxVal;
+	TEdit *edMinVal;
 	void __fastcall btnCheckClick(TObject *Sender);
 private:	// User declarations
     TMainForm *main;

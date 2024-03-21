@@ -25,7 +25,7 @@ void __fastcall TFRMMuftaLevel::btnCheckClick(TObject *Sender)
 	if (SLD->iCC->Get()) // проверяем цепи управления
 	{
 		SLD->oSENSLOWPOW->Set(true); // включим слаботочку
-
+        Sleep(500);
 		TGlobalSettings *gs = main->getGlobalSettings();
 		TLCard502* lCard502 = main->getLCard();
 		TLCardData * muftаSearchData = new TLCardData(lCard502, 1,lCard502->countLogCh, gs);
@@ -44,6 +44,7 @@ void __fastcall TFRMMuftaLevel::btnCheckClick(TObject *Sender)
 		double thresVal = (double)SqlDBModule->GetIntFromSql( "select checkMuftaLevel as F1 from checkMuftaLevel where rec_id="+IntToStr(currentTypeSize));
 		edMaxVal->Text = FloatToStr(thresVal);
 		double maxVal = 0;
+		double minVal = 1000;
 		for(int i = 0; i < kadrsQuantity; i++)
 		{
 			double val = muftаSearchData->vecMeasuresData[0].vecSensorsData[gs->checkMuftaChannel][i];
@@ -51,12 +52,17 @@ void __fastcall TFRMMuftaLevel::btnCheckClick(TObject *Sender)
 			{
 			  maxVal = val;
 			}
+			if(val < minVal)
+			{
+				minVal = val;
+			}
 		}
 		edMaxVal->Text = FloatToStr(maxVal);
+		edMinVal->Text = FloatToStr(minVal);
 	}
 	else
 	{
-        AnsiString msg;
+		AnsiString msg;
 		msg = "Нет сигнала цепей управления!!! \n";
 		TExtFunction::ShowBigModalMessage(msg, clRed);
 	}

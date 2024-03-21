@@ -71,4 +71,19 @@ object FRMMuftaLevel: TFRMMuftaLevel
     TabOrder = 1
     Text = '0'
   end
+  object edMinVal: TEdit
+    Left = 423
+    Top = 182
+    Width = 58
+    Height = 41
+    Alignment = taRightJustify
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -27
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 2
+    Text = '0'
+  end
 end
