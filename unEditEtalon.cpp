@@ -178,7 +178,7 @@ int TfmEditEtalon::FillGrids(int _indTsz, int _indGost) {
 			AnsiString gostName = cbTypeSize->Items->Strings[cbTypeSize->ItemIndex].SubString(0,5);
 			int idGost = SqlDBModule->GetIntFromSql("select rec_id as F1 from GOST where ShortName='"+gostName+"'");
 			SqlDBModule->FillComboBoxFromSql("select rec_id, SGName as F1 from SolidGroups where Gost_id=" +IntToStr(idGost),cbSGGost);
-			cbSGGost->ItemIndex=0;
+			cbSGGost->ItemIndex=-1;
 
 			TADOQuery *qry = new TADOQuery(this);
 			qry->Connection = SqlDBModule->ADOConnectionDB;

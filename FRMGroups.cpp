@@ -30,7 +30,7 @@ __fastcall TFRGroups::TFRGroups(TComponent* Owner)
 		qry->Connection = SqlDBModule->ADOConnectionDB;
 		//qry->SQL->Add("select * from TypeSizes");
 		qry->SQL->Add("\
-		select ts.TSName [Группа], ts.Diameter [Диаметр],isnull(c.cnt,0) [Количество образцов]\
+		select ts.rec_id, ts.TSName [Группа], ts.Diameter [Диаметр],isnull(c.cnt,0) [Количество образцов]\
 		from TypeSizes ts\
 		left join (select ts_id,count(*) cnt from Etalons group by ts_id) c on c.ts_id=ts.rec_id\
 		");
@@ -92,6 +92,10 @@ void __fastcall TFRGroups::AddNewGroup(void)
 	TEgroupEditFrm *frm = new TEgroupEditFrm(tsName);
 	frm->ShowModal();
 	delete frm;
+	MainForm->FillGroupsCb();
+	grid->DataSource->DataSet->Close();
+	grid->DataSource->DataSet->Open();
+	grid->Refresh();
 }
 
 void __fastcall TFRGroups::EditGroup(void)
@@ -100,13 +104,15 @@ void __fastcall TFRGroups::EditGroup(void)
 	TEgroupEditFrm *frm = new TEgroupEditFrm(tsName);
 	frm->ShowModal();
 	delete frm;
+	MainForm->FillGroupsCb();
+	grid->DataSource->DataSet->Close();
+	grid->DataSource->DataSet->Open();
+	grid->Refresh();
 }
 void __fastcall TFRGroups::gridCellClick(TColumn *Column)
 {
-	AnsiString tsName = grid->DataSource->DataSet->FieldByName("Группа")->AsString;
-	TEgroupEditFrm *frm = new TEgroupEditFrm(tsName);
-	frm->ShowModal();
-	delete frm;
+	MainForm->getGlobalSettings()->indexCurrentTypeSize = grid->DataSource->DataSet->FieldByName("rec_id")->AsInteger;
+    MainForm->menuEtalonsClick(this);
 }
 //---------------------------------------------------------------------------
 
