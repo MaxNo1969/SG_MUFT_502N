@@ -56,6 +56,8 @@ public:		// User declarations
 	int UpdFloatSql(AnsiString _tableName, AnsiString _fieldName, double _fieldValue, AnsiString _where);
 
 	AnsiString GetStrFromSql(AnsiString _strSql);
+    double GetFloatFromSql(AnsiString _strSql);
+
 
 	bool SavePar(AnsiString _name, AnsiString _value);
 	bool SavePar(AnsiString _name, int _value);

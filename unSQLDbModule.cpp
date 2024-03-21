@@ -362,6 +362,32 @@ int TSqlDBModule::GetIntFromSql(AnsiString _strSql) {
 	return result;
 }
 
+double TSqlDBModule::GetFloatFromSql(AnsiString _strSql) {
+	double result = 0;
+	try {
+		if (!ADOConnectionDB->Connected) {
+			ADOConnectionDB->Open();
+		}
+		else {
+			result = -3;
+		};
+		if (ADOQueryDB->Active) {
+			ADOQueryDB->Close();
+		}
+		ADOQueryDB->SQL->Text = _strSql;
+		ADOQueryDB->Open();
+		result = ADOQueryDB->FieldByName("F1")->AsFloat;
+		// result = ADOQueryDB->RecordCount;
+		ADOQueryDB->Close();
+	}
+	catch (Exception *ex) {
+		result = 0;
+		TProtocol::ProtocolSave(ex->Message);
+	}
+	return result;
+}
+
+
 
 
 int TSqlDBModule::FillComboBox(AnsiString _tableName, AnsiString _fieldName, TComboBox* _comboBox) {
